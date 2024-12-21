@@ -1,0 +1,92 @@
+.wrapper .content-box {
+  padding: 13px 20px 0;
+  border: 1px solid #ccc;
+}
+
+.typing-text p {
+  letter-spacing: 1px;
+  word-break: break-all;
+}
+
+.typing-text .correct {
+  color: #56964f;
+}
+
+.typing-text .active {
+  color: #17a2b8;
+}
+
+.typing-text p span.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  opacity: 0;
+  background: #17a2b8;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1;
+  }
+}
+
+.typing-text p span {
+  position: relative;
+}
+
+.typing-text .incorrect {
+  color: #cb3439;
+  background: #ffc0cb;
+  outline: 1px solid #fff;
+  border-radius: 4px;
+}
+
+.typing-text::-webkit-scrollbar {
+  width: 0;
+}
+
+.result-details li {
+  list-style: none;
+  display: flex;
+  height: 22px;
+  align-items: center;
+}
+
+.content .result-details {
+  width: calc(100% - 140px);
+}
+
+.content-box .content {
+  border-top: 1px solid #ccc;
+}
+
+.content button {
+  transition: transform 0.3s ease;
+}
+
+.content button:active {
+  transform: scale(0.97);
+}
+
+.result-details li:not(:first-child) {
+  padding-left: 22px;
+  border-left: 1px solid #ccc;
+}
+
+.result-details li p {
+  font-size: 19px;
+}
+
+.result-details li span {
+  display: block;
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.result-details li:not(:first-child) span {
+  font-weight: 500;
+}
