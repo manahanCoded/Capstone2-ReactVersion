@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Dashboard = ({ wrongAnswers, isQuizCompleted, userId, moduleId }) => {
+const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, timeSpent, perfect_score, completed }) => {
   const [aiResponse, setAiResponse] = useState([]);
 
-  // Define the passing score as a constant (70%)
-  const passingScore = 0.7; 
+  const passingScore = 0.5
 
   // Function to save user progress to the backend
+  useEffect(() => {
+    if (!isQuizCompleted) return;
+  }, [isQuizCompleted]);
+
   const saveQuizProgress = async (aiData) => {
-    const score = calculateScore(aiData);
     const progressData = {
-      userId, // Pass the userId as a prop
-      moduleId, // Pass the moduleId as a prop
-      score: score, // Custom function to calculate the score
-      completed: true,
-      passed: score >= passingScore, // Pass if score >= 70%
-      attemptNumber: 1, // Replace with the actual attempt number logic
+      user_id,
+      module_id,
+      score: score === perfect_score ? perfect_score : score,
+      timeSpent,
+      completed,
+      passed: score >= perfect_score * passingScore,
+      attempt_number: 1,
       feedback: aiData
         .map(
           (answer) =>
             `Question: ${answer.question}\nYour Answer: ${answer.user_answer}\nCorrect Answer: ${answer.correct_answer}\nExplanation: ${answer.explanation || "N/A"}`
         )
         .join("\n\n"),
+      perfect_score
     };
 
     try {
-      if (score >= passingScore) {
-        console.log("Passed!");
-      }
       const response = await axios.post("http://localhost:5000/api/module/update-module-score", progressData);
-      console.log("Progress saved successfully:", response.data.message);
     } catch (error) {
       console.error("Error saving quiz progress:", error);
     }
@@ -39,7 +39,7 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, userId, moduleId }) => {
   // Fetch AI response and save progress when the quiz is completed
   useEffect(() => {
     if (!isQuizCompleted) return;
-
+    console.log(score)
     const fetchAiResponse = async () => {
       try {
         const response = await axios.post("http://localhost:5000/api/dashboard/allDashboards", {
@@ -51,7 +51,8 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, userId, moduleId }) => {
         // Save quiz progress after fetching AI response
         saveQuizProgress(aiData);
       } catch (error) {
-        console.error("Error fetching AI response:", error);
+        console.log("Perfect score no ai")
+        await saveQuizProgress([]);
       }
     };
 
@@ -59,19 +60,21 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, userId, moduleId }) => {
   }, [isQuizCompleted, wrongAnswers]);
 
   // Custom function to calculate the score
- const calculateScore = (aiData) => {
-  // Your logic to calculate score
-  return aiData.reduce((score, answer) => score + (answer.correct ? 1 : 0), 0);
-};
+  const calculateScore = (aiData) => {
+    // Your logic to calculate score
+    return aiData.reduce((score, answer) => score + (answer.correct ? 1 : 0), 0);
+  };
 
   return (
-    <div className="mt-14">
+    <div className="mt-6">
       {isQuizCompleted ? (
-        <div>
-          <h2>Your Incorrect Answers:</h2>
-          <ul className="space-y-4">
-            {aiResponse.length > 0 ? (
-              aiResponse.map((answer, index) => (
+        score === perfect_score ? (
+          <p className="text-green-500 text-center font-bold">Perfect score! Congratulations!</p>
+        ) : aiResponse.length > 0 ? (
+          <div>
+            <h2 className="mb-4">Your Incorrect Answers:</h2>
+            <ul className="space-y-4">
+              {aiResponse.map((answer, index) => (
                 <li
                   key={index}
                   className="p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-all"
@@ -95,12 +98,12 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, userId, moduleId }) => {
                     </div>
                   )}
                 </li>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center">Loading explanations...</p>
-            )}
-          </ul>
-        </div>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center">Loading explanations...</p>
+        )
       ) : null}
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link,useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -16,7 +16,7 @@ import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 
 export default function EditJobPage() {
   const navigate = useNavigate();
-  const { jobEditID } = useParams(); 
+  const { jobEditID } = useParams();
 
   const [specificJob, setSpecificJob] = useState(null);
   const [information, setInformation] = useState({
@@ -32,6 +32,7 @@ export default function EditJobPage() {
     city: "",
     street: "",
     description: "",
+    moreinfo: "",
     date: new Date().toISOString().split("T")[0],
   });
 
@@ -97,6 +98,7 @@ export default function EditJobPage() {
         city: specificJob.city || "",
         street: specificJob.street || "",
         description: specificJob.description || "",
+        moreinfo: specificJob.moreinfo || "",
         date: new Date().toISOString().split("T")[0],
       });
     }
@@ -111,12 +113,6 @@ export default function EditJobPage() {
     }));
   };
 
-  const onDescriptionChange = (value) => {
-    setInformation((prevInfo) => ({
-      ...prevInfo,
-      description: value,
-    }));
-  };
 
   // Submit edited job data
   async function editJob(e) {
@@ -143,6 +139,19 @@ export default function EditJobPage() {
       alert("Error updating job.");
     }
   }
+
+  const deleteJob = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/job/delete/${jobEditID}`);
+      if (response.status === 200) {
+        alert("Job deleted successfully!");
+        navigate("/forum");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("Failed to delete the job.");
+    }
+  };
 
   return (
     <div className="mt-14 flex flex-row justify-center text-sm">
@@ -222,7 +231,9 @@ export default function EditJobPage() {
                     </section>
                   </div>
                 </div>
-                <div className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer ">
+                <div className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer "
+                  onClick={deleteJob}
+                >
                   <p>Delete</p>
                 </div>
               </section>
@@ -372,7 +383,7 @@ export default function EditJobPage() {
                       />
                       <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
                       <span
-                        className={`ml-2 ${information.jobtype === "Full-time" ? "text-red-600" : "text-gray-700"}  peer-checked:border-red-600 peer-checked:bg-white`}
+                        className={`ml-2 ${information.jobtype === "Full-time" ? "text-red-600" : "text-gray-700"}  peer-checked:border-red-600 `}
                       >
                         Full-time
                       </span>
@@ -598,7 +609,7 @@ export default function EditJobPage() {
                       countryid={174}
                       value={information.state}
                       onChange={(e) => {
-                        setStateid(e.id); 
+                        setStateid(e.id);
                         setInformation({
                           ...information,
                           state: e.name.toString(),
@@ -651,13 +662,33 @@ export default function EditJobPage() {
               <section className="flex flex-col gap-2">
                 {isClient && (
                   <div className="mb-4">
-                    <EditorToolbar toolbarId="t2" />
+                      <label className="block text-base text-gray-700 mb-2 mt-4">
+                        Short Job Description
+                      </label>
+                    <div className="bg-white ">
+                      <EditorToolbar toolbarId="t1" />
+                    </div>
                     <ReactQuill
                       theme="snow"
                       value={information.description}
-                       modules={modules("t2")}
+                      modules={modules("t1")}
                       onChange={(value) => setInformation({ ...information, description: value })}
-                       formats={formats}
+                      formats={formats}
+                      placeholder="Write something..."
+                      className="bg-white border rounded"
+                    />
+                      <label className="block text-base text-gray-700 mb-2 mt-4">
+                        More Information
+                      </label>
+                    <div className="bg-white ">
+                      <EditorToolbar toolbarId="t2" />
+                    </div>
+                    <ReactQuill
+                      theme="snow"
+                      value={information.moreinfo}
+                      modules={modules("t2")}
+                      onChange={(value) => setInformation({ ...information, moreinfo: value })}
+                      formats={formats}
                       placeholder="Write something..."
                       className="bg-white border rounded"
                     />

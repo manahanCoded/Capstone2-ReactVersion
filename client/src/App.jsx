@@ -26,7 +26,7 @@ import Edit from "./pages/modules/edit-module/Edit";
 
 function App() {
   return (
-    <div className="w-screen">
+    <div className="w-screen font-poppins">
       <Navbar />
       <Toaster />
       <Routes>

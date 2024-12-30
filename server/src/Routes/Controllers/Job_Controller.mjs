@@ -17,6 +17,7 @@ const create_job = async (req, res) => {
     city,
     street,
     description,
+    moreinfo,
     date,
   } = req.body;
 
@@ -31,6 +32,7 @@ const create_job = async (req, res) => {
     !city ||
     !street ||
     !description ||
+    !moreinfo ||
     !date
   ) {
     return res.status(400).json({ message: "All required fields must be provided." });
@@ -48,9 +50,9 @@ const create_job = async (req, res) => {
   try {
     await db.query(
       `INSERT INTO jobs 
-       (publisher, name, phone, email, title, applicants, remote, jobtype, salary, state, city, street, description, date, experience) 
+       (publisher, name, phone, email, title, applicants, remote, jobtype, salary, state, city, street, description, moreinfo, date, experience) 
        VALUES 
-       ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+       ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
       [
         publisher,
         name,
@@ -65,6 +67,7 @@ const create_job = async (req, res) => {
         city,
         street,
         description,
+        moreinfo,
         date,
         experience
       ]
@@ -98,14 +101,14 @@ const upload_appointment = async (req, res) => {
     }
 
     const { jobId, name, email, date, application } = req.body;
-    const fileUrl = `/api/job/uploads/${req.file.filename}`
+
+    const fileUrl = `/api/job/Resume_Img/uploads/${req.file.filename}`;
 
     if (!jobId || !name || !email || !date || !application) {
       return res.status(400).send("Missing required fields.");
     }
 
     const result = await db.query("SELECT * FROM jobs WHERE id = $1", [jobId]);
-
     if (result.rows.length === 0) {
       return res.status(404).send("Job not found.");
     }
@@ -114,7 +117,7 @@ const upload_appointment = async (req, res) => {
 
     await db.query(
       "INSERT INTO applicants (jobid, job_title, fullname,email, date, application, resume) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [jobId, currentApplicants, name, email, date, application, fileUrl] 
+      [jobId, currentApplicants, name, email, date, application, fileUrl]
     );
 
     await db.query("UPDATE jobs SET applicants = applicants + 1 WHERE id = $1", [jobId]);
@@ -125,6 +128,7 @@ const upload_appointment = async (req, res) => {
     res.status(500).send("An error occurred.");
   }
 };
+
 
 const display_appointments = async (req, res) => {
   try {
@@ -179,6 +183,7 @@ const upDatejob = async( req, res)=>{
     city,
     street,
     description,
+    moreinfo,
     date
   } = req.body; 
 
@@ -203,8 +208,9 @@ const upDatejob = async( req, res)=>{
         city = $10,
         street = $11,
         description = $12,
-        update_date = $13
-      WHERE id = $14
+        update_date = $13,
+        moreinfo = $14
+      WHERE id = $15
       RETURNING *;`;
 
   
@@ -222,6 +228,7 @@ const upDatejob = async( req, res)=>{
       street,
       description,
       date,
+      moreinfo,
       jobEditID, 
     ]);
 
@@ -236,6 +243,24 @@ const upDatejob = async( req, res)=>{
   }
 };
 
+const deleteJob = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await db.query("SELECT * FROM jobs WHERE id = $1", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    await db.query("DELETE FROM jobs WHERE id = $1", [id]);
+    res.status(200).json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    res.status(500).json({ message: "Failed to delete job" });
+  }
+};
 
 
-export { create_job, display_job, upload_appointment, display_appointments, displayUser_appointments, specific_job, upDatejob };
+
+export { create_job, display_job, upload_appointment, display_appointments, displayUser_appointments, specific_job, upDatejob, deleteJob };

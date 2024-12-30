@@ -26,7 +26,6 @@ export default function AccountsDashboard() {
                     return;
                 }
 
-
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {

@@ -66,15 +66,24 @@ export default function CheckJobPage() {
     }
   };
 
-  const handleFileUpload = async () => {
+  const handleFileUpload = async (e) => {
+    e.preventDefault()
     if (!file) {
-      setUploadStatus('Please select Resume to upload.');
+      setUploadStatus('Please select a resume to upload.');
       return;
     }
-
+    // File type validation
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload a PDF, DOC, DOCX, PNG, JPG, or GIF file.');
+      setUploadStatus('Invalid file type.');
+      return;
+    }
+  
+    // Create FormData and append data
     const formData = new FormData();
     formData.append('file', file);
-
+  
     if (job?.id) {
       formData.append('jobId', job.id.toString());
     }
@@ -90,18 +99,18 @@ export default function CheckJobPage() {
     if (userApplication?.name) {
       formData.append('name', userApplication.name);
     }
-
+  
     try {
       const response = await fetch('http://localhost:5000/api/job/upload-appointment', {
         method: 'POST',
         body: formData,
       });
-
+  
       if (response.ok) {
         setUploadStatus('File uploaded successfully!');
       } else {
         const errorMessage = await response.text();
-        console.error('Upload failed:', errorMessage);
+        alert('Upload failed: ' + errorMessage);
         setUploadStatus(`File upload failed: ${errorMessage}`);
       }
     } catch (error) {
@@ -109,6 +118,7 @@ export default function CheckJobPage() {
       setUploadStatus('An error occurred during the upload.');
     }
   };
+  
 
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
@@ -211,6 +221,7 @@ export default function CheckJobPage() {
               </div>
               <p className="font-semibold">Job Description:</p>
               <p className="ql-editor" dangerouslySetInnerHTML={{ __html: job?.description ?? "No description available" }}></p>
+              <p className="ql-editor" dangerouslySetInnerHTML={{ __html: job?.moreinfo ?? "No description available" }}></p>
             </div>
           </section>
         </MaxWidthWrapper>

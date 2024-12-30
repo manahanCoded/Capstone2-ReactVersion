@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MaxWidthWrapper from "./MaxWidthWrapper";
@@ -9,7 +9,6 @@ const Navbar = () => {
   const [profile, setProfile] = useState(false);
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function checkUser() {
@@ -130,7 +129,7 @@ const Navbar = () => {
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >
-                    <p className="font-thin group-hover:text-white">
+                    <p className=" group-hover:text-white">
                       Create Module
                     </p>
                     <ExitToAppIcon className="group-hover:text-white" />
@@ -142,7 +141,7 @@ const Navbar = () => {
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >
-                    <p className="font-thin group-hover:text-white">
+                    <p className="line line-clamp-1 group-hover:text-white">
                       Create Job/ Announcement
                     </p>
                     <ExitToAppIcon className="group-hover:text-white" />
@@ -154,7 +153,7 @@ const Navbar = () => {
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >
-                    <p className="font-thin group-hover:text-white">
+                    <p className=" group-hover:text-white">
                       Application Dashboard
                     </p>
                     <ExitToAppIcon className="group-hover:text-white" />
@@ -165,7 +164,7 @@ const Navbar = () => {
                   onClick={openProfile}
                   className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                 >
-                  <p className="font-thin group-hover:text-white">Email</p>
+                  <p className=" group-hover:text-white">Email</p>
                   <ExitToAppIcon className="group-hover:text-white" />
                 </Link>
                 <Link
@@ -173,14 +172,14 @@ const Navbar = () => {
                   onClick={openProfile}
                   className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                 >
-                  <p className="font-thin group-hover:text-white">Profile</p>
+                  <p className=" group-hover:text-white">Profile</p>
                   <ExitToAppIcon className="group-hover:text-white" />
                 </Link>
                 <div
                   className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   onClick={Logout_User}
                 >
-                  <p className="font-thin group-hover:text-white">Logout</p>
+                  <p className=" group-hover:text-white">Logout</p>
                   <ExitToAppIcon className="group-hover:text-white" />
                 </div>
               </div>

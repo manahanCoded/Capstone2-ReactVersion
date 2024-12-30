@@ -33,6 +33,7 @@ export default function CreateJobPage() {
         street: "",
         salary: "",
         description: "",
+        moreinfo: "",
         date: new Date().toISOString().split("T")[0],
     });
 
@@ -47,6 +48,10 @@ export default function CreateJobPage() {
 
     const onDescription = (value) => {
         setInformation({ ...information, description: value });
+    };
+
+    const onMoreInfo = (value) => {
+        setInformation({ ...information, moreinfo: value });
     };
 
     const onAnnouncementDescription = (value) => {
@@ -633,19 +638,38 @@ export default function CreateJobPage() {
                             <section className="flex flex-col gap-2">
                                 {isClient && (
                                     <div className="mb-4">
-                                        <label className="block text-base text-gray-700 mb-2">
-                                            Job Description
+                                        <label className="block text-base text-gray-700 mb-2 mt-4">
+                                            Short Job Description
                                         </label>
+                                        <div className="bg-white">
                                         <EditorToolbar toolbarId="t1" />
                                         <ReactQuill
                                             theme="snow"
                                             value={information.description}
+                                            required
                                             onChange={onDescription}
                                             placeholder="Write something awesome..."
                                             modules={modules("t1")}
                                             formats={formats}
                                             className="bg-white border rounded"
                                         />
+                                        </div>
+                                        <label className="block text-base text-gray-700 mb-2 mt-4">
+                                            More Information
+                                        </label>
+                                        <div className="bg-white ">
+                                        <EditorToolbar toolbarId="t2" />
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={information.moreinfo}
+                                            required
+                                            onChange={onMoreInfo}
+                                            placeholder="Write something awesome..."
+                                            modules={modules("t2")}
+                                            formats={formats}
+                                            className="bg-white border rounded"
+                                        />
+                                        </div>
                                     </div>
                                 )}
                             </section>
@@ -679,13 +703,13 @@ export default function CreateJobPage() {
                                         />
                                     </div>
                                     <div className="mb-4">
-                                        <EditorToolbar toolbarId="t2" />
+                                        <EditorToolbar toolbarId="t3" />
                                         <ReactQuill
                                             theme="snow"
                                             value={newAnnouncement.description}
                                             onChange={onAnnouncementDescription}
                                             placeholder="Write something..."
-                                            modules={modules("t2")}
+                                            modules={modules("t3")}
                                             formats={formats}
                                             className="bg-white border rounded"
                                         />

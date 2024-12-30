@@ -230,7 +230,7 @@ export default function AdminEmail() {
 
     return (
         <div className="mt-14 h-screen text-sm">
-            <form>
+            <section>
                 <MaxWidthWrapper className="h-12 flex flex-row justify-between items-center border-b-2 ">
                     <section className=" flex flex-row justify-between gap-2 overflow-hidden ">
                         <NavLink
@@ -251,7 +251,7 @@ export default function AdminEmail() {
                         </NavLink>
                     </section>
                 </MaxWidthWrapper>
-            </form>
+            </section>
 
             <MaxWidthWrapper className=" md:px-0 h-screen flex flex-row ">
                 <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px]">
@@ -318,11 +318,30 @@ export default function AdminEmail() {
                             <p>{formattedDate}</p>
                         </MaxWidthWrapper>
 
-                        <MaxWidthWrapper className="p-4">
+                        <MaxWidthWrapper className="p-4 ">
                             <p>{mail?.fullname}</p>
                             <h2 className="text-md font-semibold">Application Details</h2>
                             <p>{mail?.application}</p>
-                            <img src={`http://localhost:5000${mail?.resume}`} alt="Resume" />
+                            {mail?.resume && (
+                                <>
+                                    {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
+                                        <img
+                                            className="mt-8"
+                                            src={`http://localhost:5000${mail.resume}`} alt="Resume" />
+                                    ) : (
+                                        <div className="mt-8 w-full flex justify-end items-end ">
+                                        <a
+                                            href={`http://localhost:5000${mail.resume}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className=" bg-black px-4 py-2 text-white rounded-md"
+                                        >
+                                            Download Resume
+                                        </a>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </MaxWidthWrapper>
                     </section>
                     <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">

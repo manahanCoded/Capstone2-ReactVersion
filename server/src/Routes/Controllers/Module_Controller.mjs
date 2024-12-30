@@ -150,15 +150,13 @@ const allQuestion = async (req, res) => {
 
 
 const user_score = async (req, res) => {
-  const { user_id, module_id, completed, score, passed, attempt_number, timeSpent, feedback, perfect_score } = req.body;
+  const { user_id, module_id, completed, score, passed, attempt_number, time_spent, feedback, perfect_score } = req.body;
 
   if (!user_id || !module_id || score === undefined || passed === undefined) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    // Get current date and time for completion_date
-    const completion_date = completed ? new Date() : null;
 
     const existingQuiz = await db.query(
       'SELECT * FROM module_scores WHERE user_id = $1 AND module_id = $2',
@@ -169,7 +167,7 @@ const user_score = async (req, res) => {
     const existingTimeSpent = existingQuiz.rows.length > 0 ? existingQuiz.rows[0].time_spent : 0;
 
     const userTries = Number(attempt_number) + Number(existingAttemptNumber);
-    const totalTimeSpent = (Number(existingTimeSpent) || 0) + (Number(timeSpent) || 0); // Ensure timeSpent is properly converted to number
+    const totalTimeSpent = (Number(existingTimeSpent) || 0) + (Number(time_spent) || 0);
 
     if (isNaN(userTries) || isNaN(totalTimeSpent)) {
       return res.status(400).json({ error: 'Invalid attempt_number or time_spent' });
@@ -179,16 +177,15 @@ const user_score = async (req, res) => {
       // Update existing record
       await db.query(
         `UPDATE module_scores 
-        SET score = $1, passed = $2, attempt_number = $3, time_spent = $4, feedback = $5, completed = $6, prefect_score = $7, completion_date = $8
-        WHERE user_id = $9 AND module_id = $10`,
-        [score, passed, userTries, totalTimeSpent, feedback, completed, perfect_score, completion_date, user_id, module_id]
+        SET score = $1, passed = $2, attempt_number = $3, time_spent = $4, feedback = $5, completed = $6, prefect_score = $7
+        WHERE user_id = $8 AND module_id = $9`,
+        [score, passed, userTries, totalTimeSpent, feedback, completed, perfect_score, user_id, module_id]
       );
     } else {
-      // Insert new record with completion_date
       await db.query(
-        `INSERT INTO module_scores (user_id, module_id, score, passed, attempt_number, time_spent, feedback, completed, perfect_score, completion_date) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [user_id, module_id, score, passed, attempt_number, totalTimeSpent, feedback, completed, perfect_score, completion_date]
+        `INSERT INTO module_scores (user_id, module_id, score, passed, attempt_number, time_spent, feedback, completed, perfect_score) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [user_id, module_id, score, passed, attempt_number, totalTimeSpent, feedback, completed, perfect_score]
       );      
     }
     res.status(200).json({ message: 'Quiz progress saved successfully!' });
@@ -197,7 +194,6 @@ const user_score = async (req, res) => {
     res.status(500).json({ error: 'Failed to save quiz progress' });
   }
 };
-
 
 
 
@@ -214,7 +210,6 @@ const getUser_score = async (req, res) => {
       if (response.rows.length === 0) {
           return res.status(404).json({ message: 'No scores found for this user' });
       }
-
       res.status(200).json(response.rows);
   } catch (error) {
       console.error("Database error:", error);

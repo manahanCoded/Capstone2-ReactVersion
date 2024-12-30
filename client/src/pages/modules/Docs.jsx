@@ -79,32 +79,32 @@ function Modules() {
   };
 
   const handleNextQuestion = () => {
-  const currentQuestion = itemQuiz[currentQuestionIndex];
-  if (selectedOption !== currentQuestion.correct_option) {
-    setWrongAnswers((prev) => [
-      ...prev,
-      {
-        question: currentQuestion.question_text,
-        user_answer: selectedOption,
-        correct_answer: currentQuestion.correct_option,
-      },
-    ]);
-  } else {
-    setScore((prev) => prev + 1);  // Increment score if the answer is correct
-  }
-
-  setSelectedOption(null);
-
-  if (currentQuestionIndex < itemQuiz.length - 1) {
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
-  } else {
-    setShowResult(true);
-    setIsQuizCompleted(true);
-    setTimeout(() => {
-      saveQuizProgress();  // Save progress with a slight delay to ensure score is updated
-    }, 100);  // Ensure score is saved after the UI has updated
-  }
-};
+    const currentQuestion = itemQuiz[currentQuestionIndex];
+    if (selectedOption !== currentQuestion.correct_option) {
+      setWrongAnswers((prev) => [
+        ...prev,
+        {
+          question: currentQuestion.question_text,
+          user_answer: selectedOption,
+          correct_answer: currentQuestion.correct_option,
+        },
+      ]);
+    } else if (selectedOption) { 
+      setScore((prev) => prev + 1)
+    }
+  
+    setSelectedOption(null);
+  
+    if (currentQuestionIndex < itemQuiz.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      setShowResult(true);
+      setIsQuizCompleted(true);
+      setTimeout(() => {
+        saveQuizProgress(); 
+      }, 100); 
+    }
+  };
 
   
   const handleQuizStart = () => {
@@ -113,29 +113,27 @@ function Modules() {
   };
 
   const saveQuizProgress = async () => {
-    console.log("Final score before saving:", score);  // Log the final score to debug
-  
-    const timeSpent = Math.floor((new Date() - quizStartTime) / 1000);
-  
+
+    const timeSpent = quizStartTime ? Math.floor((new Date() - quizStartTime) / 1000) : 0;
+
     const passed = score >= itemQuiz.length * 0.7 ? 1 : 0;
   
-    const perfectScore = itemQuiz.length;  // Should match total number of questions
+    const perfectScore = itemQuiz.length;  
     
     const progressData = {
       user_id: userId,
       module_id: id,
-      score,  // Make sure this is the final score
+      score,  
       passed,
-      attempt_number: 1,
+      attempt_number: 0,
       timeSpent,
       feedback: "",
       completed: true,
-      perfect_score: perfectScore,  // Ensure perfect_score is correctly set
+      perfect_score: perfectScore,
     };
   
     try {
       const response = await axios.post("http://localhost:5000/api/module/update-module-score", progressData);
-      console.log("Progress saved successfully:", response.data.message);
     } catch (error) {
       console.error("Error saving quiz progress:", error);
     }
@@ -250,10 +248,20 @@ function Modules() {
       )}
 
       {isQuizCompleted && (
-        <Dashboard userId={userId} isQuizCompleted={isQuizCompleted} moduleId={id} wrongAnswers={wrongAnswers} />
+        <Dashboard
+        user_id={userId}
+        module_id={id}
+        isQuizCompleted={isQuizCompleted}
+        wrongAnswers={wrongAnswers}
+        score={score}
+        timeSpent={Math.floor((new Date() - quizStartTime) / 1000)} 
+        completed={true}
+        perfect_score={itemQuiz.length} 
+      />
       )}
     </div>
   );
 }
+
 
 export default Modules;

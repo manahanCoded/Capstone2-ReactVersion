@@ -90,7 +90,7 @@ export default function UserEmail() {
         }
     }, [checkUser]);
 
-    const handleEmail = (e)=> {
+    const handleEmail = (e) => {
         const emailValue = applicants.find(
             (applicant) => applicant.id == e.currentTarget.id
         );
@@ -111,7 +111,7 @@ export default function UserEmail() {
         e.preventDefault();
         if (!reply.reply || reply.reply.trim() === "") {
             alert("Reply cannot be empty or repeated.");
-            return; 
+            return;
         }
         const updatedReply = {
             parent_id: parentReply?.id || null,
@@ -146,7 +146,7 @@ export default function UserEmail() {
     const handleResponseReply = async () => {
         if (!reply.reply || reply.reply.trim() === "") {
             alert("Reply cannot be empty or repeated.");
-            return; 
+            return;
         }
         const updatedReply = {
             parent_id: parentReply?.id || null,
@@ -218,7 +218,7 @@ export default function UserEmail() {
             console.error("Error deleting reply:", error);
         }
     };
-    
+
 
 
     return (
@@ -233,10 +233,10 @@ export default function UserEmail() {
                                     className="w-full px-4 py-1 rounded-s-full mr-1"
                                     placeholder="Search"
                                     type="text"
-                                    value={searchQuery} 
-                                    onChange={handleSearchChange} 
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
                                 />
-                                    <SearchOutlinedIcon className="text-gray-500" />
+                                <SearchOutlinedIcon className="text-gray-500" />
                             </div>
                         </MaxWidthWrapper>
                     </section>
@@ -292,7 +292,22 @@ export default function UserEmail() {
                             <p>{mail?.fullname}</p>
                             <h2 className="text-md font-semibold">Application Details</h2>
                             <p>{mail?.application}</p>
-                            <img src={`http://localhost:5000${mail?.resume}`} alt="Resume" />
+                            {mail?.resume && (
+                                <>
+                                    {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
+                                        <img src={`http://localhost:5000${mail.resume}`} alt="Resume" />
+                                    ) : (
+                                        <a
+                                            href={`http://localhost:5000${mail.resume}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-black px-4 py-2 text-white rounded-md"
+                                        >
+                                            Download Resume
+                                        </a>
+                                    )}
+                                </>
+                            )}
                         </MaxWidthWrapper>
                     </section>
                     <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">

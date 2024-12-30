@@ -64,6 +64,7 @@ CREATE TABLE jobs(
 	city text,
 	street text,
 	description text,
+	moreInfo test,
 	date date
 )
 
