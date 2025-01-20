@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, timeSpent, perfect_score, completed }) => {
   const [aiResponse, setAiResponse] = useState([]);
-
+  
   const passingScore = 0.5
 
   // Function to save user progress to the backend
@@ -39,7 +39,6 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
   // Fetch AI response and save progress when the quiz is completed
   useEffect(() => {
     if (!isQuizCompleted) return;
-    console.log(score)
     const fetchAiResponse = async () => {
       try {
         const response = await axios.post("http://localhost:5000/api/dashboard/allDashboards", {
@@ -49,7 +48,7 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
         setAiResponse(aiData);
 
         // Save quiz progress after fetching AI response
-        saveQuizProgress(aiData);
+        await saveQuizProgress(aiData);
       } catch (error) {
         console.log("Perfect score no ai")
         await saveQuizProgress([]);
@@ -66,7 +65,7 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
   };
 
   return (
-    <div className="mt-6">
+    <div className=" w-[90%] m-auto py-6">
       {isQuizCompleted ? (
         score === perfect_score ? (
           <p className="text-green-500 text-center font-bold">Perfect score! Congratulations!</p>

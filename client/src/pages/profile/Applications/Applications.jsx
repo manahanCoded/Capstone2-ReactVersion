@@ -5,13 +5,12 @@ import { useEffect, useState } from 'react';
 export default function UserApplications({ checkUser }) {
     const [applications, setApplications] = useState([]);
 
-    // Early return if no user is found
+
     if (!checkUser) {
         return <div>No user found.</div>;
     }
 
     useEffect(() => {
-        // Fetch user applications only if the user email is available
         async function fetchApplications() {
             if (checkUser?.email) {
                 try {

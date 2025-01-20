@@ -9,10 +9,10 @@ import GuessingGame from "./pages/games/guessing-game/guess";
 import HangmanGame from "./pages/games/hangman/Hangman";
 import Scramble from "./pages/games/scramble/Scramble";
 import TypingGame from "./pages/games/typing-game/Typing";
-import Modules from "./pages/modules/Docs";
+import DocsPage from "./pages/modules/Docs";
 import { Toaster } from "@/components/ui/toaster"
 
-import CreateModulePage from "./pages/modules/create-module/CreateModule";
+import CreateUnitPage from "./pages/modules/create-module/CreateUnit";
 import ForumPage from "./pages/forum/Forum";
 import CheckJobPage from "./pages/forum/checkJob";
 import CreateJobPage from "./pages/forum/create-job/CreateJob";
@@ -21,6 +21,9 @@ import Email from "./pages/email/Email";
 import AccountsDashboard from "./pages/users/accounts-dashboard/AccountsDashboard";
 import Profile from "./pages/profile/Profile";
 import Edit from "./pages/modules/edit-module/Edit";
+import QuestionAnswer from "./pages/question-answer/Question-answer";
+import Unit from "./pages/modules/Unit";
+import CreateModulePage from "./pages/modules/create-module/CreateModule";
 
 
 
@@ -36,9 +39,11 @@ function App() {
         <Route path="/user/accounts-dashboard" element={<AccountsDashboard />} />
 
         <Route path="/modules" element={<ModulesPage />} />
-        <Route path="/modules/docs/:id" element={<Modules />} />
+        <Route path="/modules/units/:id" element={<Unit />} />
+        <Route path="/modules/units/docs/:id" element={<DocsPage />} />
         <Route path="/modules/create-module" element={<CreateModulePage />} />
-        <Route path="/modules/edit/:editPostID" element={<Edit />} />
+        <Route path="/modules/create-unit/:id" element={<CreateUnitPage />} />
+        <Route path="/modules/units/edit/:editPostID" element={<Edit />} />
 
         <Route path="/games" element={<Games />} />
         <Route path="/games/guessing-game" element={<GuessingGame />} />
@@ -46,11 +51,13 @@ function App() {
         <Route path="/games/scramble" element={<Scramble />} />
         <Route path="/games/typing-game" element={<TypingGame />} />
 
-
         <Route path="/forum" element={<ForumPage />} />
         <Route path="/forum/jobDetails/:jobsID" element={<CheckJobPage />} />
         <Route path="/forum/create-job" element={<CreateJobPage />} />
-        <Route path="/forum/edit-Job/:jobEditID" element={<EditJobPage />} />
+        <Route path="/forum/edit-job/:jobEditID" element={<EditJobPage />} />
+
+        <Route path="/quetion-answer" element={<QuestionAnswer />} />
+
 
         <Route path="/email" element={<Email />} />
 

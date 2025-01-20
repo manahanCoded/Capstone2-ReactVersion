@@ -1,5 +1,5 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useLocation,  } from "react-router-dom";
+import { useLocation, } from "react-router-dom";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -88,9 +88,9 @@ export default function AccountsDashboard() {
         <div className="mt-14 h-screen text-sm">
             <form>
                 <MaxWidthWrapper className="h-12 flex flex-row justify-between items-center border-b-2">
-                    <section className=" flex flex-row justify-between gap-2 overflow-hidden ">
+                <section className="w-full text-xs flex flex-row justify-start gap-8 ">
                         <NavLink
-                            to="/user/accounts-dashboard"className={`${pathName === "/user/accounts-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
+                            to="/user/accounts-dashboard" className={`${pathName === "/user/accounts-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                             Accounts
                         </NavLink>
                         <NavLink
@@ -102,9 +102,14 @@ export default function AccountsDashboard() {
                             Forum
                         </NavLink>
                         <NavLink
+                            to="/announcement" className={`${pathName === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
+                            Announcement
+                        </NavLink>
+                        <NavLink
                             to="/email" className={`${pathName === "/email" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
                             Email
                         </NavLink>
+
                     </section>
                 </MaxWidthWrapper>
             </form>

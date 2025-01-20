@@ -53,8 +53,7 @@ export default function EditJobPage() {
         }
         const data = await res.json();
         if (data.role === "client") {
-          alert("Unauthorized access!");
-          navigate("/modules");
+          navigate("/forum");
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -675,7 +674,7 @@ export default function EditJobPage() {
                       onChange={(value) => setInformation({ ...information, description: value })}
                       formats={formats}
                       placeholder="Write something..."
-                      className="bg-white border rounded"
+                      className="bg-white border rounded h-[55vh]"
                     />
                       <label className="block text-base text-gray-700 mb-2 mt-4">
                         More Information
@@ -690,7 +689,7 @@ export default function EditJobPage() {
                       onChange={(value) => setInformation({ ...information, moreinfo: value })}
                       formats={formats}
                       placeholder="Write something..."
-                      className="bg-white border rounded"
+                      className="bg-white border rounded h-[55vh]"
                     />
                   </div>
                 )}

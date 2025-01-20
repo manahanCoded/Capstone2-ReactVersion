@@ -3,15 +3,19 @@ import "react-quill-new/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ReactQuill from "react-quill-new";
-import EditorToolbar, { modules, formats } from "@/components/EditToolbar"
+import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
 const EditPost = ({ postList, editPostID }) => {
   const [checkAdminData, setCheckAdmin] = useState(null);
   const navigate = useNavigate();
 
+  const [isRawHtmlDescription, setIsRawHtmlDescription] = useState(false); 
+  const [isRawHtmlInformation, setIsRawHtmlInformation] = useState(false); 
+
+
   useEffect(() => {
-    async function checkUser() {
+    async function handleCheckAdmin() {
       try {
         const res = await fetch("http://localhost:5000/api/user/profile", {
           method: "GET",
@@ -22,17 +26,17 @@ const EditPost = ({ postList, editPostID }) => {
           return;
         }
         const data = await res.json();
-        setCheckAdmin(data);
 
         if (data.role === "client") {
-          alert("Unauthorized access!");
           navigate("/modules");
         }
-      } catch (error) {
-        console.error("Error checking user:", error);
+      } catch (err) {
+        console.error("An error occurred:", err);
+        alert("Failed to fetch user profile.");
       }
     }
-    checkUser();
+
+    handleCheckAdmin();
   }, [navigate]);
 
   const initialPostData = postList?.[0] || { title: "", description: "", information: "" };
@@ -60,6 +64,14 @@ const EditPost = ({ postList, editPostID }) => {
     });
   };
 
+  const toggleRawHtmlDescription = () => {
+    setIsRawHtmlDescription(!isRawHtmlDescription);
+  };
+
+  const toggleRawHtmlInformation = () => {
+    setIsRawHtmlInformation(!isRawHtmlInformation);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -80,7 +92,8 @@ const EditPost = ({ postList, editPostID }) => {
         navigate("/modules");
       }
     } catch (error) {
-      console.error("Error editing article:", error);
+      alert(error.response?.data?.error || "Failed to edit module.");
+      console.error("Error editing module:", error);
     }
   };
 
@@ -134,21 +147,55 @@ const EditPost = ({ postList, editPostID }) => {
                   <label className="block text-gray-700 font-bold mb-2">
                     Description <span className="text-red-500">*</span>
                   </label>
-                  <EditorToolbar toolbarId="t1" />
-                  <ReactQuill
-                    theme="snow"
-                    value={userInfo.description}
-                    onChange={onDescriptionChange}
-                    placeholder="Write something awesome..."
-                    modules={modules("t1")}
-                    formats={formats}
-                  />
+                  <div className="flex items-center gap-4 mb-2">
+                    <EditorToolbar toolbarId="t1" />
+                    <button
+                      type="button"
+                      onClick={toggleRawHtmlDescription}
+                      className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                    >
+                      {isRawHtmlDescription ? "Switch to Editor" : "Edit HTML"}
+                    </button>
+                  </div>
+                  {isRawHtmlDescription ? (
+                    <textarea
+                      value={userInfo.description}
+                      onChange={(e) => onDescriptionChange(e.target.value)}
+                      className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  ) : (
+                    <ReactQuill
+                      theme="snow"
+                      value={userInfo.description}
+                      onChange={onDescriptionChange}
+                      placeholder="Write something awesome..."
+                      modules={modules("t1")}
+                      formats={formats}
+                      className="h-[70vh] overflow-y-auto"
+                    />
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">
                     Additional Information
                   </label>
-                  <EditorToolbar toolbarId="t2" />
+                  <div className="flex items-center gap-4 mb-2">
+                    <EditorToolbar toolbarId="t2" />
+                    <button
+                      type="button"
+                      onClick={toggleRawHtmlInformation}
+                       className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                    >
+                      {isRawHtmlInformation ? "Switch to Editor" : "Edit HTML"}
+                    </button>
+                  </div>
+                  {isRawHtmlInformation ? (
+                    <textarea
+                      value={userInfo.information}
+                      onChange={(e) => onInformationChange(e.target.value)}
+                      className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  ) : (
                   <ReactQuill
                     theme="snow"
                     value={userInfo.information}
@@ -156,7 +203,9 @@ const EditPost = ({ postList, editPostID }) => {
                     placeholder="Write something awesome..."
                     modules={modules("t2")}
                     formats={formats}
+                    className="h-[70vh] overflow-y-auto"
                   />
+                  )}
                 </div>
 
                 {isError && <div className="errors">{isError}</div>}

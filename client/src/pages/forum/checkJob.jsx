@@ -185,7 +185,7 @@ export default function CheckJobPage() {
       </form>
 
       <section className="border-b-2 w-full">
-        <MaxWidthWrapper className="md:w-1/2 h-16 flex justify-between items-center">
+        <MaxWidthWrapper className="md:w-2/3 h-16 flex justify-between items-center">
           <div className="h-16 flex flex-row">
             <div
               className={typeForm === "details" ? "px-4 flex items-center cursor-pointer text-white bg-red-900" : "px-4 flex items-center cursor-pointer"}

@@ -114,11 +114,10 @@ const upload_appointment = async (req, res) => {
     }
 
     const currentApplicants = result.rows[0].title;
-
     await db.query(
-      "INSERT INTO applicants (jobid, job_title, fullname,email, date, application, resume) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      "INSERT INTO applicants (jobid, job_title, fullname, email, date, application, resume) VALUES ($1, $2, $3, $4, $5, $6, $7)",
       [jobId, currentApplicants, name, email, date, application, fileUrl]
-    );
+  );
 
     await db.query("UPDATE jobs SET applicants = applicants + 1 WHERE id = $1", [jobId]);
 
@@ -168,7 +167,7 @@ const specific_job = async (req, res) => {
   }
 };
 
-const upDatejob = async( req, res)=>{
+const updateJob = async( req, res)=>{
   const jobEditID = req.params.jobEditID; 
   const {
     name,
@@ -188,7 +187,7 @@ const upDatejob = async( req, res)=>{
   } = req.body; 
 
 
-  if (!name || !title || !jobtype || !salary) {
+  if (!name || !title || !jobtype ) {
     return res.status(400).json({ message: "Required fields are missing" });
   }
 
@@ -263,4 +262,53 @@ const deleteJob = async (req, res) => {
 
 
 
-export { create_job, display_job, upload_appointment, display_appointments, displayUser_appointments, specific_job, upDatejob, deleteJob };
+
+const getBookmarks = async(req,res)=>{
+  try {
+    const userId = req.user.id;
+    const result = await db.query(
+      "SELECT job_id FROM job_bookmarks WHERE user_id = $1",
+      [userId]
+    );
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching bookmarks:", error);
+    res.status(500).json({ message: "Failed to fetch bookmarks." });
+  }
+}
+
+const saveBookmarks = async(req ,res)=>{
+  try {
+    const userId = req.user.id;
+    const { job_id } = req.body;
+
+    await db.query(
+      "INSERT INTO job_bookmarks (user_id, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+      [userId, job_id]
+    );
+    res.status(201).json({ message: "Bookmark added successfully." });
+  } catch (error) {
+    console.error("Error adding bookmark:", error);
+    res.status(500).json({ message: "Failed to add bookmark." });
+}
+}
+
+const deleteBookmarks = async(req ,res)=>{
+  try {
+    const userId = req.user.id;
+    const { jobId } = req.params;
+
+    await db.query(
+      "DELETE FROM job_bookmarks WHERE user_id = $1 AND job_id = $2",
+      [userId, jobId]
+    );
+    res.status(200).json({ message: "Bookmark removed successfully." });
+  } catch (error) {
+    console.error("Error removing bookmark:", error);
+    res.status(500).json({ message: "Failed to remove bookmark." });
+  }
+}
+
+
+
+export {saveBookmarks, deleteBookmarks, getBookmarks, create_job, display_job, upload_appointment, display_appointments, displayUser_appointments, specific_job, updateJob, deleteJob };

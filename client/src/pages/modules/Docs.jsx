@@ -7,7 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Dashboard from "@/components/Dashboard";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-function Modules() {
+export default function DocsPage() {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -84,29 +84,34 @@ function Modules() {
       setWrongAnswers((prev) => [
         ...prev,
         {
+          module_title: currentQuestion.module_title,
           question: currentQuestion.question_text,
-          user_answer: selectedOption,
+          user_answer: selectedOption || "N/A",
+          user_answer_text: selectedOption
+            ? currentQuestion?.[`option_${selectedOption.toLowerCase()}`] || "Unknown Answer"
+            : "No Answer",
           correct_answer: currentQuestion.correct_option,
+          correct_answer_text: currentQuestion[`option_${currentQuestion.correct_option.toLowerCase()}`],
         },
       ]);
-    } else if (selectedOption) { 
+    } else if (selectedOption) {
       setScore((prev) => prev + 1)
     }
-  
+
     setSelectedOption(null);
-  
+
     if (currentQuestionIndex < itemQuiz.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setShowResult(true);
       setIsQuizCompleted(true);
       setTimeout(() => {
-        saveQuizProgress(); 
-      }, 100); 
+        saveQuizProgress();
+      }, 100);
     }
   };
 
-  
+
   const handleQuizStart = () => {
     setQuizStartTime(new Date());  // Record the start time of the quiz
     setOpenQuiz(true);
@@ -117,13 +122,13 @@ function Modules() {
     const timeSpent = quizStartTime ? Math.floor((new Date() - quizStartTime) / 1000) : 0;
 
     const passed = score >= itemQuiz.length * 0.7 ? 1 : 0;
-  
-    const perfectScore = itemQuiz.length;  
-    
+
+    const perfectScore = itemQuiz.length;
+
     const progressData = {
       user_id: userId,
       module_id: id,
-      score,  
+      score,
       passed,
       attempt_number: 0,
       timeSpent,
@@ -131,15 +136,15 @@ function Modules() {
       completed: true,
       perfect_score: perfectScore,
     };
-  
+
     try {
       const response = await axios.post("http://localhost:5000/api/module/update-module-score", progressData);
     } catch (error) {
       console.error("Error saving quiz progress:", error);
     }
   };
-  
-  
+
+
 
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
@@ -153,11 +158,12 @@ function Modules() {
   return (
     <div className="mt-14">
       <MaxWidthWrapper className="py-14">
-        <div className="lg:w-3/5 md:w-4/5 m-auto">
+        <div className="lg:w-4/5 md:w-4/5 m-auto">
           {posts.map((post) => (
             <div key={post.id}>
-              <h1 className="flex flex-col font-extrabold text-5xl">
-                <span className="font-bold text-red-900 text-lg">Introducing</span> {post.title}
+              <h1 className="flex flex-col font-extrabold text-5xl leading-tight">
+                <span className="font-bold text-red-900 text-lg">Introducing</span>
+                {post.title}
               </h1>
               <div
                 className="ql-editor"
@@ -249,19 +255,18 @@ function Modules() {
 
       {isQuizCompleted && (
         <Dashboard
-        user_id={userId}
-        module_id={id}
-        isQuizCompleted={isQuizCompleted}
-        wrongAnswers={wrongAnswers}
-        score={score}
-        timeSpent={Math.floor((new Date() - quizStartTime) / 1000)} 
-        completed={true}
-        perfect_score={itemQuiz.length} 
-      />
+          user_id={userId}
+          module_id={id}
+          isQuizCompleted={isQuizCompleted}
+          wrongAnswers={wrongAnswers}
+          score={score}
+          timeSpent={Math.floor((new Date() - quizStartTime) / 1000)}
+          completed={true}
+          perfect_score={itemQuiz.length}
+        />
       )}
     </div>
   );
 }
 
 
-export default Modules;

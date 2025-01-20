@@ -1,4 +1,4 @@
-DATABSE FOR users
+<!-- DATABSE FOR users -->
 CREATE TABLE users(
 	id serial primary key,
 	email varchar(50) unique not null,
@@ -6,18 +6,32 @@ CREATE TABLE users(
 	role varchar(45) not null
 )
 
-DATABSE FOR modules
+<!-- DATABSE FOR modules -->
+CREATE TABLE module_storage_section (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT, 
+    tags VARCHAR(255)[], 
+    created_by INTEGER not null, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
 CREATE TABLE module (
 	id serial primary key,
-	title varchar(100) UNIQUE not null,
+	publisher INTEGER not null,
+	title text UNIQUE not null,
 	description text not null,
-	information text not null
+	information text not null,
+    storage_section_id INTEGER NOT NULL REFERENCES storage_section(id),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
-DATABSE FOR quiz 
+<!-- DATABSE FOR quiz  -->
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
-    module_title TEXT,
+    module_title INTEGER NOT NULL,
     question_text TEXT NOT NULL,
     option_a TEXT NOT NULL,
     option_b TEXT NOT NULL,
@@ -28,26 +42,25 @@ CREATE TABLE questions (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DATABSE FOR quiz scores
+<!-- DATABSE FOR quiz scores -->
 CREATE TABLE module_scores (
     id SERIAL PRIMARY KEY,                 
     user_id INTEGER NOT NULL,               
-    module_id INTEGER NOT NULL,             
-    question_id INTEGER NOT NULL,          
+    module_id INTEGER NOT NULL,                     
     completed BOOLEAN NOT NULL,            
     score INTEGER NOT NULL DEFAULT 0,       
     passed BOOLEAN NOT NULL,                
     attempt_number INTEGER NOT NULL,        
-    feedback TEXT,  
-	prefect_score INTEGER,                     
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    feedback TEXT, 
+	time_spent INTEGER,
+	completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	perfect_score INTEGER,                     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (module_id) REFERENCES module(id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
-DATABSE FOR jobs
+<!-- DATABSE FOR jobs -->
 CREATE TABLE jobs(
 	id serial primary key,
 	publisher varchar(45),
@@ -68,6 +81,15 @@ CREATE TABLE jobs(
 	date date
 )
 
+CREATE TABLE job_bookmarks (
+    id serial PRIMARY KEY,
+    user_id int, 
+    job_id int NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE
+);
+
+<!-- DATABSE FOR announcements -->
 CREATE TABLE announcements (
 	id serial primary key , 
 	publisher: text not null,
@@ -76,6 +98,7 @@ CREATE TABLE announcements (
 	date date not null
 )
 
+<!-- DATABSE FOR applicants -->
 CREATE TABLE applicants (
 	id serial primary key, 
 	jobId INTEGER not null,
@@ -87,6 +110,8 @@ CREATE TABLE applicants (
 	resume text not null
 )
 
+
+<!-- DATABSE FOR email -->
 CREATE TABLE mail (
 	id serial primary key,
 	parent_id INT REFERENCES mail(id) ON DELETE CASCADE,
@@ -99,3 +124,37 @@ CREATE TABLE mail (
 	date date,
 	is_reply BOOLEAN DEFAULT FALSE  
 )
+
+
+
+<!-- DATABSE FOR Question&Answer questions-->
+CREATE TABLE QA_questions (
+    question_id SERIAL PRIMARY KEY, 
+    user_id INT NOT NULL,           
+    question_text TEXT NOT NULL,    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    topic VARCHAR(100) NOT NULL,
+	topic_type varchar(50) NOT NULL,         
+    is_resolved BOOLEAN DEFAULT FALSE 
+);
+
+<!-- DATABSE FOR Question&Answer  answers-->
+CREATE TABLE QA_answers (
+    answer_id SERIAL PRIMARY KEY,   
+    question_id INT NOT NULL REFERENCES questions(question_id) ON DELETE CASCADE,
+    user_id INT NOT NULL,          
+    answer_text TEXT NOT NULL,      
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    is_accepted BOOLEAN DEFAULT FALSE 
+);
+
+<!-- DATABSE FOR Question&Answer  votes-->
+CREATE TABLE QA_votes (
+    vote_id SERIAL PRIMARY KEY,     
+    target_id INT NOT NULL,        
+    target_type VARCHAR(10) CHECK (target_type IN ('question', 'answer')), 
+    user_id INT NOT NULL,           
+    vote_type VARCHAR(10) CHECK (vote_type IN ('up', 'down')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (target_id, target_type, user_id) 
+);

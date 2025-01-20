@@ -1,6 +1,7 @@
 import React from "react";
 import { Quill } from "react-quill-new";
 import "quill/dist/quill.snow.css";
+import { useLocation } from "react-router-dom";
 
 // Custom Undo button icon component for Quill editor
 const CustomUndo = () => (
@@ -91,6 +92,12 @@ export const formats = [
 
 // Quill Toolbar Component
 const QuillToolbar = ({ toolbarId }) => {
+  const location = useLocation();
+
+  const isHiddenRoute =
+  location.pathname === "/forum/create-job" ||
+  location.pathname.startsWith("/forum/edit-job/");
+
   if (!toolbarId) return null;
 
   return (
@@ -168,6 +175,27 @@ const QuillToolbar = ({ toolbarId }) => {
           <CustomRedo />
         </button>
       </span>
+      {!isHiddenRoute && (
+        <span className="ql-formats">
+          <a
+            href="https://cryptowarriors.h5p.com/content#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ql-h5p-button"
+            style={{
+              display: "inline-block",
+              backgroundColor: "#333",
+              color: "#fff",
+              borderRadius: "4px",
+              padding: "6px 10px",
+              fontSize: "12px",
+              textDecoration: "none",
+            }}
+          >
+            Game
+          </a>
+        </span>
+      )}
     </div>
   );
 };

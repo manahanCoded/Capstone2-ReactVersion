@@ -232,9 +232,9 @@ export default function AdminEmail() {
         <div className="mt-14 h-screen text-sm">
             <section>
                 <MaxWidthWrapper className="h-12 flex flex-row justify-between items-center border-b-2 ">
-                    <section className=" flex flex-row justify-between gap-2 overflow-hidden ">
+                    <section className="w-full text-xs flex flex-row justify-start gap-8 ">
                         <NavLink
-                            to="/user/accounts-dashboard" className="w-20  flex justify-center items-center hover:text-gray-500 font-semibold  px-3 py-2 cursor-pointer">
+                            to="/user/accounts-dashboard" className={`${pathName === "/user/accounts-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                             Accounts
                         </NavLink>
                         <NavLink
@@ -246,19 +246,24 @@ export default function AdminEmail() {
                             Forum
                         </NavLink>
                         <NavLink
+                            to="/announcement" className={`${pathName === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
+                            Announcement
+                        </NavLink>
+                        <NavLink
                             to="/email" className={`${pathName === "/email" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
                             Email
                         </NavLink>
+
                     </section>
                 </MaxWidthWrapper>
             </section>
 
             <MaxWidthWrapper className=" md:px-0 h-screen flex flex-row ">
-                <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px]">
+                <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px] border-b-[1px]">
                     {/* Search and Filter Section */}
                     <section className="min-h-12 w-full border-b-[1px]">
                         <MaxWidthWrapper className="h-full flex gap-2 flex-row justify-between items-center">
-                            <div className="flex items-center justify-center mt-2 w-full border-2 rounded-full pr-2 border-gray-400">
+                            <div className="flex items-center justify-center mt-2 w-full border-[1px] rounded-full pr-2 border-gray-400">
                                 <input
                                     className="w-full px-4 py-1 rounded-s-full mr-1"
                                     placeholder="Search"
@@ -306,7 +311,7 @@ export default function AdminEmail() {
                     </section>
                 </div>
                 <div className=" w-full md:flex lg:flex-row flex-col ">
-                    <section className="lg:w-2/3 shadow">
+                    <section className="lg:w-2/3 border-x-[1px]">
                         <MaxWidthWrapper className="p-4 border-b-[1px] flex flex-row justify-between items-center text-xs">
                             <div className="flex flex-row items-center gap-1">
                                 <AccountCircleIcon style={{ fontSize: '2.5rem' }} />
@@ -330,14 +335,14 @@ export default function AdminEmail() {
                                             src={`http://localhost:5000${mail.resume}`} alt="Resume" />
                                     ) : (
                                         <div className="mt-8 w-full flex justify-end items-end ">
-                                        <a
-                                            href={`http://localhost:5000${mail.resume}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className=" bg-black px-4 py-2 text-white rounded-md"
-                                        >
-                                            Download Resume
-                                        </a>
+                                            <a
+                                                href={`http://localhost:5000${mail.resume}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className=" bg-black px-4 py-2 text-white rounded-md"
+                                            >
+                                                Download Resume
+                                            </a>
                                         </div>
                                     )}
                                 </>

@@ -200,26 +200,6 @@ export default function UserEmail() {
         }));
     }, [mail]);
 
-    const handleDeleteReply = async (e) => {
-        try {
-            const replyIdFromEvent = e.currentTarget.id;
-            const selectedReply = viewReply?.find((replies) => replies.id == replyIdFromEvent);
-            if (!selectedReply) {
-                alert("Reply not found.");
-                return;
-            }
-            const res = await axios.delete(`http://localhost:5000/api/mail/deleteMail/${selectedReply.id}`);
-            if (res.status === 200) {
-                alert("Reply deleted successfully!");
-            } else {
-                alert("Failed to delete reply.");
-            }
-        } catch (error) {
-            console.error("Error deleting reply:", error);
-        }
-    };
-
-
 
     return (
         <div className="mt-14 text-sm">
@@ -228,7 +208,7 @@ export default function UserEmail() {
                     {/* Search and Filter Section */}
                     <section className="min-h-12 w-full border-b-[1px]">
                         <MaxWidthWrapper className="h-full flex gap-2 flex-row justify-between items-center">
-                            <div className="flex items-center justify-center mt-2 w-full border-2 rounded-full pr-2 border-gray-400">
+                            <div className="flex items-center justify-center mt-2 w-full border-[1px] rounded-full pr-2 border-gray-400">
                                 <input
                                     className="w-full px-4 py-1 rounded-s-full mr-1"
                                     placeholder="Search"
@@ -338,10 +318,7 @@ export default function UserEmail() {
                                                     onChange={(e) => (setReply((prev) => ({ ...prev, reply: e.target.value }))
                                                     )}
                                                 ></textarea>
-                                                <div className="w-full flex flex-row justify-between text-xs">
-                                                    <button id={reply.id} className="py-2 px-4 rounded-md bg-red-600 text-white"
-                                                        onClick={handleDeleteReply}
-                                                    >Delete</button>
+                                                <div className="w-full flex flex-row justify-end text-xs">
                                                     <button className="py-2 px-4 rounded-md border-2 border-black hover:bg-black hover:text-white"
                                                         onClick={handleResponseReply}
                                                     >Reply</button>

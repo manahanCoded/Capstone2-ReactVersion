@@ -64,44 +64,39 @@ export default function CreateJobPage() {
 
     useEffect(() => {
         async function checkUser() {
-            try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
-                    method: "GET",
-                    credentials: "include",
-                });
-                if (!res.ok) {
-                    navigate("/user/login");
-                    return;
-                }
-                const data = await res.json();
-
-                if (data.role === "client") {
-                    alert("Unauthorized access!");
-                    navigate("/modules");
-                }
-
-                setInformation((prev) => ({
-                    ...prev,
-                    publisher: data.email,
-                }));
-                setNewAnnouncement((prev) => ({
-                    ...prev,
-                    publisher: data.email,
-                }));
-            } catch (err) {
-                if (axios.isAxiosError(err) && err.response) {
-                    if (err.response.status === 401 || err.response.status === 403) {
-                        navigate("/user/login");
-                    }
-                } else {
-                    alert("Failed to fetch user profile.");
-                    console.error(err);
-                }
+          try {
+            const res = await fetch("http://localhost:5000/api/user/profile", {
+              method: "GET",
+              credentials: "include",
+            });
+    
+            if (!res.ok) {
+                navigate("/user/login");
+                return;
+              }
+            const data = await res.json();
+    
+            if (data.role === "client") {
+              navigate("/forum");
+              return;
             }
+    
+            setInformation((prev) => ({
+              ...prev,
+              publisher: data.email,
+            }));
+            setNewAnnouncement((prev) => ({
+              ...prev,
+              publisher: data.email,
+            }));
+          } catch (err) {
+            alert("Failed to fetch user profile.");
+            console.error("An error occurred:", err);
+          }
         }
-
+    
         checkUser();
-    }, [navigate]);
+      }, [navigate, setInformation, setNewAnnouncement]);
 
     async function postJob(e) {
         e.preventDefault();
@@ -111,13 +106,13 @@ export default function CreateJobPage() {
                 "http://localhost:5000/api/job/create",
                 information,
                 {
-                    withCredentials: true,
                     headers: {
                         "Content-Type": "application/json",
                     },
                 }
             );
             if (res.status === 201) {
+                alert("Job created successfully.")
                 navigate("/forum");
             } else {
                 alert("Failed to create job.");
@@ -651,7 +646,7 @@ export default function CreateJobPage() {
                                             placeholder="Write something awesome..."
                                             modules={modules("t1")}
                                             formats={formats}
-                                            className="bg-white border rounded"
+                                            className="bg-white border rounded  h-[55vh] overflow-y-auto"
                                         />
                                         </div>
                                         <label className="block text-base text-gray-700 mb-2 mt-4">
@@ -667,7 +662,7 @@ export default function CreateJobPage() {
                                             placeholder="Write something awesome..."
                                             modules={modules("t2")}
                                             formats={formats}
-                                            className="bg-white border rounded"
+                                            className="bg-white border rounded  h-[55vh] overflow-y-auto"
                                         />
                                         </div>
                                     </div>
@@ -682,16 +677,16 @@ export default function CreateJobPage() {
                     </MaxWidthWrapper>
                 </section>
             </form>
-            <form onSubmit={postAnnouncement} className="w-full flex flex-col border-l-2">
+            <form onSubmit={postAnnouncement} className="w-full flex flex-col border-l-2 text-base">
                 <section className={typeForm === "announcement" ? "block py-14 " : "hidden"}>
                     <MaxWidthWrapper>
                         <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8  m-auto rounded-lg bg-gray-100 ">
                             {isClient && (
                                 <section className="flex flex-col gap-2">
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-bold mb-2">
+                                        <label className=" text-gray-700 ">
                                             Title <span className="text-red-500">*</span>
                                         </label>
+                                    <div className="mb-4">
                                         <input
                                             type="text"
                                             name="title"
@@ -702,7 +697,8 @@ export default function CreateJobPage() {
                                             required
                                         />
                                     </div>
-                                    <div className="mb-4">
+                                    <label className=" text-gray-700 2">Announcement details</label>
+                                    <div className="mb-4 bg-white">
                                         <EditorToolbar toolbarId="t3" />
                                         <ReactQuill
                                             theme="snow"
@@ -711,13 +707,13 @@ export default function CreateJobPage() {
                                             placeholder="Write something..."
                                             modules={modules("t3")}
                                             formats={formats}
-                                            className="bg-white border rounded"
+                                            className="bg-white border rounded  h-[70vh] overflow-y-auto"
                                         />
                                     </div>
                                     <div className="flex items-center justify-end">
                                         <button
                                             type="submit"
-                                            className="bg-red-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                            className="bg-red-900 text-white text-sm py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                         >
                                             Submit
                                         </button>

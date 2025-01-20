@@ -83,7 +83,7 @@ export default function HangmanGame() {
             alt="Hangman"
             className="max-w-72"
           />
-          <h1 className="text-2xl mt-5 text-center uppercase">Hangman Game</h1>
+          <h1 className="text-2xl mt-5 text-center uppercase">Hashman Game</h1>
         </div>
         <div className="game-box">
           <ul className="word-display flex list-none gap-3 items-center justify-center">

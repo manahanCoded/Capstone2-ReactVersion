@@ -2,35 +2,41 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card'; // Assuming you have Card components
 import { useNavigate } from 'react-router-dom'; // useNavigate is used for navigation in React Router
 
+export const games = [
+  {
+    title: 'Guessing Quest',
+    description: 'Test your intuition by guessing items. A fun and interactive game inspired by blockchain randomization!',
+    img: "/Game_images/frontPage/guess.png",
+    img_2: "/Game_images/frontPage/guess2.png",
+    path: '/games/guessing-game'
+  },
+  {
+    title: 'Hashman',
+    description: 'Dive into the world of Web3 and try to guess the correct word before time runs out. Each word relates to blockchain technology and crypto concepts!',
+    img: "/Game_images/frontPage/hangman.png",
+    img_2: "/Game_images/frontPage/hangman2.png",
+    path: '/games/hangman'
+  },
+  {
+    title: 'Blockchain Unscramble',
+    description: 'Unjumble the letters to form words related to cryptocurrency, NFTs, and the blockchain ecosystem. A perfect way to learn Web3 lingo!',
+    img: "/Game_images/frontPage/scramble.png",
+    img_2: "/Game_images/frontPage/scramble2.png",
+    path: '/games/scramble'
+  },
+  {
+    title: 'Hash Sprint',
+    description: 'Test your typing speed while mastering key blockchain and crypto terminologies. Can you keep up with the fast-paced world of Web3?',
+    img: "/Game_images/frontPage/typing.png",
+    img_2: "/Game_images/frontPage/typing2.png",
+    path: '/games/typing-game'
+  }
+ ];
+
+
 export default function Games() {
   const navigate = useNavigate(); // Use navigate from react-router-dom
 
-  const games = [
-    {
-      title: 'Guessing Game',
-      description: 'Guess the number or item!',
-      img: "/Game_images/frontPage/guess.png",
-      path: '/games/guessing-game',
-    },
-    {
-      title: 'Hangman',
-      description: 'Can you guess the word before time runs out?',
-      img: "/Game_images/frontPage/hangman.png",
-      path: '/games/hangman',
-    },
-    {
-      title: 'Scramble',
-      description: 'Unjumble the letters to form a word.',
-      img: "/Game_images/frontPage/scramble.png",
-      path: '/games/scramble',
-    },
-    {
-      title: 'Typing Game',
-      description: 'Type as fast as you can!',
-      img: "/Game_images/frontPage/typing.png",
-      path: '/games/typing-game',
-    },
-  ];
 
   return (
     <div className="flex flex-col items-center justify-center mt-20">

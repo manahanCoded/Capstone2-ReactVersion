@@ -42,7 +42,7 @@ const login = (req, res) => {
           console.error("Error during login:", err);
           return res.status(500).json({ error: "Internal Server Error" });
         }
-
+        
         return res.status(200).json({
           message: "Successfully Logged in",
           user: { id: user.id, email: user.email },
@@ -67,7 +67,7 @@ const google_login_callback = (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).json({ error: "Google Authentication Failed" });
+      return res.status(401).redirect(`http://localhost:5173/user/login`);
     }
 
     req.login(user, (err) => {

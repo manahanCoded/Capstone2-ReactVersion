@@ -1,11 +1,21 @@
 import { Router } from "express";
-import { addModule, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score} from "./Controllers/Module_Controller.mjs";
+import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule} from "./Controllers/Module_Controller.mjs";
 
 const router = Router() 
 
+router.get('/allModule-storage/:id?', allModule_Storage)
+
+router.get('/module-units/:id', units)
+
 router.get('/allModule', allModule)
 
-router.post('/addModule', addModule)
+router.post('/createModule', createModule)
+
+router.put('/updateModule/:id', updateModule)
+
+router.delete('/removeModule/:id', removeModule)
+
+router.post('/addModule', addUnit)
 
 router.post('/getPostId', getModuleIds);
 

@@ -1,18 +1,17 @@
-import multer from "multer"; // Import Multer, a middleware for handling `multipart/form-data`, which is primarily used for file uploads.
-import fs from "fs"; // Import the file system module to interact with the file system (e.g., create directories).
-import path from "path"; // Import the path module to work with file and directory paths.
+import multer from "multer";
+import fs from "fs"; 
+import path from "path";
 import { fileURLToPath } from "url"; 
 
-// Get the current file name and directory (__dirname equivalent for ES modules)
-const __filename = fileURLToPath(import.meta.url); // Dynamically resolve the file name of the current module.
-const __dirname = path.dirname(__filename); // Get the directory name of the current module.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename); 
 
-// Define the directory where uploaded files will be stored
+
 const uploadDir = path.join(__dirname, "./uploads"); // Resolve the `uploads` directory relative to the current file's directory.
 
 // Ensure the uploads directory exists
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true }); // Create the directory (and any necessary parent directories) if it doesn't exist.
+  fs.mkdirSync(uploadDir, { recursive: true }); // Create the directory
 }
 
 // Configure Multer's storage settings
@@ -46,7 +45,7 @@ const upload = multer({
 });
 
 // Middleware for handling single file uploads
-const appointmentFile = upload.single("file"); // Expect a single file upload with the field name `file`.
+const appointmentFile = upload.single("file");
 
 // Middleware to handle file upload errors
 const handleFileUploadError = (err, req, res, next) => {
