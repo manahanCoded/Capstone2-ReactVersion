@@ -77,7 +77,7 @@ export default function CreateJobPage() {
             const data = await res.json();
     
             if (data.role === "client") {
-              navigate("/forum");
+              navigate("/jobs");
               return;
             }
     
@@ -113,7 +113,7 @@ export default function CreateJobPage() {
             );
             if (res.status === 201) {
                 alert("Job created successfully.")
-                navigate("/forum");
+                navigate("/jobs");
             } else {
                 alert("Failed to create job.");
             }
@@ -143,7 +143,7 @@ export default function CreateJobPage() {
                 }
             );
             if (res.status === 201) {
-                navigate("/forum");
+                navigate("/jobs");
             } else {
                 alert("Failed to create Announcement.");
             }
@@ -186,7 +186,7 @@ export default function CreateJobPage() {
                             </div>
                         </div>
                         <Link
-                            to="/forum"
+                            to="/jobs"
                             className="flex gap-1 items-center p-2 rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
                         >
                             <ExitToAppIcon />

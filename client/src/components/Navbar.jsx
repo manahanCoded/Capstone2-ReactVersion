@@ -135,9 +135,9 @@ const Navbar = () => {
             Games
           </Link>
           <Link
-            to="/forum"
+            to="/jobs-home"
             className={
-              location.pathname === "/forum"
+              location.pathname === "/jobs" || location.pathname === "/jobs-home"
                 ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
                 : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
             }
@@ -161,11 +161,11 @@ const Navbar = () => {
               className="h-14  hover:text-red-900"
               onClick={openNotification}
             >
-              {notification?
-              <NotificationsIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
-              :
-              <NotificationsNoneIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
-            }
+              {notification ?
+                <NotificationsIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+                :
+                <NotificationsNoneIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+              }
             </button>
             <button
               className="h-14  hover:text-red-900"
@@ -193,7 +193,7 @@ const Navbar = () => {
                 ) : null}
                 {user.role === "admin" ? (
                   <Link
-                    to={`/forum/create-job`}
+                    to={`/jobs/create-job`}
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >

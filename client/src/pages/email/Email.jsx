@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AdminEmail from "./admin-email/AdminEmail";
 import UserEmail from "./user-email/UserEmail";
 
 export default function Email() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation()
   const [checkAdmin, setCheckAdmin] = useState(null);
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export default function Email() {
         });
 
         if (!res.ok) {
-          navigate("/user/login"); 
+          navigate("/user/login");
           return;
         }
 
@@ -26,7 +27,7 @@ export default function Email() {
       } catch (err) {
         if (axios.isAxiosError(err) && err.response) {
           if (err.response.status === 401 || err.response.status === 403) {
-            navigate("/user/login"); 
+            navigate("/user/login");
           }
         } else {
           alert("Failed to fetch user profile.");
@@ -36,11 +37,12 @@ export default function Email() {
     }
 
     checkUser();
-  }, [navigate]); 
+  }, []);
 
   if (checkAdmin?.role === "admin") {
     return <AdminEmail />;
   } else {
     return <UserEmail />;
   }
+
 }

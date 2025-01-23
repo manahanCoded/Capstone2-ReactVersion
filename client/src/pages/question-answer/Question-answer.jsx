@@ -171,7 +171,7 @@ export default function QuestionAnswer() {
                     answers: [
                         ...prevData.answers,
                         {
-                            answer_id: data.answer_id,
+                            answer_id: data.answer_id, 
                             question_id: questionId,
                             user_id: checkUser.id,
                             answer_text: answerText,
@@ -179,8 +179,8 @@ export default function QuestionAnswer() {
                         },
                     ],
                 }));
-
                 setAnswers((prevAnswers) => ({ ...prevAnswers, [questionId]: "" }));
+
             } else {
                 alert("Error submitting answer: " + data.error);
             }
@@ -197,6 +197,12 @@ export default function QuestionAnswer() {
             alert("Log in first")
             navigate("/user/login")
         }
+        console.log({
+            target_id: targetId,
+            target_type: targetType,
+            user_id: checkUser?.id,
+            vote_type: voteType,
+        });
         try {
             const response = await fetch("http://localhost:5000/api/question-answer/vote", {
                 method: "POST",
@@ -283,9 +289,9 @@ export default function QuestionAnswer() {
 
     return (
         <div className="h-screen">
-            <MaxWidthWrapper className=" mt-14 lg:mx-56 m-2">
+            <MaxWidthWrapper className=" mt-14 xl:mx-56 lg:mx-40 m-2">
                 <section className="mt-14 h-12 flex flex-row justify-start gap-8 items-center  text-xs">
-                    {["all", "Module", "Forum", "Announcement"].map((type) => (
+                    {["all", "Modules", "Jobs", "Announcements"].map((type) => (
                         <button
                             key={type}
                             onClick={() => setSpecifyQuestion(type)}
@@ -296,15 +302,16 @@ export default function QuestionAnswer() {
                         </button>
                     ))}
                 </section>
-                {specifyQuestion === "all" && <section className="h-96 w-full px-14 py-20 rounded-md bg-[#333333] text-white">
-                    <div className="w-3/4">
+                {specifyQuestion === "all" && 
+                <section className="h-96 w-full px-14 py-20 rounded-md bg-[#333333] text-white">
+                    <div className="lg:w-3/4">
                         <h1 className="text-5xl font-semibold italic">Question & Answer</h1>
-                        <p className="text-lg font-extralight mt-4">
+                        <p className="lg:text-lg text-sm font-extralight mt-4">
                             Ensure your question is relevant to the topic, and avoid using inappropriate or offensive language. Remember, this is a community space—let's maintain a positive and constructive environment for everyone.
                         </p>
                     </div>
                 </section>}
-                <section className="mb-8 flex flex-row gap-8 mt-10">
+                <section className="mb-8 flex lg:flex-row flex-col-reverse gap-8 mt-10">
                     <section className="w-full ">
                         <form className="pb-4 border-b-[1px]">
                             <h3 className="text-lg italic font-medium mb-2">Ask Question:</h3>
@@ -327,9 +334,9 @@ export default function QuestionAnswer() {
                                 onChange={handleTopicType}
                             >
                                 <option value="General">General</option>
-                                <option value="Module">Module</option>
-                                <option value="Forum">Forum</option>
-                                <option value="Announcement">Announcement</option>
+                                <option value="Modules">Module</option>
+                                <option value="Jobs">Job</option>
+                                <option value="Announcements">Announcement</option>
                             </select>
                             <div className="w-full flex justify-end items-center">
                                 <button
@@ -360,11 +367,14 @@ export default function QuestionAnswer() {
                             <section>
                                 {filteredQuestions && filteredQuestions.length > 0 ? (
                                     filteredQuestions
-                                        .filter((question) => specifyQuestion === "all" || question.topic_type === specifyQuestion) // Filter based on selected type
+                                        .filter((question) => specifyQuestion === "all" || question.topic_type === specifyQuestion)
                                         .map((question) => {
                                             const relatedAnswers = all_QA.answers.filter(
                                                 (answer) => answer.question_id === question.question_id
                                             );
+
+                                            // Fallback for missing answer_id
+
                                             const questionVotes = all_QA.votes.filter(
                                                 (vote) => vote.target_id === question.question_id && vote.target_type === "question"
                                             );
@@ -446,6 +456,10 @@ export default function QuestionAnswer() {
                                                         <div className="space-y-2">
                                                             {relatedAnswers.length > 0 ? (
                                                                 relatedAnswers.map((answer) => {
+                                                                    if (!answer.answer_id) {
+                                                                        console.error("Missing answer_id for answer:", answer);
+                                                                        return null;
+                                                                    }
                                                                     const answerVotes = all_QA.votes.filter(
                                                                         (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
                                                                     );
@@ -536,10 +550,10 @@ export default function QuestionAnswer() {
                         </section>
 
                     </section>
-                    <section className="w-2/4">
-                        <div className="h-44 rounded-md p-4 bg-gray-100">
+                    <section className="lg:w-2/4">
+                        <div className="h-fit rounded-md p-4 bg-gray-100">
                             <h3 className="font-serif font-bold text-2xl italic">Rules</h3>
-                            <p className="mt-2 text-sm text-gray-600">
+                            <p className="mt-2 text-sm  text-gray-600">
                                 Following the rules ensures a respectful and productive environment for everyone.
                                 Please adhere to them to maintain constructive discussions and avoid conflicts.
                             </p>

@@ -1,17 +1,16 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useLocation, useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AdminDashboard from "@/components/AdminDashboard";
 
 
 export default function AdminEmail() {
     const [checkAdmin, setCheckAdmin] = useState(null)
-    const location = useLocation();
+
     const pathName = location.pathname;
     const [applicants, setApplicants] = useState([])
     const [mail, setMail] = useState(null);
@@ -230,34 +229,7 @@ export default function AdminEmail() {
 
     return (
         <div className="mt-14 h-screen text-sm">
-            <section>
-                <MaxWidthWrapper className="h-12 flex flex-row justify-between items-center border-b-2 ">
-                    <section className="w-full text-xs flex flex-row justify-start gap-8 ">
-                        <NavLink
-                            to="/user/accounts-dashboard" className={`${pathName === "/user/accounts-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
-                            Accounts
-                        </NavLink>
-                        <NavLink
-                            to="/modules/modules-dashboard" className={`${pathName === "/modules/modules-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
-                            Module
-                        </NavLink>
-                        <NavLink
-                            to="/forum/forum-dashboard" className={`${pathName === "/forum/forum-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
-                            Forum
-                        </NavLink>
-                        <NavLink
-                            to="/announcement" className={`${pathName === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
-                            Announcement
-                        </NavLink>
-                        <NavLink
-                            to="/email" className={`${pathName === "/email" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
-                            Email
-                        </NavLink>
-
-                    </section>
-                </MaxWidthWrapper>
-            </section>
-
+            <AdminDashboard/>
             <MaxWidthWrapper className=" md:px-0 h-screen flex flex-row ">
                 <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px] border-b-[1px]">
                     {/* Search and Filter Section */}

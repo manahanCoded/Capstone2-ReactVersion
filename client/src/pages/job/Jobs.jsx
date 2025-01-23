@@ -18,7 +18,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-export default function ForumPage() {
+export default function JobsPage() {
   const navigate = useNavigate()
   const [checkAdmin, setCheckAdmin] = useState(null);
   const [displayJobs, setDisplayJobs] = useState([]);
@@ -176,22 +176,22 @@ export default function ForumPage() {
   const [isSalaryOpen, setSalaryOpen] = useState(false);
 
   return (
-    <div className=" mt-14">
-      <MaxWidthWrapper className="flex justify-end w-full lg:h-16 h-fit border-b-[1px] text-xs bg-[#333333]">
+    <div className="mt-14">
+      <MaxWidthWrapper className="flex justify-end w-full lg:h-20 h-fit border-b-[1px] xl:text-sm text-xs bg-[#333333]">
         <section className="flex lg:flex-row flex-col-reverse items-center w-full lg:mx-20 m-2 gap-6">
           <section className=" w-full">
             <div className=" xl:mr-40 md:mr-16 flex flex-row item md:gap-4 gap-2">
               {/* Job Type Filter */}
-              <div className="relative lg:w-48  w-full">
+              <div className="relative xl:w-56  w-full">
                 <button
                   onClick={() => setJobTypeOpen(!isJobTypeOpen)}
-                  className="w-full h-9 py-2 px-4 text-left bg-white border border-gray-300 rounded-2xl flex items-center justify-between"
+                  className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
                 >
                   {selectedJobType || "Select Job Type"}
                   <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
                 </button>
                 {isJobTypeOpen && (
-                  <ul className="absolute top-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                  <ul className="absolute top-14 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
                     <li
                       onClick={() => {
                         setSelectedJobType("");
@@ -217,16 +217,16 @@ export default function ForumPage() {
                 )}
               </div>
               {/* Location Filter */}
-              <div className="relative lg:w-48 w-full">
+              <div className="relative xl:w-56 w-full">
                 <button
                   onClick={() => setLocationOpen(!isLocationOpen)}
-                  className="w-full h-9 py-2 px-4 text-left bg-white border border-gray-300 rounded-2xl flex items-center justify-between"
+                  className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
                 >
                   {selectedLocation || "Select Location"}
                   <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
                 </button>
                 {isLocationOpen && (
-                  <ul className="absolute top-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                  <ul className="absolute top-14 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
                     <li
                       onClick={() => {
                         setSelectedLocation("");
@@ -253,16 +253,16 @@ export default function ForumPage() {
               </div>
 
               {/* Salary Filter */}
-              <div className="relative lg:w-48 w-full">
+              <div className="relative xl:w-56 w-full">
                 <button
                   onClick={() => setSalaryOpen(!isSalaryOpen)}
-                  className="w-full h-9 py-2 px-4 text-left bg-white border border-gray-300 rounded-2xl flex items-center justify-between"
+                  className="w-full lg:h-11 h-9 py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
                 >
                   {selectedSalary === "0" ? "Unpaid" : selectedSalary ? `${selectedSalary}+` : "Select Salary Range"}
                   <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
                 </button>
                 {isSalaryOpen && (
-                  <ul className="absolute top-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                  <ul className="absolute top-14 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
                     <li
                       onClick={() => {
                         setSelectedSalary("");
@@ -289,11 +289,11 @@ export default function ForumPage() {
               </div>
             </div>
           </section>
-          <div className="lg:w-1/3 w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
+          <div className="lg:w-1/2 w-full flex flex-row items-center border-[1px] rounded-xl overflow-hidden bg-white">
             <input
               placeholder="Find the job you're looking for"
               type="text"
-              className="h-9 w-full py-2 pl-4 outline-none bg-slate-100"
+              className="lg:h-11 h-9 w-full py-2 pl-4 outline-none "
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <SearchOutlinedIcon className="mr-2" />
@@ -309,7 +309,7 @@ export default function ForumPage() {
               <div className=" flex items-center gap-2 mt-2">
                 {checkAdmin?.role === "admin" && (
                   <Link
-                    to={`/forum/edit-job/${displayOptions[selectOption]?.id}`}
+                    to={`/jobs/edit-job/${displayOptions[selectOption]?.id}`}
                     className="border-[1px] font-medium text-sm rounded-md p-3 bg-[#333333] hover:bg-[#121212] text-white"
                   >
                     Edit Job
@@ -317,7 +317,7 @@ export default function ForumPage() {
                   </Link>
                 )}
                 <Link
-                  to={`/forum/jobDetails/${displayOptions[selectOption]?.id}`}
+                  to={`/jobs/jobDetails/${displayOptions[selectOption]?.id}`}
                   className="border-[1px] font-medium text-sm rounded-md p-3 bg-red-900 hover:bg-red-700 text-white"
                 >
                   Check More Information
@@ -370,12 +370,12 @@ export default function ForumPage() {
 
 
           {/* Job Options */}
-          <section className="flex flex-col gap-6 lg:w-1/3 w-full">
+          <section className="flex flex-col gap-6 lg:w-1/2 w-full">
             {displayOptions.map((job, index) => (
               <section
                 key={job.id}
                 onClick={() => { setSelectOptions(index) }}
-                className={`w-full h-[19rem] border-[1px] rounded-md cursor-pointer p-4 hover:border-red-950 ${index === selectOption && "border-red-950 shadow-[5px_5px_rgba(255,_0,_0,_0.4),_10px_10px_rgba(255,_0,_0,_0.3),_15px_15px_rgba(255,_0,_0,_0.2),_20px_20px_rgba(255,_0,_0,_0.1),_25px_25px_rgba(255,_0,_0,_0.05)]"}`}>
+                className={`w-full h-64 border-[1px] rounded-md cursor-pointer p-4 hover:border-red-950 ${index === selectOption && "border-2 border-red-950 shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.38)]"}`}>
                 <div className="flex justify-between items-center">
                   <p className="text-xs line-clamp-1 text-slate-500">{new Date(job.date).toLocaleDateString()}</p>
                   <button
@@ -396,18 +396,18 @@ export default function ForumPage() {
                   </button>
                 </div>
                 <h3 className="mt-2 font-bold text-lg line-clamp-1 text-red-950">{job.title}</h3>
-                <p className="mt-4 line-clamp-1 text-sm"><LocationOnOutlinedIcon />{job.state}, {job.city}</p>
-                <div className="mt-4">
+                <p className="mt-2 line-clamp-1 text-sm"><LocationOnOutlinedIcon />{job.state}, {job.city}</p>
+                <div className="mt-2">
                   <p className="text-xs tracking-wider text-slate-500">SALARY</p>
                   <p className="line-clamp-1">{job.salary ? job.salary : "Unpaid"}</p>
                 </div>
-                <div className="my-4">
+                <div className="my-1">
                   <p className="text-xs tracking-wider text-slate-500">HIRING</p>
                   <p className="line-clamp-1">{job.experience}</p>
                 </div>
                 <div className="w-full flex justify-end items-center">
                   <Link
-                    to={`/forum/jobDetails/${job.id}`}
+                    to={`/jobs/jobDetails/${job.id}`}
                     className="line-clamp-1 border-[1px] font-medium text-xs rounded-md p-2 overflow-hidden bg-red-900 hover:bg-red-700 text-white"
                   >
                     Check Information

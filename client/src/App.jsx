@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";  // Import these
+import { Routes, Route } from "react-router-dom"; 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/users/Login";
@@ -13,10 +13,10 @@ import DocsPage from "./pages/modules/Docs";
 import { Toaster } from "@/components/ui/toaster"
 
 import CreateUnitPage from "./pages/modules/create-module/CreateUnit";
-import ForumPage from "./pages/forum/Forum";
-import CheckJobPage from "./pages/forum/checkJob";
-import CreateJobPage from "./pages/forum/create-job/CreateJob";
-import EditJobPage from "./pages/forum/edit-job/EditJob";
+import JobPage from "./pages/job/Jobs";
+import CheckJobPage from "./pages/job/CheckJob";
+import CreateJobPage from "./pages/job/create-job/CreateJob";
+import EditJobPage from "./pages/job/edit-job/EditJob";
 import Email from "./pages/email/Email";
 import AccountsDashboard from "./pages/users/accounts-dashboard/AccountsDashboard";
 import Profile from "./pages/profile/Profile";
@@ -24,6 +24,7 @@ import Edit from "./pages/modules/edit-module/Edit";
 import QuestionAnswer from "./pages/question-answer/Question-answer";
 import Unit from "./pages/modules/Unit";
 import CreateModulePage from "./pages/modules/create-module/CreateModule";
+import JobHome from "./pages/job/Job-Home";
 
 
 
@@ -51,10 +52,11 @@ function App() {
         <Route path="/games/scramble" element={<Scramble />} />
         <Route path="/games/typing-game" element={<TypingGame />} />
 
-        <Route path="/forum" element={<ForumPage />} />
-        <Route path="/forum/jobDetails/:jobsID" element={<CheckJobPage />} />
-        <Route path="/forum/create-job" element={<CreateJobPage />} />
-        <Route path="/forum/edit-job/:jobEditID" element={<EditJobPage />} />
+        <Route path="/jobs-home" element={<JobHome />} />
+        <Route path="/jobs" element={<JobPage />} />
+        <Route path="/jobs/jobDetails/:jobsID" element={<CheckJobPage />} />
+        <Route path="/jobs/create-job" element={<CreateJobPage />} />
+        <Route path="/jobs/edit-job/:jobEditID" element={<EditJobPage />} />
 
         <Route path="/quetion-answer" element={<QuestionAnswer />} />
 

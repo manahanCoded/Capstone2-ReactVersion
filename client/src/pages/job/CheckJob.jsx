@@ -195,7 +195,7 @@ export default function CheckJobPage() {
             </div>
           </div>
           <Link
-            to="/forum"
+            to="/jobs"
             className="flex gap-1 items-center p-2 rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
           >
             <ExitToAppIcon />

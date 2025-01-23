@@ -53,7 +53,7 @@ export default function EditJobPage() {
         }
         const data = await res.json();
         if (data.role === "client") {
-          navigate("/forum");
+          navigate("/jobs");
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -129,7 +129,7 @@ export default function EditJobPage() {
       );
       if (res.status === 201) {
         alert("Update Successful");
-        navigate("/forum");
+        navigate("/jobs");
       } else {
         alert("Failed to update job.");
       }
@@ -144,7 +144,7 @@ export default function EditJobPage() {
       const response = await axios.delete(`http://localhost:5000/api/job/delete/${jobEditID}`);
       if (response.status === 200) {
         alert("Job deleted successfully!");
-        navigate("/forum");
+        navigate("/jobs");
       }
     } catch (error) {
       console.error("Error deleting job:", error);
@@ -165,7 +165,7 @@ export default function EditJobPage() {
               </div>
             </div>
             <Link
-              href="/forum"
+              href="/jobs"
               className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
             >
               <ExitToAppIcon />

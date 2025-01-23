@@ -63,7 +63,11 @@ const answer = async (req, res) => {
             "INSERT INTO QA_answers (question_id, user_id, answer_text, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *",
             [question_id, user_id, answer_text]
         );
-        res.status(201).json({ message: "Answer submitted successfully", answer: result.rows[0] });
+        res.status(201).json({
+            message: "Answer submitted successfully",
+            answer_id: result.rows[0].answer_id, 
+            answer: result.rows[0] 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to submit answer" });

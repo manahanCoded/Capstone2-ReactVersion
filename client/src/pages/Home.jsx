@@ -63,9 +63,9 @@ export default function Home() {
               imgSrc="/IMG_Dashboard/Features/demos.jpg"
             />
             <FeatureCard
-              title="Forum"
+              title="Jobs"
               description="Find Job"
-              link="/forum"
+              link="/jobs"
               imgSrc="/IMG_Dashboard/Features/question.jpg"
             />
           </MaxWidthWrapper>

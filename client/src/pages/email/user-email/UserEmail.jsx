@@ -275,16 +275,20 @@ export default function UserEmail() {
                             {mail?.resume && (
                                 <>
                                     {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
-                                        <img src={`http://localhost:5000${mail.resume}`} alt="Resume" />
+                                        <img
+                                            className="mt-8"
+                                            src={`http://localhost:5000${mail.resume}`} alt="Resume" />
                                     ) : (
-                                        <a
-                                            href={`http://localhost:5000${mail.resume}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="bg-black px-4 py-2 text-white rounded-md"
-                                        >
-                                            Download Resume
-                                        </a>
+                                        <div className="mt-8 w-full flex justify-end items-end ">
+                                            <a
+                                                href={`http://localhost:5000${mail.resume}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className=" bg-black px-4 py-2 text-white rounded-md"
+                                            >
+                                                Download Resume
+                                            </a>
+                                        </div>
                                     )}
                                 </>
                             )}
