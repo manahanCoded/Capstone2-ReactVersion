@@ -246,7 +246,7 @@ export default function UserEmail() {
                                             <p className="text-xs text-gray-400">{formattedDate}</p>
                                         </div>
                                         <p className="line-clamp-2 text-xs">{applicant.application}</p>
-                                        <p className="bg-black py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">
+                                        <p className="bg-[#333333] py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">
                                             {applicant.job_title}
                                         </p>
                                     </section>
@@ -284,7 +284,7 @@ export default function UserEmail() {
                                                 href={`http://localhost:5000${mail.resume}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className=" bg-black px-4 py-2 text-white rounded-md"
+                                                className=" bg-[#333333] px-4 py-2 text-white rounded-md"
                                             >
                                                 Download Resume
                                             </a>
@@ -297,7 +297,7 @@ export default function UserEmail() {
                     <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">
                         <div className="w-full px-4 flex items-center justify-start"
                             onClick={() => setShowReply(!showReply)}>
-                            <p className={`h-12 px-3 flex items-center border-x-[1px] hover:bg-black hover:text-white cursor-pointer ${showReply ? "bg-black text-white" : "bg-white text-black"}`}>View Reply</p>
+                            <p className={`h-12 px-3 flex items-center border-x-[1px] hover:bg-[#333333] hover:text-white cursor-pointer ${showReply ? "bg-[#333333] text-white" : "bg-white text-black"}`}>View Reply</p>
                         </div>
 
                         {showReply ?
@@ -323,7 +323,7 @@ export default function UserEmail() {
                                                     )}
                                                 ></textarea>
                                                 <div className="w-full flex flex-row justify-end text-xs">
-                                                    <button className="py-2 px-4 rounded-md border-2 border-black hover:bg-black hover:text-white"
+                                                    <button className="py-2 px-4 rounded-md border-2 border-black hover:bg-[#333333] hover:text-white"
                                                         onClick={handleResponseReply}
                                                     >Reply</button>
                                                 </div>
@@ -343,7 +343,7 @@ export default function UserEmail() {
                                 ></textarea>
                                 <div className="flex flex-row justify-between">
                                     <p className="text-green-600" > {successReply ? "Reply Sent" : null}</p>
-                                    <button className=" py-2 px-6 rounded-md font-semibold text-sm text-white bg-black">Send</button>
+                                    <button className=" py-2 px-6 rounded-md font-semibold text-sm text-white bg-[#333333]">Send</button>
                                 </div>
                             </form>
                         }

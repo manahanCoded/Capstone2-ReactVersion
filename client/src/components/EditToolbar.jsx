@@ -95,8 +95,8 @@ const QuillToolbar = ({ toolbarId }) => {
   const location = useLocation();
 
   const isHiddenRoute =
-  location.pathname === "/forum/create-job" ||
-  location.pathname.startsWith("/forum/edit-job/");
+  location.pathname === "/jobs/create-job" ||
+  location.pathname.startsWith("/jobs/edit-job/");
 
   if (!toolbarId) return null;
 

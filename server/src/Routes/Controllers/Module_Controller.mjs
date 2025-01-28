@@ -424,4 +424,44 @@ const getUser_score = async (req, res) => {
   }
 };
 
-export {allModule_Storage, units, updateModule, removeModule, allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion ,deleteModule, user_score, getUser_score};
+
+const getAllModule_UserInfo = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        u.email,
+        u.id AS user_id,
+        m.title AS unit,
+        ms.score,
+        ms.attempt_number,
+        ms.time_spent,
+        ms.completed,
+        ms.completion_date,
+        ms.perfect_score,
+        ms.feedback
+      FROM 
+        users u
+      LEFT JOIN 
+        module_scores ms ON u.id = ms.user_id  
+      LEFT JOIN 
+        module m ON ms.module_id = m.id
+      WHERE 
+        ms.user_id IS NOT NULL 
+    `;
+    
+    const result = await db.query(query);
+
+    if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'No quiz data found for any user' });
+    }
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching all user info:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+export {allModule_Storage, units, updateModule, removeModule, allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion ,deleteModule, user_score, getUser_score, getAllModule_UserInfo};

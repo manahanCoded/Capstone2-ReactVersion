@@ -1,19 +1,19 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useLocation, } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminDashboard from "@/components/AdminDashboard";
+import { DataGrid } from "@mui/x-data-grid";
+import { InputLabel, FormControl, Select, MenuItem, Box, CircularProgress, TextField } from "@mui/material";
 
 export default function AccountsDashboard() {
     const [accounts, setAccounts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const location = useLocation();
     const pathName = location.pathname;
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterRole, setFilterRole] = useState("");
-    const [filterType, setFilterType] = useState("");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function checkUser() {
@@ -26,7 +26,6 @@ export default function AccountsDashboard() {
                     navigate("/user/login");
                     return;
                 }
-
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -48,8 +47,10 @@ export default function AccountsDashboard() {
                     withCredentials: true,
                 });
                 setAccounts(response.data);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching accounts:", error);
+                setLoading(false);
             }
         };
 
@@ -61,9 +62,7 @@ export default function AccountsDashboard() {
             (account.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
             (account.role?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
             (account.type?.toLowerCase() || "").includes(searchTerm.toLowerCase());
-        const matchesRoleFilter = filterRole ? account.role === filterRole : true;
-        const matchesTypeFilter = filterType ? account.type === filterType : true;
-        return matchesSearchTerm && matchesRoleFilter && matchesTypeFilter;
+        return matchesSearchTerm;
     });
 
     const handleRoleChange = async (email, newRole) => {
@@ -85,88 +84,83 @@ export default function AccountsDashboard() {
         }
     };
 
+    const columns = [
+        { field: "email", headerName: "Email", width: 300 },
+        { field: "role", headerName: "Role", width: 300 },
+        {
+            field: "roleChange",
+            headerName: "Change Role",
+            width: 200,
+            renderCell: (params) => (
+                <FormControl fullWidth>
+                    <Select
+                        value={params.row.role || ""}
+                        onChange={(e) => handleRoleChange(params.row.email, e.target.value)}
+                        sx={{ fontSize: "0.875rem" }}
+                    >
+                        {[...new Set(accounts.map((acc) => acc.role))].map((role, index) => (
+                            <MenuItem key={index} value={role}>
+                                {role}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            ),
+        },
+    ];
+
+    const rows = filteredAccounts.map((account, index) => ({
+        id: index,
+        email: account.email || "N/A",
+        role: account.role || "N/A",
+        emailChange: account.email,
+        roleChange: account.role,
+    }));
+
+    // Show loading spinner while data is being fetched
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
         <div className="mt-14 h-screen text-sm">
-            <AdminDashboard/>
+            <AdminDashboard />
             <section className="mt-8">
                 <MaxWidthWrapper>
                     {/* Search Input */}
-                    <div className="mb-4">
-                        <input
-                            type="text"
-                            placeholder="Search by email, role, or type..."
+                    <Box sx={{ marginBottom: 2 }}>
+                        {/* Search Control */}
+                        <TextField
+                            label="Search"
+                            variant="outlined"
+                            fullWidth
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            placeholder="Search by email or quiz name"
                         />
-                    </div>
-                    {/* Dropdown Filters */}
-                    <div className="mb-4 flex gap-4">
-                        <select
-                            value={filterRole}
-                            onChange={(e) => setFilterRole(e.target.value)}
-                            className="p-2 border border-gray-300 rounded-md"
-                        >
-                            <option value="">Filter by Role</option>
-                            {[...new Set(accounts.map((account) => account.role))].map((role, index) => (
-                                <option key={index} value={role}>
-                                    {role}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={filterType}
-                            onChange={(e) => setFilterType(e.target.value)}
-                            className="p-2 border border-gray-300 rounded-md"
-                        >
-                            <option value="">Filter by Type</option>
-                            {[...new Set(accounts.map((account) => account.type))].map((type, index) => (
-                                <option key={index} value={type}>
-                                    {type}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    </Box>
 
-                    <div className="w-full ">
-                        <table className="table-auto w-full border-collapse border border-gray-300">
-                            <thead className="bg-gray-100">
-                                <tr>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Role</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Change Role</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredAccounts.length > 0 ? (
-                                    filteredAccounts.map((account, index) => (
-                                        <tr key={index}>
-                                            <td className="border border-gray-300 px-4 py-2">{account.email || "N/A"}</td>
-                                            <td className="border border-gray-300 px-4 py-2">{account.role || "N/A"}</td>
-                                            <td className="border border-gray-300 px-4 py-2">
-                                                <select
-                                                    value={account.role}
-                                                    onChange={(e) => handleRoleChange(account.email, e.target.value)}
-                                                    className="p-2 border border-gray-300 rounded-md"
-                                                >
-                                                    {[...new Set(accounts.map((acc) => acc.role))].map((role, index) => (
-                                                        <option key={index} value={role}>
-                                                            {role}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={3} className="border border-gray-300 px-4 py-2 text-center">
-                                            No matching accounts found.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                    {/* DataGrid Table */}
+                    <div className="w-full">
+                        <DataGrid
+                            rows={rows}
+                            columns={columns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5, 10, 20]}
+                            checkboxSelection
+                            disableSelectionOnClick
+                            autoHeight
+                            sx={{
+                                boxShadow: 2,
+                                border: 2,
+                                borderColor: "grey.300",
+                                borderRadius: 1,
+                            }}
+                        />
                     </div>
                 </MaxWidthWrapper>
             </section>

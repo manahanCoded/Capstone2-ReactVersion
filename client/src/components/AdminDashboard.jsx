@@ -8,17 +8,18 @@ const AdminDashboard = () => {
     return (
         <section>
             <MaxWidthWrapper className="h-12 flex flex-row justify-between items-center border-b-2 ">
+                <div className="w-full flex flex-row justify-between">
                 <section className="w-full text-xs flex flex-row justify-start gap-8 ">
                     <Link
                         to="/user/accounts-dashboard" className={`${location.pathname === "/user/accounts-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                         Accounts
                     </Link>
                     <Link
-                        to="/modules/modules-dashboard" className={`${location.pathname === "/modules/modules-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
+                        to="/user/modules-dashboard" className={`${location.pathname === "/modules/modules-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                         Module
                     </Link>
                     <Link
-                        to="/jobs/jobs-dashboard" className={`${location.pathname === "/jobs/jobs-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
+                        to="/user/jobs-dashboard" className={`${location.pathname === "/jobs/jobs-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                         Jobs
                     </Link>
                     <Link
@@ -31,6 +32,12 @@ const AdminDashboard = () => {
                     </Link>
 
                 </section>
+                <Link
+                        to="/user/warriors-dashboard" className="py-2 px-4 rounded-sm  text-white bg-[#333333]">
+                        Data
+                    </Link>
+
+                </div>
             </MaxWidthWrapper>
         </section>
     )

@@ -79,6 +79,9 @@ CREATE TABLE jobs(
 	description text,
 	moreInfo test,
 	date date
+    file_name TEXT,
+    file_data BYTEA,
+    file_mime_type TEXT
 )
 
 CREATE TABLE job_bookmarks (
@@ -107,7 +110,8 @@ CREATE TABLE applicants (
 	email text not null,
 	application text not null,
 	date date not null,
-	resume text not null
+	resume TYPE BYTEA,
+    file_mime_type TEXT;
 )
 
 

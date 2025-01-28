@@ -11,9 +11,11 @@ import {
   deleteJob,
   getBookmarks,
   saveBookmarks,
-  deleteBookmarks
+  deleteBookmarks,
+  downloadApplication
 } from "./Controllers/Job_Controller.mjs";
-import { uploadDir, appointmentFile, handleFileUploadError } from "../Resume_Img/Multer-config.mjs";
+
+import multer from "multer";
 
 
 const router = Router();
@@ -25,11 +27,50 @@ const isAuthenticated = (req, res, next) => {
   next();
 };
 
-router.post("/create", create_job);
+
+const imageFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true); 
+  } else {
+    cb(new Error("Only image files are allowed!"), false);
+  }
+};
+
+const appointmentFileFilter = (req, file, cb) => {
+  const allowedMimeTypes = [
+    "image/jpeg", "image/png", 
+    "application/pdf",  
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true); 
+  } else {
+    cb(new Error("Invalid file type. Please upload an image, PDF, DOC, DOCX, PNG, or JPG file."), false);
+  }
+};
+
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },  
+  fileFilter: imageFileFilter,
+});
+
+const appointmentUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },  
+  fileFilter: appointmentFileFilter,
+});
+
+
+router.post("/create", imageUpload.single("file"), create_job);
 
 router.get("/display", display_job);
 
-router.post("/upload-appointment", appointmentFile, handleFileUploadError, upload_appointment);
+router.post("/upload-appointment", appointmentUpload.single("file"), upload_appointment);
+
+router.get("/download/:id", isAuthenticated, downloadApplication);
 
 router.get("/display-appointment", display_appointments);
 
@@ -37,7 +78,7 @@ router.get("/display-user-appointment/:user", displayUser_appointments);
 
 router.get("/specific-job/:id", specific_job);
 
-router.put("/upDatejob/:jobEditID", updateJob);
+router.put("/upDatejob/:id", imageUpload.single("file"), updateJob);
 
 router.delete("/delete/:id", deleteJob);
 
@@ -47,7 +88,7 @@ router.post("/bookmarks", isAuthenticated, saveBookmarks)
 
 router.delete("/bookmarks/:jobId", isAuthenticated, deleteBookmarks)
 
-// Use centralized uploadDir for serving files
-router.use("/Resume_Img/uploads", express.static(uploadDir));
+
+
 
 export default router;

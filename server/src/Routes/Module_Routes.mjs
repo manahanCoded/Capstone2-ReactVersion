@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule} from "./Controllers/Module_Controller.mjs";
+import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo} from "./Controllers/Module_Controller.mjs";
 
 const router = Router() 
 
@@ -30,5 +30,7 @@ router.delete('/deleteModules/:id', deleteModule)
 router.post("/update-module-score", user_score)
 
 router.get("/get-user-score/:id", getUser_score)
+
+router.get("/get-all-user-info", getAllModule_UserInfo);
 
 export default router

@@ -34,6 +34,9 @@ export default function EditJobPage() {
     description: "",
     moreinfo: "",
     date: new Date().toISOString().split("T")[0],
+    fileName: "",
+    fileBuffer: null,
+    fileMimeType: "",
   });
 
   const [isClient, setIsClient] = useState(false);
@@ -103,7 +106,7 @@ export default function EditJobPage() {
     }
   }, [specificJob]);
 
-  // Handle input changes
+
   const onInputChange = (e) => {
     const { name, value } = e.target;
     setInformation((prevInfo) => ({
@@ -112,30 +115,53 @@ export default function EditJobPage() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setInformation((prev) => ({
+          ...prev,
+          fileName: file.name,
+          fileBuffer: reader.result.split(",")[1],
+          fileMimeType: file.type,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-  // Submit edited job data
   async function editJob(e) {
     e.preventDefault();
+  
+    const formData = new FormData();
+  
+    Object.entries(information).forEach(([key, value]) => {
+      if (key === "fileBuffer" && information.fileBuffer) {
+        const blob = new Blob([new Uint8Array(atob(value).split('').map(c => c.charCodeAt(0)))], {
+          type: information.fileMimeType,
+        });
+        formData.append("file", blob, information.fileName);
+      } else {
+        formData.append(key, value);
+      }
+    });
+  
     try {
-      const res = await axios.put(
+      const response = await axios.put(
         `http://localhost:5000/api/job/upDatejob/${jobEditID}`,
-        information,
+        formData,
         {
-          withCredentials: true,
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      if (res.status === 201) {
-        alert("Update Successful");
-        navigate("/jobs");
-      } else {
-        alert("Failed to update job.");
-      }
+      alert("Update: " + response.data.message); 
+      navigate("/jobs");
     } catch (error) {
-      console.error("Error updating job:", error);
-      alert("Error updating job.");
+        alert("Error updating job: " + error.message); 
+
     }
   }
 
@@ -230,10 +256,46 @@ export default function EditJobPage() {
                     </section>
                   </div>
                 </div>
-                <div className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer "
-                  onClick={deleteJob}
-                >
-                  <p>Delete</p>
+                <div className="flex flex-row items-center">
+                  <div className="flex flex-row  items-center gap-x-4">
+                    <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-red-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                        />
+                      </svg>
+                      <div className="flex flex-col gap-1">
+                        <span className="ml-2 text-sm font-medium text-gray-700">
+
+                          Edit Background Image
+                        </span>
+                        <span className="ml-2 text-sm font-medium text-gray-700">
+
+                          Image files only
+                        </span>
+                      </div>
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                    <span className="text-sm text-gray-500">{information.fileName}</span>
+                  </div>
+                  <div className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer "
+                    onClick={deleteJob}
+                  >
+                    <p>Delete</p>
+                  </div>
                 </div>
               </section>
 
@@ -661,9 +723,9 @@ export default function EditJobPage() {
               <section className="flex flex-col gap-2">
                 {isClient && (
                   <div className="mb-4">
-                      <label className="block text-base text-gray-700 mb-2 mt-4">
-                        Short Job Description
-                      </label>
+                    <label className="block text-base text-gray-700 mb-2 mt-4">
+                      Short Job Description
+                    </label>
                     <div className="bg-white ">
                       <EditorToolbar toolbarId="t1" />
                     </div>
@@ -676,9 +738,9 @@ export default function EditJobPage() {
                       placeholder="Write something..."
                       className="bg-white border rounded h-[55vh]"
                     />
-                      <label className="block text-base text-gray-700 mb-2 mt-4">
-                        More Information
-                      </label>
+                    <label className="block text-base text-gray-700 mb-2 mt-4">
+                      More Information
+                    </label>
                     <div className="bg-white ">
                       <EditorToolbar toolbarId="t2" />
                     </div>

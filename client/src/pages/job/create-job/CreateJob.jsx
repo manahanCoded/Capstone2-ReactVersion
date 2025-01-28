@@ -17,6 +17,7 @@ export default function CreateJobPage() {
     const [isClient, setIsClient] = useState(false);
     const [stateid, setStateId] = useState(0);
     const [typeForm, setTypeForm] = useState("job");
+    const [fileName, setFileName] = useState("No file selected");
     const [information, setInformation] = useState({
         id: 0,
         publisher: "",
@@ -35,6 +36,7 @@ export default function CreateJobPage() {
         description: "",
         moreinfo: "",
         date: new Date().toISOString().split("T")[0],
+        selectedFile: null
     });
 
     const [newAnnouncement, setNewAnnouncement] = useState({
@@ -58,75 +60,82 @@ export default function CreateJobPage() {
         setNewAnnouncement({ ...newAnnouncement, description: value });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setInformation({ ...information, selectedFile: file });
+        setFileName(file ? file.name : "No file selected");
+    };
+
+
     useEffect(() => {
         setIsClient(true);
     }, []);
 
     useEffect(() => {
         async function checkUser() {
-          try {
-            const res = await fetch("http://localhost:5000/api/user/profile", {
-              method: "GET",
-              credentials: "include",
-            });
-    
-            if (!res.ok) {
-                navigate("/user/login");
-                return;
-              }
-            const data = await res.json();
-    
-            if (data.role === "client") {
-              navigate("/jobs");
-              return;
+            try {
+                const res = await fetch("http://localhost:5000/api/user/profile", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!res.ok) {
+                    navigate("/user/login");
+                    return;
+                }
+                const data = await res.json();
+
+                if (data.role === "client") {
+                    navigate("/jobs");
+                    return;
+                }
+
+                setInformation((prev) => ({
+                    ...prev,
+                    publisher: data.email,
+                }));
+                setNewAnnouncement((prev) => ({
+                    ...prev,
+                    publisher: data.email,
+                }));
+            } catch (err) {
+                alert("Failed to fetch user profile.");
+                console.error("An error occurred:", err);
             }
-    
-            setInformation((prev) => ({
-              ...prev,
-              publisher: data.email,
-            }));
-            setNewAnnouncement((prev) => ({
-              ...prev,
-              publisher: data.email,
-            }));
-          } catch (err) {
-            alert("Failed to fetch user profile.");
-            console.error("An error occurred:", err);
-          }
         }
-    
+
         checkUser();
-      }, [navigate, setInformation, setNewAnnouncement]);
+    }, [navigate, setInformation, setNewAnnouncement]);
+
+
 
     async function postJob(e) {
         e.preventDefault();
-
+      
+        const formData = new FormData();
+        Object.entries(information).forEach(([key, value]) => {
+          if (key === "selectedFile" && value) {
+            formData.append("file", value); 
+          } else {
+            formData.append(key, value);
+          }
+        });
+      
         try {
-            const res = await axios.post(
-                "http://localhost:5000/api/job/create",
-                information,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-            if (res.status === 201) {
-                alert("Job created successfully.")
-                navigate("/jobs");
-            } else {
-                alert("Failed to create job.");
-            }
+          const res = await axios.post("http://localhost:5000/api/job/create", formData);
+          if (res.status === 201) {
+            alert("Job created successfully.");
+          } else {
+            alert("Failed to create job.");
+          }
         } catch (err) {
-            if (axios.isAxiosError(err) && err.response) {
-                console.error("Error creating job:", err.response.data);
-                alert("Error creating job: " + (err.response.data.message || "Unknown error"));
-            } else {
-                alert("Error creating job.");
-                console.error(err);
-            }
+          console.error("Error uploading job:", err);
+          alert("An error occurred while creating the job.");
         }
-    }
+      }
+      
+
+
 
     async function postAnnouncement(e) {
         e.preventDefault();
@@ -198,7 +207,7 @@ export default function CreateJobPage() {
                 <section className={typeForm === "job" ? "block py-14 " : "hidden"}>
                     <MaxWidthWrapper>
                         <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8  m-auto rounded-lg bg-gray-100 ">
-                            <section className="flex mb-2">
+                            <section className="flex flex-row justify-between mb-2">
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-base">Contact Person</h6>
                                     <div className="flex flex-row items-center gap-2">
@@ -256,6 +265,40 @@ export default function CreateJobPage() {
                                             </div>
                                         </section>
                                     </div>
+                                </div>
+                                <div className="flex flex-col items-center space-y-4">
+                                    <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6 text-red-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                                            />
+                                        </svg>
+                                        <div className="flex flex-col gap-1">
+                                        <span className="ml-2 text-sm font-medium text-gray-700">
+                                      
+                                            Choose Background Image
+                                        </span>
+                                        <span className="ml-2 text-sm font-medium text-gray-700">
+                                      
+                                            Image files only
+                                        </span>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    <span className="text-sm text-gray-500">{fileName}</span>
                                 </div>
                             </section>
 
@@ -637,33 +680,33 @@ export default function CreateJobPage() {
                                             Short Job Description
                                         </label>
                                         <div className="bg-white">
-                                        <EditorToolbar toolbarId="t1" />
-                                        <ReactQuill
-                                            theme="snow"
-                                            value={information.description}
-                                            required
-                                            onChange={onDescription}
-                                            placeholder="Write something awesome..."
-                                            modules={modules("t1")}
-                                            formats={formats}
-                                            className="bg-white border rounded  h-[55vh] overflow-y-auto"
-                                        />
+                                            <EditorToolbar toolbarId="t1" />
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={information.description}
+                                                required
+                                                onChange={onDescription}
+                                                placeholder="Write something awesome..."
+                                                modules={modules("t1")}
+                                                formats={formats}
+                                                className="bg-white border rounded  h-[55vh] overflow-y-auto"
+                                            />
                                         </div>
                                         <label className="block text-base text-gray-700 mb-2 mt-4">
                                             More Information
                                         </label>
                                         <div className="bg-white ">
-                                        <EditorToolbar toolbarId="t2" />
-                                        <ReactQuill
-                                            theme="snow"
-                                            value={information.moreinfo}
-                                            required
-                                            onChange={onMoreInfo}
-                                            placeholder="Write something awesome..."
-                                            modules={modules("t2")}
-                                            formats={formats}
-                                            className="bg-white border rounded  h-[55vh] overflow-y-auto"
-                                        />
+                                            <EditorToolbar toolbarId="t2" />
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={information.moreinfo}
+                                                required
+                                                onChange={onMoreInfo}
+                                                placeholder="Write something awesome..."
+                                                modules={modules("t2")}
+                                                formats={formats}
+                                                className="bg-white border rounded  h-[55vh] overflow-y-auto"
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -683,9 +726,9 @@ export default function CreateJobPage() {
                         <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8  m-auto rounded-lg bg-gray-100 ">
                             {isClient && (
                                 <section className="flex flex-col gap-2">
-                                        <label className=" text-gray-700 ">
-                                            Title <span className="text-red-500">*</span>
-                                        </label>
+                                    <label className=" text-gray-700 ">
+                                        Title <span className="text-red-500">*</span>
+                                    </label>
                                     <div className="mb-4">
                                         <input
                                             type="text"

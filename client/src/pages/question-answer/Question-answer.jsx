@@ -23,6 +23,7 @@ export default function QuestionAnswer() {
     const [answers, setAnswers] = useState({});
 
     const [searchTerm, setSearchTerm] = useState("");
+    const [acceptedAnswers, setAcceptedAnswers] = useState({});
 
     useEffect(() => {
         async function checkUser() {
@@ -171,7 +172,7 @@ export default function QuestionAnswer() {
                     answers: [
                         ...prevData.answers,
                         {
-                            answer_id: data.answer_id, 
+                            answer_id: data.answer_id,
                             question_id: questionId,
                             user_id: checkUser.id,
                             answer_text: answerText,
@@ -197,12 +198,6 @@ export default function QuestionAnswer() {
             alert("Log in first")
             navigate("/user/login")
         }
-        console.log({
-            target_id: targetId,
-            target_type: targetType,
-            user_id: checkUser?.id,
-            vote_type: voteType,
-        });
         try {
             const response = await fetch("http://localhost:5000/api/question-answer/vote", {
                 method: "POST",
@@ -275,6 +270,32 @@ export default function QuestionAnswer() {
     };
 
 
+    const handleAccept = async (acceptID, isAccepted) => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/question-answer/accept/${acceptID}`, {
+                method: "PATCH",
+                credentials: "include",
+            });
+    
+            const data = await res.json();
+    
+            if (res.ok) {
+                alert(data.message);
+                setAcceptedAnswers((prev) => ({
+                    ...prev,
+                    [acceptID]: !isAccepted,
+                }));
+            } else {
+                alert(data.error || "An error occurred on the server.");
+            }
+        } catch (error) {
+            console.error("Network or unexpected error:", error);
+            alert("An unexpected error occurred. Please try again later.");
+        }
+    };
+
+
+
     const handleSearch = (e) => {
         setSearchTerm(e.target.value.toLowerCase());
     };
@@ -302,15 +323,15 @@ export default function QuestionAnswer() {
                         </button>
                     ))}
                 </section>
-                {specifyQuestion === "all" && 
-                <section className="h-96 w-full px-14 py-20 rounded-md bg-[#333333] text-white">
-                    <div className="lg:w-3/4">
-                        <h1 className="text-5xl font-semibold italic">Question & Answer</h1>
-                        <p className="lg:text-lg text-sm font-extralight mt-4">
-                            Ensure your question is relevant to the topic, and avoid using inappropriate or offensive language. Remember, this is a community space—let's maintain a positive and constructive environment for everyone.
-                        </p>
-                    </div>
-                </section>}
+                {specifyQuestion === "all" &&
+                    <section className="h-96 w-full px-14 py-20 rounded-md bg-[#333333] text-white">
+                        <div className="lg:w-3/4">
+                            <h1 className="text-5xl font-semibold italic">Question & Answer</h1>
+                            <p className="lg:text-lg text-sm font-extralight mt-4">
+                                Ensure your question is relevant to the topic, and avoid using inappropriate or offensive language. Remember, this is a community space—let's maintain a positive and constructive environment for everyone.
+                            </p>
+                        </div>
+                    </section>}
                 <section className="mb-8 flex lg:flex-row flex-col-reverse gap-8 mt-10">
                     <section className="w-full ">
                         <form className="pb-4 border-b-[1px]">
@@ -381,11 +402,11 @@ export default function QuestionAnswer() {
 
                                             return (
                                                 <div key={question.question_id} className="p-4 border-b">
-                                                    {/* Question Details */}
+
                                                     <div className="w-full flex justify-between items-center mb-2">
                                                         <p className="text-sm text-gray-600">Topic: {question.topic_type}</p>
                                                         <div>
-                                                            {/* Check if the user has voted on this question */}
+
                                                             {(() => {
                                                                 const userVote =
                                                                     all_QA?.votes?.find(
@@ -398,7 +419,7 @@ export default function QuestionAnswer() {
                                                                 const isUpvoted = userVote?.vote_type === "up";
                                                                 return (
                                                                     <>
-                                                                        {/* Upvote Button */}
+
                                                                         <button
                                                                             className={`mr-2 ${isUpvoted ? "text-red-500" : "text-black"}`}
                                                                             onClick={() =>
@@ -420,7 +441,7 @@ export default function QuestionAnswer() {
                                                     <p className="text-base font-medium">{question.question_text}</p>
                                                     <p className="text-sm text-gray-500 mt-2">{new Date(question.created_at).toLocaleDateString()}</p>
 
-                                                    {/* Question Votes */}
+
                                                     <div className="mt-2">
                                                         {questionVotes.filter((vote) => vote.vote_type === "up").length > 0 ? (
                                                             <h4 className="list-disc text-sm text-gray-600">
@@ -431,7 +452,7 @@ export default function QuestionAnswer() {
                                                         )}
                                                     </div>
 
-                                                    {/* Show/Hide Answers Button */}
+
                                                     <div
                                                         type="button"
                                                         onClick={() => toggleDropdown(question.question_id)}
@@ -448,7 +469,7 @@ export default function QuestionAnswer() {
                                                         )}
                                                     </div>
 
-                                                    {/* Dropdown for Answers with Smooth Transition */}
+
                                                     <div
                                                         className={`mt-4 overflow-y-auto transition-all duration-500 ease-in-out ${openQuestion === question.question_id ? "max-h-screen" : "max-h-0"
                                                             }`}
@@ -466,7 +487,16 @@ export default function QuestionAnswer() {
 
                                                                     return (
                                                                         <div key={answer.answer_id} className="p-2 bg-gray-50 rounded-md">
-                                                                            <p className="text-gray-700">{answer.answer_text}</p>
+                                                                            <div className="flex flex-row justify-between items-center">
+                                                                                <p className="text-gray-700">{answer.answer_text}</p>
+                                                                                {checkUser?.role === "admin" &&
+                                                                                    <button
+                                                                                        onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
+                                                                                        className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
+                                                                                    >
+                                                                                        {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
+                                                                                    </button>}
+                                                                            </div>
                                                                             <p className="text-sm text-gray-500">
                                                                                 {answerVotes.length} votes
                                                                                 {answer.is_accepted && (
@@ -487,6 +517,7 @@ export default function QuestionAnswer() {
                                                                                     👎 Dislike
                                                                                 </button>
                                                                             </div>
+
                                                                             {/* Answer Votes */}
                                                                             <div className="mt-1">
                                                                                 <h5 className="font-semibold">Answer Votes:</h5>

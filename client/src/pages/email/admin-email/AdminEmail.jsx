@@ -1,4 +1,4 @@
-
+import DrawIcon from '@mui/icons-material/Draw';
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { useNavigate } from "react-router-dom";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -10,8 +10,6 @@ import AdminDashboard from "@/components/AdminDashboard";
 
 export default function AdminEmail() {
     const [checkAdmin, setCheckAdmin] = useState(null)
-
-    const pathName = location.pathname;
     const [applicants, setApplicants] = useState([])
     const [mail, setMail] = useState(null);
     const [successReply, setSuccessReply] = useState(false)
@@ -32,6 +30,7 @@ export default function AdminEmail() {
     })
 
     const [searchQuery, setSearchQuery] = useState("");
+
     const filteredApplicants = applicants?.filter((applicant) => {
         const search = searchQuery.toLowerCase();
         return (
@@ -135,9 +134,6 @@ export default function AdminEmail() {
             setSuccessReply(true);
             const res = await axios.post("http://localhost:5000/api/mail/sendMail", updatedReply, {
                 withCredentials: true,
-                headers: {
-                    "Content-Type": "application/json"
-                }
             });
 
             setReply((prev) => ({
@@ -209,14 +205,21 @@ export default function AdminEmail() {
     const handleDeleteReply = async (e) => {
         try {
             const replyIdFromEvent = e.currentTarget.id;
-            const selectedReply = viewReply?.find((replies) => replies.id == replyIdFromEvent);
-            if (!selectedReply) {
-                alert("Reply not found.");
-                return;
+            const selectedReply = viewReply.find((r) => r.id == replyIdFromEvent);
+
+            const isNestedReply = selectedReply.parent_id !== null;
+
+            if (!isNestedReply) {
+                const confirmDelete = window.confirm(
+                    "This is a main reply. Deleting this will also remove all associated replies. Are you sure you want to continue?"
+                );
+                if (!confirmDelete) return;
             }
-            const res = await axios.delete(`http://localhost:5000/api/mail/deleteMail/${selectedReply.id}`);
+
+            const res = await axios.delete(`http://localhost:5000/api/mail/deleteMail/${replyIdFromEvent}`);
             if (res.status === 200) {
                 alert("Reply deleted successfully!");
+                setViewReply((prevReplies) => prevReplies.filter((r) => r.id !== replyIdFromEvent));
             } else {
                 alert("Failed to delete reply.");
             }
@@ -229,7 +232,7 @@ export default function AdminEmail() {
 
     return (
         <div className="mt-14 h-screen text-sm">
-            <AdminDashboard/>
+            <AdminDashboard />
             <MaxWidthWrapper className=" md:px-0 h-screen flex flex-row ">
                 <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px] border-b-[1px]">
                     {/* Search and Filter Section */}
@@ -252,15 +255,6 @@ export default function AdminEmail() {
                     <section className="h-full overflow-y-auto py-4">
                         <MaxWidthWrapper>
                             {filteredApplicants?.map((applicant, index) => {
-                                const formattedDate = new Intl.DateTimeFormat("en-US", {
-                                    month: "short",
-                                    day: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                }).format(new Date(applicant.date));
-
                                 return (
                                     <section
                                         key={index}
@@ -270,10 +264,10 @@ export default function AdminEmail() {
                                     >
                                         <div className="flex flex-row justify-between">
                                             <h3 className="font-semibold">{applicant.fullname}</h3>
-                                            <p className="text-xs text-gray-400">{formattedDate}</p>
+                                            <p className="text-xs text-gray-400">{applicant.date}</p>
                                         </div>
                                         <p className="line-clamp-2 text-xs">{applicant.application}</p>
-                                        <p className="bg-black py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">
+                                        <p className="bg-[#333333] py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">
                                             {applicant.job_title}
                                         </p>
                                     </section>
@@ -298,33 +292,27 @@ export default function AdminEmail() {
                         <MaxWidthWrapper className="p-4 ">
                             <p>{mail?.fullname}</p>
                             <h2 className="text-md font-semibold">Application Details</h2>
-                            <p>{mail?.application}</p>
-                            {mail?.resume && (
+                            <p>{mail?.name}</p>
+                            <div className='mt-4'>
+                            {mail?.resumeUrl && (
                                 <>
-                                    {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
-                                        <img
-                                            className="mt-8"
-                                            src={`http://localhost:5000${mail.resume}`} alt="Resume" />
+                                    {mail?.resumeUrl.startsWith('data:image/') ? (
+                                        <img src={mail?.resumeUrl} alt="Applicant Resume" style={{ width: "200px", height: "auto" }} />
                                     ) : (
-                                        <div className="mt-8 w-full flex justify-end items-end ">
-                                            <a
-                                                href={`http://localhost:5000${mail.resume}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className=" bg-black px-4 py-2 text-white rounded-md"
-                                            >
-                                                Download Resume
-                                            </a>
-                                        </div>
+                                        <a href={`http://localhost:5000/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
+                                        Download Resume
+                                      </a>
                                     )}
                                 </>
                             )}
+                            </div>
                         </MaxWidthWrapper>
                     </section>
+                    {/* Reply */}
                     <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">
                         <div className="w-full px-4 flex items-center justify-start"
                             onClick={() => setShowReply(!showReply)}>
-                            <p className={`h-12 px-3 flex items-center border-x-[1px] hover:bg-black hover:text-white cursor-pointer ${showReply ? "bg-black text-white" : "bg-white text-black"}`}>View Reply</p>
+                            <p className={`h-12 px-3 flex items-center border-x-[1px] hover:bg-[#333333] hover:text-white cursor-pointer ${showReply ? "bg-[#333333] text-white" : "bg-white text-black"}`}>View Reply</p>
                         </div>
 
                         {showReply ?
@@ -334,6 +322,7 @@ export default function AdminEmail() {
                                         .filter((replies) => replies.aplicant_name === mail?.fullname)
                                         .map((reply, index) => (
                                             <section key={index} className="flex flex-col gap-4 p-2 border-b-[1px]">
+                                                <p>{reply.parent_id ? "" : <DrawIcon />}</p>
                                                 <div className="flex flex-row items-center justify-between text-xs text-gray-400">
                                                     <p> Replied by: {reply.admin} </p>
                                                     <p>
@@ -346,14 +335,13 @@ export default function AdminEmail() {
                                                 </div>
                                                 <p>{reply.reply}</p>
                                                 <textarea required className="h-16 w-full p-2 border-[1px] text-xs rounded-sm" placeholder="Reply something..."
-                                                    onChange={(e) => (setReply((prev) => ({ ...prev, reply: e.target.value }))
-                                                    )}
+                                                    onChange={(e) => setReply(prev => ({ ...prev, reply: e.target.value }))}
                                                 ></textarea>
                                                 <div className="w-full flex flex-row justify-between text-xs">
                                                     <button id={reply.id} className="py-2 px-4 rounded-md bg-red-600 text-white"
                                                         onClick={handleDeleteReply}
                                                     >Delete</button>
-                                                    <button className="py-2 px-4 rounded-md border-2 border-black hover:bg-black hover:text-white"
+                                                    <button className="py-2 px-4 rounded-md border-2 border-black hover:bg-[#333333] hover:text-white"
                                                         onClick={handleResponseReply}
                                                     >Reply</button>
                                                 </div>
@@ -373,7 +361,7 @@ export default function AdminEmail() {
                                 ></textarea>
                                 <div className="flex flex-row justify-between">
                                     <p className="text-green-600" > {successReply ? "Reply Sent" : null}</p>
-                                    <button className=" py-2 px-6 rounded-md font-semibold text-sm text-white bg-black">Send</button>
+                                    <button className=" py-2 px-6 rounded-md font-semibold text-sm text-white bg-[#333333]">Send</button>
                                 </div>
                             </form>
                         }

@@ -10,8 +10,6 @@ import HangmanGame from "./pages/games/hangman/Hangman";
 import Scramble from "./pages/games/scramble/Scramble";
 import TypingGame from "./pages/games/typing-game/Typing";
 import DocsPage from "./pages/modules/Docs";
-import { Toaster } from "@/components/ui/toaster"
-
 import CreateUnitPage from "./pages/modules/create-module/CreateUnit";
 import JobPage from "./pages/job/Jobs";
 import CheckJobPage from "./pages/job/CheckJob";
@@ -25,6 +23,8 @@ import QuestionAnswer from "./pages/question-answer/Question-answer";
 import Unit from "./pages/modules/Unit";
 import CreateModulePage from "./pages/modules/create-module/CreateModule";
 import JobHome from "./pages/job/Job-Home";
+import WarriorsDashboard from "./pages/users/warriors-dashboard/WarriorsDashboard";
+import ModulesDashboard from "./pages/users/accounts-dashboard/ModuleDashboard";
 
 
 
@@ -32,13 +32,14 @@ function App() {
   return (
     <div className="w-screen font-poppins">
       <Navbar />
-      <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/user/accounts-dashboard" element={<AccountsDashboard />} />
-
+        <Route path="/user/modules-dashboard" element={<ModulesDashboard />} />
+        <Route path="/user/warriors-dashboard" element={<WarriorsDashboard />} />
+        
         <Route path="/modules" element={<ModulesPage />} />
         <Route path="/modules/units/:id" element={<Unit />} />
         <Route path="/modules/units/docs/:id" element={<DocsPage />} />

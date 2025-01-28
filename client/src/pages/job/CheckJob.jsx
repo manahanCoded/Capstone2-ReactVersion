@@ -12,6 +12,8 @@ export default function CheckJobPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [job, setJob] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [userApplication, setUserApplication] = useState({
     name: "",
     date: new Intl.DateTimeFormat('en-US', {
@@ -67,20 +69,19 @@ export default function CheckJobPage() {
   };
 
   const handleFileUpload = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    
     if (!file) {
       setUploadStatus('Please select a resume to upload.');
       return;
     }
-    // File type validation
+  
     const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Invalid file type. Please upload a PDF, DOC, DOCX, PNG, JPG, or GIF file.');
+      alert('Invalid file type. Please upload a PDF, DOC, DOCX, PNG, or JPG file.');
       setUploadStatus('Invalid file type.');
       return;
     }
-  
-    // Create FormData and append data
     const formData = new FormData();
     formData.append('file', file);
   
@@ -100,6 +101,7 @@ export default function CheckJobPage() {
       formData.append('name', userApplication.name);
     }
   
+
     try {
       const response = await fetch('http://localhost:5000/api/job/upload-appointment', {
         method: 'POST',
@@ -119,10 +121,6 @@ export default function CheckJobPage() {
     }
   };
   
-
-  const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState(null);
-
   return (
     <div className="mt-14 text-sm">
       <form className={openApply ? "fixed h-screen inset-0 z-10 backdrop-blur-sm bg-black bg-opacity-50" : "hidden"}>

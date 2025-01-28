@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const response = await fetch("http://localhost:5000/api/user/profile", {
+        method: "GET",
+        credentials: "include", 
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.id) { 
+        navigate("/"); 
+      } else {
+        console.log("User not logged in");
+      }
+    };
+  
+    checkLogin();
+  }, [navigate]);
+
 
   const submit_Login = async (e) => {
     e.preventDefault();
@@ -19,8 +42,7 @@ function Login() {
     if (!response.ok) {
       alert("Log in failed");
     } else {
-      // Simulate navigation (React Router example)
-      window.location.href = "/";
+      navigate("/")
     }
   };
 

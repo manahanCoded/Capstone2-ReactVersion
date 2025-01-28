@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MaxWidthWrapper from "./MaxWidthWrapper";
@@ -21,6 +21,7 @@ const Navbar = () => {
   const [notification, setNotification] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function checkUser() {
@@ -40,7 +41,7 @@ const Navbar = () => {
       }
     }
     checkUser();
-  }, []);
+  }, [navigate]);
 
   function openProfile() {
     setProfile(!profile);

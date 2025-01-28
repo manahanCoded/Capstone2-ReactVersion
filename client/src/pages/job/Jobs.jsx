@@ -115,6 +115,24 @@ export default function JobsPage() {
     }
   };
 
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 5;
+
+  const totalPages = Math.ceil(displayOptions.length / jobsPerPage);
+
+  const currentJobs = displayOptions.slice(
+    (currentPage - 1) * jobsPerPage,
+    currentPage * jobsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+
+
   useEffect(() => {
     if (selectOption >= displayJobs.length) {
       setSelectOptions(0);
@@ -174,6 +192,9 @@ export default function JobsPage() {
   const [isJobTypeOpen, setJobTypeOpen] = useState(false);
   const [isLocationOpen, setLocationOpen] = useState(false);
   const [isSalaryOpen, setSalaryOpen] = useState(false);
+
+
+
 
   return (
     <div className="mt-14">
@@ -349,9 +370,10 @@ export default function JobsPage() {
               <p><PaymentsIcon className="mr-1" />{displayOptions[selectOption]?.salary ? displayOptions[selectOption]?.salary : "Unpaid"}</p>
               {displayOptions[selectOption]?.update_date ? <p>Updated: {new Date(displayOptions[selectOption]?.update_date).toLocaleDateString()} </p>
                 :
-                <p>Uploaded: {new Date(displayOptions[selectOption]?.date).toLocaleDateString()} </p>
+                <p>Posted : {new Date(displayOptions[selectOption]?.date).toLocaleDateString()} </p>
               }
             </div>
+            <img src={displayOptions[selectOption]?.file_data} alt={displayOptions[selectOption]?.file_name || "Job image"} style={{ width: "200px" }} />
             <div className="flex flex-row flex-wrap gap-2 mt-4 text-xs">
               <p className="border-2 px-2 py-1 rounded-lg tracking-wide bg-violet-200 text-violet-800">
                 {displayOptions[selectOption]?.city || "N/A"}
@@ -371,52 +393,96 @@ export default function JobsPage() {
 
           {/* Job Options */}
           <section className="flex flex-col gap-6 lg:w-1/2 w-full">
-            {displayOptions.map((job, index) => (
-              <section
-                key={job.id}
-                onClick={() => { setSelectOptions(index) }}
-                className={`w-full h-64 border-[1px] rounded-md cursor-pointer p-4 hover:border-red-950 ${index === selectOption && "border-2 border-red-950 shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.38)]"}`}>
-                <div className="flex justify-between items-center">
-                  <p className="text-xs line-clamp-1 text-slate-500">{new Date(job.date).toLocaleDateString()}</p>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleBookmark(job.id);
-                    }}
-                    className={`${bookmarkedJobs.includes(job.id)
-                      ? "text-red-700"
-                      : "hover:text-red-700"
-                      }`}
-                  >
-                    {bookmarkedJobs.includes(job.id) ? (
-                      <BookmarkIcon className="ml-1" />
-                    ) : (
-                      <BookmarkBorderIcon className="ml-1" />
-                    )}
-                  </button>
-                </div>
-                <h3 className="mt-2 font-bold text-lg line-clamp-1 text-red-950">{job.title}</h3>
-                <p className="mt-2 line-clamp-1 text-sm"><LocationOnOutlinedIcon />{job.state}, {job.city}</p>
-                <div className="mt-2">
-                  <p className="text-xs tracking-wider text-slate-500">SALARY</p>
-                  <p className="line-clamp-1">{job.salary ? job.salary : "Unpaid"}</p>
-                </div>
-                <div className="my-1">
-                  <p className="text-xs tracking-wider text-slate-500">HIRING</p>
-                  <p className="line-clamp-1">{job.experience}</p>
-                </div>
-                <div className="w-full flex justify-end items-center">
-                  <Link
-                    to={`/jobs/jobDetails/${job.id}`}
-                    className="line-clamp-1 border-[1px] font-medium text-xs rounded-md p-2 overflow-hidden bg-red-900 hover:bg-red-700 text-white"
-                  >
-                    Check Information
-                    <AdsClickIcon className="ml-1" />
-                  </Link>
-                </div>
-              </section>
-            ))}
-          </section>
+      {currentJobs.map((job, index) => (
+        <section
+        key={job.id}
+        onClick={() => setSelectOptions((currentPage - 1) * jobsPerPage + index)}
+        className={`w-full h-64 border-[1px] rounded-md cursor-pointer p-4 hover:border-red-950 ${
+          (currentPage - 1) * jobsPerPage + index === selectOption &&
+          "border-2 border-red-950 shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.38)]"
+        }`}
+      >
+          <div className="flex justify-between items-center">
+            <p className="text-xs line-clamp-1 text-slate-500">
+              {new Date(job.date).toLocaleDateString()}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleBookmark(job.id);
+              }}
+              className={`${
+                bookmarkedJobs.includes(job.id)
+                  ? "text-red-700"
+                  : "hover:text-red-700"
+              }`}
+            >
+              {bookmarkedJobs.includes(job.id) ? (
+                <BookmarkIcon className="ml-1" />
+              ) : (
+                <BookmarkBorderIcon className="ml-1" />
+              )}
+            </button>
+          </div>
+          <h3 className="mt-2 font-bold text-lg line-clamp-1 text-red-950">
+            {job.title}
+          </h3>
+          <p className="mt-2 line-clamp-1 text-sm">
+            <LocationOnOutlinedIcon />
+            {job.state}, {job.city}
+          </p>
+          <div className="mt-2">
+            <p className="text-xs tracking-wider text-slate-500">SALARY</p>
+            <p className="line-clamp-1">
+              {job.salary ? job.salary : "Unpaid"}
+            </p>
+          </div>
+          <div className="my-1">
+            <p className="text-xs tracking-wider text-slate-500">HIRING</p>
+            <p className="line-clamp-1">{job.experience}</p>
+          </div>
+          <div className="w-full flex justify-end items-center">
+            <Link
+              to={`/jobs/jobDetails/${job.id}`}
+              className="line-clamp-1 border-[1px] font-medium text-xs rounded-md p-2 overflow-hidden bg-red-900 hover:bg-red-700 text-white"
+            >
+              Check Information
+              <AdsClickIcon className="ml-1" />
+            </Link>
+          </div>
+        </section>
+      ))}
+      {/* Pagination Controls */}
+      <div className="flex justify-center mt-4 gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          Previous
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`px-3 py-1 rounded-md border ${
+              currentPage === page
+                ? "bg-red-900 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          Next
+        </button>
+      </div>
+    </section>
         </div>
       </MaxWidthWrapper>
 

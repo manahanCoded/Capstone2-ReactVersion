@@ -90,7 +90,7 @@ const register = async (req, res) => {
   try {
 
     if (!problem.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: problem.array() });
     }
 
     const checkEmail = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -121,6 +121,7 @@ const register = async (req, res) => {
       return res.status(200).json({
         message: "Registration successful!",
         user: { id: user.id, email: user.email },
+        loggedIn: true,
       });
     });
   } catch (err) {
@@ -131,7 +132,7 @@ const register = async (req, res) => {
 
 const logout = (req, res) => {
   try {
-    if (!req.isAuthenticated()) {
+    if (!req.user) {
       return res.status(400).json({ error: "No user found to logout" });
     }
     req.logout((err) => {

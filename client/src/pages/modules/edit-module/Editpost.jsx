@@ -115,7 +115,7 @@ const EditPost = ({ postList, editPostID }) => {
     <div className="mt-14 container mx-auto">
       <div className="container">
         <div className="row">
-          <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+          <form onSubmit={handleSubmit} className="bg-white shadow-md rounded md:px-8 pt-6 pb-8 mb-4">
             <MaxWidthWrapper>
               <div className="w-full flex items-center justify-between gap-2">
                 <h3 className="text-xl font-semibold mb-4">Edit</h3>
@@ -213,7 +213,7 @@ const EditPost = ({ postList, editPostID }) => {
                 <div className="form-group col-sm-12 text-right">
                   <button
                     type="submit"
-                    className="bg-red-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   >
                     Submit
                   </button>

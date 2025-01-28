@@ -107,6 +107,7 @@ export default function CreateUnitPage() {
       });
 
       if (res.data.success) {
+        alert("Unit has been successfully created.")
         setTypeForm("createQuiz");
       } else {
         setError(res.data.error || "An error occurred while submitting the form.");
@@ -198,7 +199,7 @@ export default function CreateUnitPage() {
         questions: updatedQuestions,
       });
 
-      navigate("/modules");
+      navigate(`/modules/units/${userInfo.storage_section_id}`);
     } catch (error) {
       console.error("Axios error:", error);
     }
@@ -228,7 +229,7 @@ export default function CreateUnitPage() {
           </div>
 
           <Link
-            to="/modules"
+            to={`/modules/units/${userInfo.storage_section_id}`}
             className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
           >
             <ExitToApp />
@@ -238,7 +239,7 @@ export default function CreateUnitPage() {
       </section>
       <form
         onSubmit={addDetails}
-        className={typeForm === "createModule" ? "w-[80vw] m-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" : "hidden"}
+        className={typeForm === "createModule" ? " m-auto bg-white shadow-md rounded lg:px-8 pt-6 pb-8 mb-4" : "hidden"}
       >
         <MaxWidthWrapper>
           {/* Title Input */}
@@ -346,7 +347,7 @@ export default function CreateUnitPage() {
           <div className="flex items-center justify-end">
             <button
               type="submit"
-              className="bg-red-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Submit
             </button>

@@ -1,6 +1,4 @@
-// src/pages/Register.jsx
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -12,29 +10,71 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
-
+  
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const response = await fetch("http://localhost:5000/api/user/profile", {
+        method: "GET",
+        credentials: "include",
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.id) { 
+        navigate("/"); 
+      } else {
+        console.log("User not logged in");
+      }
+    };
+  
+    checkLogin();
+  }, [navigate]);
 
   const submit_Register = async (e) => {
     e.preventDefault();
-    
     if (user.password !== user.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
-    const response = await fetch("http://localhost:5000/api/user/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-      credentials: "include",
-    });
 
-    if (!response.ok) {
-      alert("Register failed");
-    } else {
-      navigate("/");
+    if (!user.email || !user.password || !user.confirmPassword) {
+      alert("All fields are required.");
+      return;
     }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.errors) {
+          const errorMessages = data.errors.map((error) => error.msg).join("\n");
+          alert(`${errorMessages}`);
+        } else if (data.error) {
+          alert(data.error);
+        } else {
+          alert("Registration failed for an unknown reason.");
+        }
+      } else {
+        if (data.loggedIn) {
+        alert("Registration successful!");
+        navigate("/"); 
+        }
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Something went wrong. Please try again.");
+    } 
   };
 
   return (
@@ -112,7 +152,7 @@ function Register() {
                   className="md:h-10 h-8 rounded mb-2 mt-6 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
                 >
                   <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />
-                  Or sign in with Google
+                  Or sign up with Google
                 </Link>
               </div>
               <div className="flex justify-between items-center">

@@ -4,7 +4,7 @@ const qa_all = async (req, res) => {
     try {
         const [questions, answers, votes] = await Promise.all([
             db.query("SELECT * FROM qa_questions ORDER BY created_at DESC"),
-            db.query("SELECT * FROM qa_answers "),
+            db.query("SELECT * FROM qa_answers ORDER BY answer_id"),
             db.query("SELECT * FROM qa_votes")
         ]);
 
@@ -150,5 +150,24 @@ const delete_item = async (req, res) => {
 };
 
 
+const isAccepted = async (req,res)=>{
+    const {id} = req.params
+    try{
+        const result =  await db.query("SELECT is_accepted FROM qa_answers WHERE answer_id = $1 ", [id])
 
-export { qa_all, question, answer, vote, delete_item }
+        if(result.rows[0].is_accepted == false){
+            await db.query("UPDATE qa_answers SET is_accepted = true WHERE answer_id = $1 RETURNING *", [id])
+            return res.status(200).json({ message: "Successfully accepted", result: result.rows[0].is_accepted });
+        }else{
+            await db.query("UPDATE qa_answers SET is_accepted = false WHERE answer_id = $1 RETURNING *", [id])
+            return res.status(200).json({ message: "Successfully removed accepted", result: result.rows[0].is_accepted });
+        }
+
+    }catch(err){
+        res.status(500).json({ error: 'An error occurred while accepting the question' });
+    }
+}
+
+
+
+export { qa_all, question, answer, vote, delete_item, isAccepted }
