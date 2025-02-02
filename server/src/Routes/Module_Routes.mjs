@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo} from "./Controllers/Module_Controller.mjs";
+import multer from "multer";
+
 
 const router = Router() 
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.get('/allModule-storage/:id?', allModule_Storage)
 
@@ -9,9 +14,9 @@ router.get('/module-units/:id', units)
 
 router.get('/allModule', allModule)
 
-router.post('/createModule', createModule)
+router.post('/createModule', upload.single("file"), createModule)
 
-router.put('/updateModule/:id', updateModule)
+router.put('/updateModule/:id',upload.single("file"),  updateModule)
 
 router.delete('/removeModule/:id', removeModule)
 

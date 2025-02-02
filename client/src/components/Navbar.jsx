@@ -6,7 +6,7 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import axios from "axios";
 import "react-quill-new/dist/quill.snow.css"
@@ -108,11 +108,10 @@ const Navbar = () => {
           className="flex flex-row items-center justify-center text-xl font-semibold text-red-900"
         >
           <img
-            className="h-14"
-            src="https://substackcdn.com/image/fetch/w_96,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F051da1ed-7e17-4ab0-9645-3510a8958a7a_1000x1000.png"
+            className="h-6"
+            src="/Icons/LOGO_Maroon.png"
             alt="Crypto Warriors"
           />
-          Crypto Warriors
         </Link>
         <div className="h-full pt-4 flex justify-between items-center gap-12">
           <Link
@@ -157,23 +156,35 @@ const Navbar = () => {
           </Link>
         </div>
         {user ? (
-          <div>
+          <div className="flex flex-row py-2 items-center gap-x-4">
             <button
-              className="h-14  hover:text-red-900"
+              className="h-10 w-10 rounded-full bg-gray-200"
               onClick={openNotification}
             >
               {notification ?
-                <NotificationsIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+                <NotificationsIcon  />
                 :
-                <NotificationsNoneIcon style={{ width: "2rem", height: "1.7rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+                <NotificationsNoneIcon  />
               }
             </button>
+            <div>
             <button
-              className="h-14  hover:text-red-900"
+              className="relative h-14 hover:text-red-900"
               onClick={openProfile}
             >
-              <AccountCircleIcon style={{ width: "3.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+              {
+                user.image ?
+                  <img
+                    src={`data:${user.file_mime_type};base64,${user.image}`
+                    }
+                    className="h-10 w-10 object-cover rounded-full"
+                    alt="Profile Picture"
+                  /> :
+                  <AccountCircleIcon style={{ width: "2.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+              }
             </button>
+              <ExpandMoreIcon className="absolute p-0.5 bottom-1 right-6 rounded-full bg-slate-100"/>
+            </div>
             <section
               className={
                 profile ? "absolute top-14 md:right-7 right-2" : "hidden"

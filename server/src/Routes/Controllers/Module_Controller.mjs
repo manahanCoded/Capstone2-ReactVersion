@@ -10,16 +10,33 @@ const allModule_Storage = async (req, res) => {
       if (result.rows.length === 0) {
         return res.status(404).json({ success: false, message: "Module not found" });
       }
-      return res.json({ success: true, module: result.rows[0] });
+
+
+      const module = result.rows[0];
+      if (module.file_data) {
+        module.file_data = module.file_data.toString('base64');
+      }
+
+      return res.json({ success: true, listall: [module] });
     }
+
     const result = await db.query("SELECT * FROM module_storage_section ORDER BY id");
-    return res.json({ success: true, listall: result.rows });
+
+    const modulesWithImages = result.rows.map(module => {
+      if (module.file_data) {
+        module.file_data = module.file_data.toString('base64');
+      }
+      return module;
+    });
+
+    return res.json({ success: true, listall: modulesWithImages });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Error fetching posts" });
   }
 };
+
 
 
 
@@ -57,7 +74,7 @@ const addUnit = async (req, res) => {
   let { title, description, information , storage_section_id, publisher} = req.body;
 
   title = title.trim();
-  title = title.replace(/\s+/g, ' '); //remove multiple spaces
+  title = title.replace(/\s+/g, ' ');
 
   if (!title || !description || !information || !storage_section_id || !publisher) {
     return res.status(400).json({ success: false, error: "Missing required fields" });
@@ -94,24 +111,44 @@ const addUnit = async (req, res) => {
 
 
 const createModule = async (req, res) => {
-  let { name, description, tags, created_by } = req.body;
-
-  name = name.trim();
-  description = description.trim();
-  tags = tags.map((tag) => tag.trim()); 
-  created_by = created_by.toString().trim(); 
-
-  if (!name || !description || !tags.length || !created_by) {
-    return res.status(400).json({ error: "All fields are required." });
-  }
+  let name, description, tags, created_by;
 
   try {
+    ({ name, description, tags, created_by } = req.body || {});
+    name = name?.trim() || "";
+    description = description?.trim() || "";
+    created_by = created_by?.toString().trim() || "";
+
+    // Convert tags from string back to array if it is a stringified array
+    if (typeof tags === "string") {
+      try {
+        tags = JSON.parse(tags); // Convert string to array
+        if (!Array.isArray(tags)) throw new Error();
+      } catch (error) {
+        return res.status(400).json({ error: "Tags must be an array." });
+      }
+    } else if (!Array.isArray(tags)) {
+      return res.status(400).json({ error: "Tags must be an array." });
+    }
+
+    // Trim individual tags
+    tags = tags.map((tag) => tag.trim());
+
+    const file = req.file;
+    const fileData = file ? file.buffer : null;
+    const fileMimeType = file ? file.mimetype : null;
+
+    // Validate required fields
+    if (!name || !description || !tags.length || !created_by) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
     const query = `
-      INSERT INTO module_storage_section (name, description, tags, created_by)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO module_storage_section (name, description, tags, created_by, file_data, file_mime_type)
+      VALUES ($1, $2, $3::VARCHAR[], $4, $5, $6)
       RETURNING *;
     `;
-    const values = [name, description, tags, created_by];
+    const values = [name, description, tags, created_by, fileData, fileMimeType];
     const { rows } = await db.query(query, values);
 
     return res.status(201).json({
@@ -119,15 +156,17 @@ const createModule = async (req, res) => {
       newModule: rows[0],
     });
   } catch (error) {
-    if (error.code === "23505") { 
+    if (error.code === "23505") {
       return res.status(400).json({
-        error: `A module with the name "${name}" already exists. Please choose a different name.`,
+        error: `A module with the name "${name || 'unknown'}" already exists. Please choose a different name.`,
       });
     }
 
+    console.error("Error:", error);
     return res.status(500).json({ error: "An internal server error occurred." });
   }
 };
+
 
 
 const updateModule = async (req, res) => {
@@ -139,16 +178,22 @@ const updateModule = async (req, res) => {
   }
 
   try {
-    // Convert tags to a PostgreSQL array format: {tag1, tag2, tag3}
-    const tagsString = Array.isArray(tags) ? `{${tags.join(",")}}` : `{${tags}}`;
+    let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
+    const tagsString = `{${tagsArray.join(",")}}`; 
 
-    const query = `
+    let query = `
       UPDATE module_storage_section
       SET name = $1, description = $2, tags = $3
-      WHERE id = $4
-      RETURNING *;
     `;
-    const values = [name.trim(), description.trim(), tagsString.trim(), id];
+    let values = [name.trim(), description.trim(), tagsString];
+
+    if (req.file) {
+      query += `, file_data = $4, file_mime_type = $5`;
+      values.push(req.file.buffer, req.file.mimetype);
+    }
+
+    query += ` WHERE id = $${values.length + 1} RETURNING *;`;
+    values.push(id);
 
     const { rows } = await db.query(query, values);
 
@@ -161,16 +206,11 @@ const updateModule = async (req, res) => {
       updatedModule: rows[0],
     });
   } catch (error) {
-
-    if (error.code === "23505") {
-      return res.status(400).json({
-        error: `A module with the name "${name}" already exists. Please choose a different name.`,
-      });
-    }
-
+    console.error("Error updating module:", error);
     return res.status(500).json({ error: "An internal server error occurred." });
   }
 };
+
 
  
 

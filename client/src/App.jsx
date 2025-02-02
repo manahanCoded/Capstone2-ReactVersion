@@ -25,7 +25,7 @@ import CreateModulePage from "./pages/modules/create-module/CreateModule";
 import JobHome from "./pages/job/Job-Home";
 import WarriorsDashboard from "./pages/users/warriors-dashboard/WarriorsDashboard";
 import ModulesDashboard from "./pages/users/accounts-dashboard/ModuleDashboard";
-
+import Retrieve from "./pages/users/Retrieve";
 
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/register" element={<Register />} />
+        <Route path="/user/retrieve" element={<Retrieve />} />
         <Route path="/user/accounts-dashboard" element={<AccountsDashboard />} />
         <Route path="/user/modules-dashboard" element={<ModulesDashboard />} />
         <Route path="/user/warriors-dashboard" element={<WarriorsDashboard />} />

@@ -3,7 +3,7 @@ import "../../Middleware/Google_passport.mjs"
 import passport from "passport";
 import db from "../../Database/DB_Connect.mjs";
 import bcrypt from "bcrypt";
-import {validationResult, matchedData} from "express-validator"
+import { validationResult, matchedData } from "express-validator"
 
 import env from "dotenv"
 
@@ -14,7 +14,7 @@ env.config()
 const login = (req, res) => {
 
   const problem = validationResult(req)
-  
+
   try {
     if (!problem.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -42,7 +42,7 @@ const login = (req, res) => {
           console.error("Error during login:", err);
           return res.status(500).json({ error: "Internal Server Error" });
         }
-        
+
         return res.status(200).json({
           message: "Successfully Logged in",
           user: { id: user.id, email: user.email },
@@ -84,9 +84,8 @@ const google_login_callback = (req, res, next) => {
 const register = async (req, res) => {
 
   const problem = validationResult(req)
-  const { email, password, confirmPassword } = matchedData(req)
+  const { name, lastname, phone_number, email, password, confirmPassword } = matchedData(req)
   const saltRounds = 10;
-
   try {
 
     if (!problem.isEmpty()) {
@@ -107,8 +106,8 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = await db.query(
-      "INSERT INTO users (email, password, role) VALUES ($1, $2, $3) RETURNING *",
-      [email, hashedPassword, 'client']
+      "INSERT INTO users (name, lastname, phone_number, email, password, role, type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [name, lastname, phone_number, email, hashedPassword, 'client', "local"]
     );
 
     const user = newUser.rows[0];
@@ -156,64 +155,122 @@ const logout = (req, res) => {
   }
 };
 
-const updateUser = async(req,res) =>{
-  const { email, oldPassword, newPassword, confirmPassword } = req.body;
+const retrieve = async (req, res) => {
+  try {
+    const problem = validationResult(req);
 
-try {
-  const findUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-  if (findUser.rows.length === 0) {
-    return res.status(401).json({ error: "No user found" });
-  }
-
-  const user = findUser.rows[0];
-
-  if (!oldPassword) {
-    return res.status(400).json({ error: "Old password is required to update password." });
-  }
-
-  const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isPasswordMatch) {
-    return res.status(401).json({ error: "Old password is incorrect." });
-  }
-
-  let updatedPassword = user.password; 
-
-  if (newPassword) {
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ error: "New passwords do not match." });
+    if (!problem.isEmpty()) {
+      return res.status(400).json({ errors: problem.array() });
     }
-    updatedPassword = await bcrypt.hash(newPassword, 10);
+
+    const { email, password, confirmPassword, phone_number } = matchedData(req);
+
+    const findAcc = await db.query(
+      "SELECT * FROM users WHERE phone_number = $1 AND email = $2",
+      [phone_number, email]
+    );
+
+    if (findAcc.rowCount === 0) {
+      return res.status(401).json({ error: "No user found" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(401).json({ error: "Passwords must be the same" });
+    }
+
+    const newPassword = await bcrypt.hash(password, 10);
+
+    await db.query("UPDATE users SET password = $1 WHERE email = $2", [
+      newPassword,
+      email,
+    ]);
+
+    return res.status(200).json({ message: "Password updated successfully! Please log in again." });
+
+  } catch (err) {
+    console.error("Retrieve Account Error", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
+};
+
+const updateUser = async (req, res) => {
+  const { email, oldPassword, newPassword, confirmPassword, name, lastname } = req.body;
+  const image = req.file ? req.file.buffer : null;
+  const fileMimeType = req.file ? req.file.mimetype : null;
+
+  try {
+    const findUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (findUser.rowCount === 0) {
+      return res.status(401).json({ error: "No user found" });
+    }
+
+    const user = findUser.rows[0];
+
+    if (newPassword) {
+      if (!oldPassword) {
+        return res.status(400).json({ error: "Old password is required to update password." });
+      }
+      const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isPasswordMatch) {
+        return res.status(401).json({ error: "Old password is incorrect." });
+      }
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: "New passwords do not match." });
+      }
+
+      const updatedPassword = await bcrypt.hash(newPassword, 10);
+
+      await db.query(
+        "UPDATE users SET password = $1 WHERE id = $2",
+        [updatedPassword, user.id]
+      );
+    }
+
+    if (image) {
+      await db.query(
+        `UPDATE users SET name = $1, lastname = $2, image = $3, file_mime_type = $4 WHERE id = $5`,
+        [name, lastname, image, fileMimeType, user.id]
+      );
+    } else {
+      await db.query(
+        `UPDATE users SET name = $1, lastname = $2 WHERE id = $3`,
+        [name, lastname, user.id]
+      );
+    }
+
+    res.status(200).json({ message: "Profile updated successfully!" });
+  } catch (err) {
+    console.error("Update error", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
-  await db.query(
-    "UPDATE users SET email = $1, password = $2 WHERE id = $3",
-    [email, updatedPassword, user.id]
-  );
-
-  res.status(200).json({ message: "User Password updated successfully!" });
-} catch (err) {
-  console.error("Update error", err);
-  return res.status(500).json({ error: "Internal Server Error" });
-}
-}
 
 const userInfo = (req, res) => {
-  if(!req.isAuthenticated()){
-    return res.status(401).json({message: "No user found. Unauthorized!"})
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
+
+
+  const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
 
   return res.status(200).json({
     id: req.user.id,
     email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
     role: req.user.role,
-    type : req.user.type,
+    image: imageBase64,  
+    file_mime_type: req.user.file_mime_type, 
+    type: req.user.type,
   })
 };
 
-const accountsDashboard = async(req,res)=>{
-  if(!req.isAuthenticated()){
-    return res.status(401).json({message: "No user found. Unauthorized!"})
+
+const accountsDashboard = async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
 
   const response = await db.query("SELECT email, role, type from users")
@@ -221,21 +278,21 @@ const accountsDashboard = async(req,res)=>{
 }
 
 
-const updateRoles = async (req,res) =>{
-  try{
-  if(!req.isAuthenticated()){
-    return res.status(401).json({message: "No user found. Unauthorized!"})
+const updateRoles = async (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No user found. Unauthorized!" })
+    }
+    const { email, role } = req.body
+    await db.query("UPDATE users SET role = $1 WHERE email = $2", [role, email])
+    res.status(200).json({ message: "User Password updated successfully!" });
   }
-  const {email, role} = req.body 
-  await db.query("UPDATE users SET role = $1 WHERE email = $2", [role, email])
-  res.status(200).json({ message: "User Password updated successfully!" });
-}
-catch(err){
-  res.status(500).json({ error: "Internal Server Error" });
-}
+  catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 
 }
 
 
 
-export { login, google_login, google_login_callback, register, logout, userInfo, updateUser, accountsDashboard, updateRoles };
+export { login, google_login, google_login_callback, register, logout, userInfo, updateUser, accountsDashboard, updateRoles, retrieve };

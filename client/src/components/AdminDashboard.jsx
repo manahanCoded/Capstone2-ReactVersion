@@ -15,7 +15,7 @@ const AdminDashboard = () => {
                         Accounts
                     </Link>
                     <Link
-                        to="/user/modules-dashboard" className={`${location.pathname === "/modules/modules-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
+                        to="/user/modules-dashboard" className={`${location.pathname === "/user/modules-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                         Module
                     </Link>
                     <Link

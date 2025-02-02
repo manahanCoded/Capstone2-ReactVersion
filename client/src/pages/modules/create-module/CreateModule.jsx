@@ -4,16 +4,20 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+
 export default function CreateModulePage() {
     const [checkAdmin, setCheckAdmin] = useState();
     const [modules, setModules] = useState();
     const [searchQuery, setSearchQuery] = useState("");
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [fileName, setFileName] = useState("No file selected")
+    const [editFileName, setEditFileName] = useState("Edit file image")
     const [newModule, setNewModule] = useState({
         name: "",
         description: "",
         tags: "",
-        created_by: ""
+        created_by: "",
+        selectedFile: null
     });
 
 
@@ -50,34 +54,48 @@ export default function CreateModulePage() {
         handleCheckAdmin();
     }, [navigate]);
 
-    useEffect(() => {
-        async function handleModules() {
-            try {
-                const modulesData = await axios.get(
-                    "http://localhost:5000/api/module/allModule-storage"
-                );
 
-                if (Array.isArray(modulesData.data.listall)) {
-                    setModules(modulesData.data.listall);
-                } else {
-                    setModules([]);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setNewModule({ ...newModule, selectedFile: file });
+        setFileName(file ? file.name : "No file selected");
+    };
+
+    const handleEditFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setEditModule((prev) => ({
+                ...prev,
+                selectedFile: file,
+            }));
+            setEditFileName(file.name);
         }
-        handleModules();
-    }, []);
+    };
 
     const handleCreateModule = async (e) => {
         e.preventDefault();
+
         try {
-            const { name, description, tags, created_by } = newModule;
-            const res = await axios.post("http://localhost:5000/api/module/createModule", {
-                name,
-                description,
-                tags: tags.split(",").map((tag) => tag.trim()),
-                created_by,
+            const formData = new FormData();
+            formData.append("name", newModule.name);
+            formData.append("description", newModule.description);
+
+            // Split tags string into an array based on commas, then trim extra spaces from each tag
+            const tagsArray = newModule.tags
+                .split(",")   // Split the string by commas
+                .map((tag) => tag.trim()) // Trim extra spaces around each tag
+                .filter(Boolean); // Filter out empty tags
+
+            formData.append("tags", JSON.stringify(tagsArray));
+
+            formData.append("created_by", newModule.created_by);
+            if (newModule.selectedFile) {
+                formData.append("file", newModule.selectedFile);
+            }
+
+            const res = await axios.post("http://localhost:5000/api/module/createModule", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
             if (res.status === 201) {
@@ -85,39 +103,53 @@ export default function CreateModulePage() {
                 setShowCreateForm(false);
                 setNewModule({ name: "", description: "", tags: "", created_by: newModule.created_by });
                 setModules((prev) => [...prev, res.data.newModule]);
+                setFileName("No file selected");
             }
         } catch (error) {
             if (error.response) {
-                const errorMessage = error.response.data.error || "Failed to create module.";
-                alert(errorMessage);
+                const errorMessage = error.response.data.error;
+                if (errorMessage) {
+                    alert(`Error: ${errorMessage}`);
+                } else {
+                    alert("An error occurred, please try again.");
+                }
             } else {
-                alert("Failed to create module. Please refresh the page.");
+                alert("Network error or server is down. Please try again later.");
             }
-            console.error("Error creating module:", error);
         }
     };
-
 
     const handleUpdateModule = async (e) => {
         e.preventDefault();
         if (!editModule) return;
 
         try {
+            const tagsArray = typeof editModule.tags === "string"
+                ? editModule.tags.split(",").map(tag => tag.trim()).filter(Boolean)
+                : editModule.tags; // If already an array, keep as is
 
-            const tagsArray = Array.isArray(editModule.tags)
-                ? editModule.tags.join(", ") // If it's an array, join it into a string
-                : editModule.tags; // If it's already a string, use it as is
+            // Prepare the form data
+            const formData = new FormData();
+            formData.append("name", editModule.name);
+            formData.append("description", editModule.description);
+            formData.append("tags", JSON.stringify(tagsArray)); // Send tags as a JSON string
 
-            const res = await axios.put(`http://localhost:5000/api/module/updateModule/${editModule.id}`, {
-                name: editModule.name,
-                description: editModule.description,
-                tags: tagsArray.split(",").map((tag) => tag.trim()),
-            });
+            if (editModule.selectedFile) {
+                formData.append("file", editModule.selectedFile);
+            }
+
+            // Send the request to the backend
+            const res = await axios.put(
+                `http://localhost:5000/api/module/updateModule/${editModule.id}`,
+                formData
+            );
 
             if (res.status === 200) {
                 alert("Module updated successfully!");
                 setModules((prev) =>
-                    prev.map((module) => (module.id === editModule.id ? res.data.updatedModule : module))
+                    prev.map((module) =>
+                        module.id === editModule.id ? res.data.updatedModule : module
+                    )
                 );
                 setIsEditing(false);
                 setEditModule(null);
@@ -132,6 +164,32 @@ export default function CreateModulePage() {
         }
     };
 
+
+
+    useEffect(() => {
+        async function handleModules() {
+            try {
+                const response = await axios.get("http://localhost:5000/api/module/allModule-storage");
+
+                if (response.data.success && response.data.listall) {
+                    const updatedModules = response.data.listall.map(module => ({
+                        ...module,
+                        file_url: module.file_data ? `data:image/png;base64,${module.file_data}` : null
+                    }));
+
+                    setModules(updatedModules);
+                    
+                } else {
+                    console.error("Error fetching modules:", response.data.message);
+                    setModules([]);
+                }
+            } catch (error) {
+                console.error("Error fetching modules:", error);
+                setModules([]);
+            }
+        }
+        handleModules();
+    }, [handleUpdateModule]);
 
 
     const handleDeleteModule = async (id) => {
@@ -165,7 +223,7 @@ export default function CreateModulePage() {
         <div className="h-screen mt-14">
             <div className="w-full flex flex-wrap gap-4 md:justify-start justify-evenly">
                 {/* Search */}
-                <section className="sticky top-14 h-20 w-full px-8 py-2 flex flex-row justify-between items-center lg:pr-16 gap-6 text-xs border-b-[1px] bg-white">
+                <section className="sticky z-20 top-14 h-20 w-full px-8 py-2 flex flex-row justify-between items-center lg:pr-16 gap-6 text-xs border-b-[1px] bg-white">
                     <p className="lg:text-xl text-sm font-medium">Modules</p>
                     <div className="lg:w-1/3 md:w-1/2 w-full  flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
                         <input
@@ -189,7 +247,7 @@ export default function CreateModulePage() {
                 {showCreateForm && (
                     <form
                         onSubmit={handleCreateModule}
-                        className="fixed flex items-center justify-center w-full h-screen bg-black bg-opacity-50 "
+                        className="fixed flex items-center justify-center w-full h-screen z-50 bg-black bg-opacity-50 "
                     >
                         <div className="absolute w-[70%] h-[85%] top-3 bg-white flex flex-col gap-4 p-6 border rounded-md">
                             <div className="w-full flex  justify-between items-center">
@@ -201,6 +259,7 @@ export default function CreateModulePage() {
                                     <ClearIcon />
                                 </button>
                             </div>
+
                             <div className="flex flex-col gap-4 p-6">
                                 <input
                                     type="text"
@@ -222,6 +281,37 @@ export default function CreateModulePage() {
                                     rows="4"
                                     required
                                 ></textarea>
+                                <div className="w-fit flex flex-col  space-y-4">
+                                    <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6 text-red-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                                            />
+                                        </svg>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="ml-2 text-sm font-medium text-gray-700">
+
+                                                Choose Background Image
+                                            </span>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            accept="image/*"
+                                        />
+                                    </label>
+                                    <span className="text-sm text-gray-500">{fileName}</span>
+                                </div>
                                 <input
                                     type="text"
                                     placeholder="Tags (comma separated)"
@@ -244,19 +334,28 @@ export default function CreateModulePage() {
                 )}
 
                 {/* Display filtered modules */}
-                <MaxWidthWrapper className="w-full flex flex-wrap gap-4 justify-center">
-                    {Array.isArray(filteredModules) && filteredModules.length > 0 ? (
+                <MaxWidthWrapper className="w-fit m-auto flex flex-wrap flex-row gap-4">
+                    {filteredModules?.length > 0 ? (
                         filteredModules.map((module, index) => (
                             <section
                                 key={index}
-                                className="h-72 flex flex-col justify-between  lg:w-72 md:w-64 w-56 rounded-md border-[1px] bg-white overflow-hidden"
+                                className="h-72 flex flex-col justify-between lg:w-72 md:w-64 w-56 rounded-md border-[1px] bg-white overflow-hidden"
                             >
-                                <div className="w-full h-36 p-3 bg-red-900 text-white">
-                                    <h2 className="text-lg font-medium line-clamp-3">
+                                <div className={`relative flex w-full h-36 p-3 text-white ${!module.file_url && "bg-red-900"}`}>
+                                    {module.file_url && (
+                                        <img
+                                            className="absolute inset-0 w-full h-full object-cover z-10"
+                                            src={module.file_url}
+                                            alt={module.name}
+                                        />
+                                    )}
+                                    {module.file_url && <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>}
+                                    <h2 className="text-lg font-medium line-clamp-3 z-10">
                                         {module.name}
                                     </h2>
                                 </div>
-                                <div className="w-full h-20 p-3 flex flex-row flex-wrap gap-2 overflow-hidden">
+
+                                <div className="w-full h-20 p-3 flex flex-row flex-wrap gap-2 overflow-hidden bg-white">
                                     {module.tags.map((tag, index) => (
                                         <p
                                             key={index}
@@ -290,7 +389,6 @@ export default function CreateModulePage() {
                                         >
                                             Start
                                         </Link>
-
                                     </div>
                                 </section>
                             </section>
@@ -298,11 +396,12 @@ export default function CreateModulePage() {
                     ) : (
                         <p>No modules available</p>
                     )}
+
                 </MaxWidthWrapper>
                 {isEditing && editModule && (
                     <form
                         onSubmit={handleUpdateModule}
-                        className="fixed flex items-center justify-center w-full h-screen bg-black bg-opacity-50 "
+                        className="fixed flex items-center justify-center w-full h-screen z-50 bg-black bg-opacity-50 "
                     >
                         <div className="absolute w-[70%] h-[85%] top-3 bg-white flex flex-col gap-4 p-6 border rounded-md">
                             <div className="w-full flex  justify-between items-center">
@@ -333,6 +432,37 @@ export default function CreateModulePage() {
                                     rows="4"
                                     required
                                 ></textarea>
+                                <div className="w-fit flex flex-col space-y-4">
+                                    <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6 text-red-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                                            />
+                                        </svg>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="ml-2 text-sm font-medium text-gray-700">
+                                                Choose Background Image
+                                            </span>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            onChange={handleEditFileChange}
+                                            className="hidden"
+                                            accept="image/*"
+                                        />
+                                    </label>
+                                    <span className="text-sm text-gray-500">{editFileName}</span>
+                                </div>
+
                                 <input
                                     type="text"
                                     value={editModule.tags}

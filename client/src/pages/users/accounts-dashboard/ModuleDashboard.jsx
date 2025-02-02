@@ -36,7 +36,6 @@ export default function ModuleDashboard() {
         fetchData();
     }, []);
 
-    // Show loading spinner while data is being fetched
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -45,17 +44,14 @@ export default function ModuleDashboard() {
         );
     }
 
-    // Display error message if there is an issue with the response
     if (error) {
         return <div>{error}</div>;
     }
 
-    // If userData is not an array, show an empty state
     if (!Array.isArray(userData)) {
         return <div>No user data available</div>;
     }
 
-    // Columns for DataGrid
     const columns = [
         { field: 'email', headerName: 'Email', width: 200 },
         { field: 'unit', headerName: 'Quiz Name', width: 200 },
@@ -67,7 +63,6 @@ export default function ModuleDashboard() {
         {field: 'completion_date',headerName: 'Date Completed',width: 180,}
     ];
 
-    // Filter rows based on search input
     const filteredRows = userData.filter((user) => {
         const searchTerm = selectedFilter.toLowerCase();
         return (
@@ -106,7 +101,6 @@ export default function ModuleDashboard() {
                     </Box>
 
 
-                    {/* DataGrid Component */}
                     <Box sx={{ height: ' 100%', width: '100%' }}>
                         <DataGrid
                             rows={rows}

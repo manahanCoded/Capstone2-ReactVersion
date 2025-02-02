@@ -287,15 +287,12 @@ export default function CreateJobPage() {
                                       
                                             Choose Background Image
                                         </span>
-                                        <span className="ml-2 text-sm font-medium text-gray-700">
-                                      
-                                            Image files only
-                                        </span>
                                         </div>
                                         <input
                                             type="file"
                                             onChange={handleFileChange}
                                             className="hidden"
+                                            accept="image/*"
                                         />
                                     </label>
                                     <span className="text-sm text-gray-500">{fileName}</span>

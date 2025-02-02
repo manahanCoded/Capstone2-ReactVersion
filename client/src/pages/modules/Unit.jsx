@@ -2,15 +2,18 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Footer from "@/components/Footer";
 
 export default function Unit() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const [checkUser, setCheckUser] = useState();
+    const [checkUser, setCheckUser] = useState(null);
     const [units, setUnits] = useState([]);
     const [userScores, setUserScores] = useState([]);
-
+    const [moduleName, setModuleName] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function checkUserStatus() {
@@ -26,104 +29,170 @@ export default function Unit() {
                 const data = await res.json();
                 setCheckUser(data);
             } catch (err) {
-                if (axios.isAxiosError(err) && err.response) {
-                    if (err.response.status === 401 || err.response.status === 403) {
-                        navigate("/user/login");
-                    }
-                } else {
-                    alert("Failed to fetch user profile.");
-                    console.error(err);
-                }
+                console.error("Failed to fetch user profile:", err);
+                navigate("/user/login");
             }
         }
 
         checkUserStatus();
     }, [navigate]);
 
-    // Fetch units data and user scores
     useEffect(() => {
         async function fetchUnitsAndScores() {
             try {
                 const unitsRes = await axios.get(`http://localhost:5000/api/module/module-units/${id}`);
-                if (Array.isArray(unitsRes.data.listall)) {
-                    setUnits(unitsRes.data.listall);
-                } else {
-                    setUnits([]);
-                }
+                setUnits(unitsRes.data.listall);
 
                 if (checkUser) {
-                    const scoresRes = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser?.id}`);
+                    const scoresRes = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser.id}`);
                     setUserScores(scoresRes.data);
                 }
+
+                const moduleData = await axios.get(`http://localhost:5000/api/module/allModule-storage/${id}`);
+                if (moduleData.data.success && moduleData.data.listall.length > 0) {
+                    const module = moduleData.data.listall[0];
+                    setModuleName({
+                        ...module,
+                        file_url: module.file_data ? `data:image/png;base64,${module.file_data}` : null,
+                    });
+                } else {
+                    setModuleName(null);
+                    setError("Module not found");
+                }
+
             } catch (error) {
                 console.error("Error fetching data:", error);
-                setError("Failed to load units or scores.");
+                setError("Failed to load data.");
             }
         }
 
-        fetchUnitsAndScores();
+        if (id) {
+            fetchUnitsAndScores();
+        }
     }, [id, checkUser]);
 
-
-
     return (
-        <div className="h-screen mt-14 px-4">
-            <MaxWidthWrapper className="py-8 w-[60%]">
-                <h1 className="text-3xl font-bold mb-4">Units</h1>
-                {checkUser?.role === "admin" ? (
-                    <Link to={`/modules/create-unit/${id}`}
-                        className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
-                    >
-                        Create Unit
-                    </Link>
-                ) : null}
-                {units.length > 0 ? (
-                    <div className="space-y-4">
-                        {units.map((unit, index) => {
-
-                            const userScore = userScores.find((score) => score.module_id === unit.id);
-                            const isCompleted = userScore?.completed;
-                            const score = userScore?.score || 0;
-                            const passed = userScore?.passed ? "Passed" : "Not Passed";
-
-                            return (
-                                <div key={index} className="border-b border-gray-200 py-2 text-sm">
-                                    <p className="text-lg font-semibold">{unit?.title}</p>
-                                    {isCompleted ? (
-                                        <div className=" text-gray-500 mt-2">
-                                            <p>Score: {score}</p>
-                                            <p>{passed}</p>
-                                        </div>
-                                    ) : (
-                                        <div className=" text-red-500 mt-2">
-                                            <p>Not completed yet</p>
-                                        </div>
-                                    )}
-                                    <div className="flex flex-row items-center justify-end">
-                                        {checkUser?.role === "admin" ? (
-                                            <Link to={`/modules/units/edit/${unit.id}`}
-                                                className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
-                                            >
-                                                Edit
-                                            </Link>
-                                        ) : null}
-                                        <div className="group ">
-                                            <Link
-                                                to={`/modules/units/docs/${unit.id}`}
-                                                className="rounded-sm py-2 px-4 font-medium  bg-[#333333] hover:bg-[#121212] text-white "
-                                            >
-                                                Start
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+        <div className="h-screen mt-14 ">
+            <MaxWidthWrapper className="md:pr-0 bg-gray-50 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+                <section className="flex md:flex-row flex-col-reverse justify-center lg:ml-20  gap-6 ">
+                    <div className="w-full mt-14">
+                        <div>
+                            <img className="h-5 "
+                                src="/IMG_Modules/LOGO_maroon.png" alt="" />
+                            <h1 className="text-[2.5rem] font-light mt-1">{moduleName.name}</h1>
+                            <p className="mt-4 text-sm">🛠️ Blockchain may seem tough now, but soon it'll click!</p>
+                            <p className="mt-4 text-">Web3 is the next evolution of the internet, leveraging
+                                decentralization, blockchain, and smart contracts to empower users with transparency, security, and digital ownership.</p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="text-center text-gray-500">No units found.</div>
-                )}
+                    <div className=" bg-green-400 lg:w-4/6  top-20">
+                        <div className="h-[30rem] w-full bg-red-700 relative">
+                            <img className="absolute inset-0 w-full h-full object-cover z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                src={moduleName.file_url} alt="" />
+                        </div>
+                    </div>
+                </section>
             </MaxWidthWrapper>
+            <MaxWidthWrapper className="md:pr-0 ">
+                <section className=" flex md:flex-row flex-col justify-center lg:ml-20  gap-6 ">
+                    <div className="relative w-full">
+                        <div className="absolute -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+                            <h3 className="w-fit text-lg font-semibold text-[#333333] p-2 border-b-4 border-red-900">Description</h3>
+                            <p className="my-8 text-sm text-gray-600">{moduleName.description}</p>
+                        </div>
+                        <h4 className="mt-32 mb-8 text-4xl font-extralight">Insights you'll uncover.</h4>
+                        {units.length > 0 ? (
+                            <div className="flex flex-col gap-5 pb-8">
+                                {units.map((unit, index) => {
+                                    const userScore = userScores.find((score) => score.module_id === unit.id);
+                                    const isCompleted = userScore?.completed;
+                                    return (
+                                        <Link
+                                        to={`/modules/units/docs/${unit.id}`}
+                                        key={index}
+                                        className="relative group flex flex-row items-center justify-between px-4 pr-8 py-6 rounded text-sm hover:bg-red-700 hover:text-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] transition-all duration-300"
+                                      >
+                                        {isCompleted && (
+                                          <CheckCircleIcon
+                                            className="absolute right-1 -top-5"
+                                            style={{ height: "2.5rem", width: "2.5rem", color: "#22C55E" }}
+                                          />
+                                        )}
+                                        <div className="flex flex-row items-center gap-6">
+                                          <SchoolOutlinedIcon
+                                            className="group-hover:text-white text-red-900"
+                                            style={{ height: "2.5rem", width: "2.5rem" }}
+                                          />
+                                          <p className="text-lg font-medium line-clamp-1">{unit?.title}</p>
+                                        </div>
+                                        <div className="flex flex-row items-center justify-end">
+                                          {checkUser?.role === "admin" && (
+                                            <Link
+                                              to={`/modules/units/edit/${unit.id}`}
+                                              className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
+                                            >
+                                              Edit
+                                            </Link>
+                                          )}
+                                        </div>
+                                      </Link>
+                                      
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center text-gray-500">No units found.</div>
+                        )}
+                    </div>
+                    <div className="lg:block hidden bg-gray-50 lg:w-4/6 ">
+                        <div className="h-64 p-8 border-b ">
+                            <h3 className="text-lg font-semibold text-[#333333]  ">Achievements</h3>
+                            <p className="text-sm mt-2">Awards you can earn by completing the module.</p>
+                        </div>
+                        {units.length > 0 ? (
+                            <div className="flex flex-col p-8  border-b">
+                                 <h3 className="text-lg  mb-8 font-semibold text-[#333333]  ">Completed Units</h3>
+                                {units.map((unit, index) => {
+                                    const userScore = userScores.find((score) => score.module_id === unit.id);
+                                    const score = userScore?.score || 0;
+                                    const passed = userScore?.passed ? "Passed" : "Failed";
+                                    const completedUnits = units.filter((unit) => {
+                                        const userScore = userScores.find((score) => score.module_id === unit.id);
+                                        return userScore?.completed === true;  //
+                                      });
+                                    return (
+                                        <Link
+                                        to={`/modules/units/docs/${unit.id}`}
+                                        key={unit.id}
+                                        className="border mb-2 border-gray-200 py-2 text-sm group rounded-md relative bg-white hover:bg-gray-100 hover:text-gray-900 transition-all duration-300 ease-in-out"
+                                      >
+                                        <p className=" px-4 text-sm line-clamp-1 font-semibold group-hover:text-red-600">
+                                          {unit?.title}
+                                        </p>
+                                        {completedUnits ? (
+                                          <div className="px-4 flex flex-row justify-between text-gray-500 mt-2">
+                                            <p>{passed}</p>
+                                            <p>Score: {score}</p>
+                                          </div>
+                                        ) : (
+                                          <div className="text-red-500 mt-2">
+                                            <p>Not completed yet</p>
+                                          </div>
+                                        )}
+                    
+                                        <div className="absolute inset-0 bg-gray-200 opacity-0 group-hover:opacity-50 transition-all duration-300 ease-in-out"></div>
+                                      </Link>
+                                      
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center text-gray-500">No units found.</div>
+                        )}
+                    </div>
+                </section>
+            </MaxWidthWrapper>
+            <Footer />
         </div>
     );
 }

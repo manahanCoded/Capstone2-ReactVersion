@@ -42,7 +42,7 @@ export default function EditJobPage() {
   const [isClient, setIsClient] = useState(false);
   const [stateid, setStateid] = useState(0);
 
-  // Fetch user role and profile
+
   useEffect(() => {
     async function checkUser() {
       try {
@@ -65,8 +65,8 @@ export default function EditJobPage() {
     }
     checkUser();
   }, [navigate]);
+  
 
-  // Fetch specific job data for editing
   useEffect(() => {
     if (jobEditID) {
       async function fetchJobData() {
@@ -83,7 +83,7 @@ export default function EditJobPage() {
     }
   }, [jobEditID]);
 
-  // Pre-fill form fields when specificJob is loaded
+
   useEffect(() => {
     if (specificJob) {
       setIsClient(true);
@@ -278,15 +278,12 @@ export default function EditJobPage() {
 
                           Edit Background Image
                         </span>
-                        <span className="ml-2 text-sm font-medium text-gray-700">
-
-                          Image files only
-                        </span>
                       </div>
                       <input
                         type="file"
                         onChange={handleFileChange}
                         className="hidden"
+                        accept="image/*"
                       />
                     </label>
                     <span className="text-sm text-gray-500">{information.fileName}</span>

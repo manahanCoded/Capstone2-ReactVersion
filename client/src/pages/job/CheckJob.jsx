@@ -6,6 +6,13 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import CloseIcon from '@mui/icons-material/Close';
 import "quill/dist/quill.snow.css";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import EmailIcon from '@mui/icons-material/Email';
+import PaymentsIcon from '@mui/icons-material/Payments';
+import Groups2Icon from '@mui/icons-material/Groups2';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+
 
 export default function CheckJobPage() {
   const { jobsID } = useParams();
@@ -70,12 +77,12 @@ export default function CheckJobPage() {
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
-    
+
     if (!file) {
       setUploadStatus('Please select a resume to upload.');
       return;
     }
-  
+
     const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       alert('Invalid file type. Please upload a PDF, DOC, DOCX, PNG, or JPG file.');
@@ -84,7 +91,7 @@ export default function CheckJobPage() {
     }
     const formData = new FormData();
     formData.append('file', file);
-  
+
     if (job?.id) {
       formData.append('jobId', job.id.toString());
     }
@@ -100,14 +107,14 @@ export default function CheckJobPage() {
     if (userApplication?.name) {
       formData.append('name', userApplication.name);
     }
-  
+
 
     try {
       const response = await fetch('http://localhost:5000/api/job/upload-appointment', {
         method: 'POST',
         body: formData,
       });
-  
+
       if (response.ok) {
         setUploadStatus('File uploaded successfully!');
       } else {
@@ -120,7 +127,7 @@ export default function CheckJobPage() {
       setUploadStatus('An error occurred during the upload.');
     }
   };
-  
+
   return (
     <div className="mt-14 text-sm">
       <form className={openApply ? "fixed h-screen inset-0 z-10 backdrop-blur-sm bg-black bg-opacity-50" : "hidden"}>
@@ -171,7 +178,9 @@ export default function CheckJobPage() {
               </div>
               <div className="flex flex-col gap-4 px-3">
                 <p className="font-semibold">Resume:</p>
-                <input required type="file" className="w-fit" onChange={handleFileChange} />
+                <input required type="file"
+                 className="w-fit" onChange={handleFileChange} 
+                 />
                 <button className="self-end w-28 rounded-md p-2 bg-red-900 text-white" onClick={handleFileUpload}>
                   Upload
                 </button>
@@ -212,10 +221,28 @@ export default function CheckJobPage() {
               </button>
             </div>
             <div className="flex flex-col justify-between gap-3">
-              <div className="flex flex-row gap-3">
-                <p className="border-[1px] rounded-xl px-2 py-1">{job?.state ?? "State Not Available"}</p>
-                <p className="border-[1px] rounded-xl px-2 py-1">{job?.city ?? "City Not Available"}</p>
-                <p className="border-[1px] rounded-xl px-2 py-1">{job?.date ? new Date(job.date).toLocaleDateString() : "Date Not Available"}</p>
+              <div className="w-full flex flex-row justify-evenly flex-wrap gap-6 bg-slate-100 p-4 rounded-md lg:text-sm text-xs text-slate-500">
+                <p><AssignmentIndIcon className="mr-1" />Publisher: {job?.name}</p>
+                <p><EmailIcon className="mr-1" />{job?.email}</p>
+                <p><LocationOnIcon className="mr-1" />{job?.state}, {job?.city}, {job?.street}</p>
+                <p><Groups2Icon className="mr-1" />Applicants: {job?.applicants}</p>
+                <p><PersonSearchIcon className="mr-1" />{job?.experience} · {job?.remote} · {job?.jobtype}</p>
+                <p><PaymentsIcon className="mr-1" />{job?.salary ? job?.salary : "Unpaid"}</p>
+                {job?.update_date ? <p>Updated: {new Date(job?.update_date).toLocaleDateString()} </p>
+                  :
+                  <p>Posted : {new Date(job?.date).toLocaleDateString()} </p>
+                }
+              </div>
+              <div className="flex flex-row flex-wrap gap-2 mt-4 text-xs">
+                <p className="border-2 px-2 py-1 rounded-lg tracking-wide bg-violet-200 text-violet-800">
+                  {job?.city || "N/A"}
+                </p>
+                <p className="border-2 px-2 py-1 rounded-lg  tracking-wide bg-green-200 text-green-800">
+                  {job?.experience || "Not specified"}
+                </p>
+                <p className="border-2 px-2 py-1 rounded-lg  tracking-wide bg-red-200 text-red-800">
+                  {job?.salary ? job?.salary : "Unpaid"}
+                </p>
               </div>
               <p className="font-semibold">Job Description:</p>
               <p className="ql-editor" dangerouslySetInnerHTML={{ __html: job?.description ?? "No description available" }}></p>

@@ -1,0 +1,65 @@
+<section className="h-[90vh] w-full px-4 pb-4 lg:block hidden  sticky top-16 rounded-md overflow-y-auto border-[1px]">
+            <div className="sticky top-0 flex flex-row justify-between flex-wrap border-b-[1px] py-4  bg-white">
+              <h2 className="mt-2 text-3xl font-bold tracking-wider text-[#333333]">{displayOptions[selectOption]?.title}</h2>
+              <div className=" flex items-center gap-2 mt-2">
+                {checkAdmin?.role === "admin" && (
+                  <Link
+                    to={`/jobs/edit-job/${displayOptions[selectOption]?.id}`}
+                    className="border-[1px] font-medium text-sm rounded-md p-3 bg-[#333333] hover:bg-[#121212] text-white"
+                  >
+                    Edit Job
+                    <EditIcon className="ml-1" />
+                  </Link>
+                )}
+                <Link
+                  to={`/jobs/jobDetails/${displayOptions[selectOption]?.id}`}
+                  className="border-[1px] font-medium text-sm rounded-md p-3 bg-red-900 hover:bg-red-700 text-white"
+                >
+                  Check More Information
+                  <AdsClickIcon className="ml-1" />
+                </Link>
+                <button
+                  onClick={() => toggleBookmark(displayOptions[selectOption]?.id)}
+                  className={`font-medium text-sm rounded-md p-3 pr-4 border-[1px] ${bookmarkedJobs.includes(displayOptions[selectOption]?.id)
+                    ? "text-red-700"
+                    : "hover:text-red-700"
+                    }`}
+                >
+                  {bookmarkedJobs.includes(displayOptions[selectOption]?.id) ? (
+                    <BookmarkIcon className="ml-1" />
+                  ) : (
+                    <BookmarkBorderIcon className="ml-1" />
+                  )}
+                  Save
+                </button>
+              </div>
+
+            </div>
+            <div className="w-full flex justify-evenly flex-wrap gap-6 bg-slate-100 p-4 rounded-md lg:text-sm text-xs text-slate-500">
+              <p><AssignmentIndIcon className="mr-1" />Publisher: {displayOptions[selectOption]?.name}</p>
+              <p><EmailIcon className="mr-1" />{displayOptions[selectOption]?.email}</p>
+              <p><LocationOnIcon className="mr-1" />{displayOptions[selectOption]?.state}, {displayOptions[selectOption]?.city}, {displayOptions[selectOption]?.street}</p>
+              <p><Groups2Icon className="mr-1" />Applicants: {displayOptions[selectOption]?.applicants}</p>
+              <p><PersonSearchIcon className="mr-1" />{displayOptions[selectOption]?.experience} · {displayOptions[selectOption]?.remote} · {displayOptions[selectOption]?.jobtype}</p>
+              <p><PaymentsIcon className="mr-1" />{displayOptions[selectOption]?.salary ? displayOptions[selectOption]?.salary : "Unpaid"}</p>
+              {displayOptions[selectOption]?.update_date ? <p>Updated: {new Date(displayOptions[selectOption]?.update_date).toLocaleDateString()} </p>
+                :
+                <p>Posted : {new Date(displayOptions[selectOption]?.date).toLocaleDateString()} </p>
+              }
+            </div>
+            <img src={displayOptions[selectOption]?.file_data} alt={displayOptions[selectOption]?.file_name || "Job image"} style={{ width: "200px" }} />
+            <div className="flex flex-row flex-wrap gap-2 mt-4 text-xs">
+              <p className="border-2 px-2 py-1 rounded-lg tracking-wide bg-violet-200 text-violet-800">
+                {displayOptions[selectOption]?.city || "N/A"}
+              </p>
+              <p className="border-2 px-2 py-1 rounded-lg  tracking-wide bg-green-200 text-green-800">
+                {displayOptions[selectOption]?.experience || "Not specified"}
+              </p>
+              <p className="border-2 px-2 py-1 rounded-lg  tracking-wide bg-red-200 text-red-800">
+                {displayOptions[selectOption]?.salary ? displayOptions[selectOption]?.salary : "Unpaid"}
+              </p>
+            </div>
+            <p className="pt-4 mb-2 text-gray-600"
+              dangerouslySetInnerHTML={{ __html: displayOptions[selectOption]?.description }}
+            ></p>
+          </section>

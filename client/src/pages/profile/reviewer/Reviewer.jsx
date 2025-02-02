@@ -2,13 +2,15 @@ import "quill/dist/quill.snow.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import "quill/dist/quill.snow.css";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Reviewer() {
     const [checkUser, setCheckUser] = useState(null);
     const [checkModules, setCheckModules] = useState([]);
     const [checkScores, setCheckScores] = useState([]);
     const [selectedModule, setSelectedModule] = useState(null);
-
+    const [isOpen, setIsOpen] = useState(false);
     useEffect(() => {
         async function fetchUser() {
             const res = await fetch("http://localhost:5000/api/user/profile", {
@@ -102,8 +104,7 @@ export default function Reviewer() {
                     <div className="flex flex-col gap-4">
                         <div className="bg-gray-100 rounded-lg p-4 shadow-sm">
                             <p className="text-gray-700">
-                                <strong>Score:</strong> {moduleScore.score} /{" "}
-                                {moduleScore.perfect_score}
+                                <strong>Score:</strong> {moduleScore.score} / {moduleScore.perfect_score}
                             </p>
                             <p className="text-gray-700">
                                 <strong>Attempt Number:</strong> {moduleScore.attempt_number}
@@ -111,8 +112,7 @@ export default function Reviewer() {
                             <p className="text-gray-700">
                                 <strong>Passed:</strong>{" "}
                                 <span
-                                    className={`font-semibold ${moduleScore.passed ? "text-green-600" : "text-red-600"
-                                        }`}
+                                    className={`font-semibold ${moduleScore.passed ? "text-green-600" : "text-red-600"}`}
                                 >
                                     {moduleScore.passed ? "Yes" : "No"}
                                 </span>
@@ -125,9 +125,8 @@ export default function Reviewer() {
                                 {moduleScore.feedback ? (
                                     moduleScore.feedback
                                         .split("Question: ")
-                                        .map((feedbackItem, index) =>
-                                            renderFeedbackItem(feedbackItem, index)
-                                        )
+                                        .slice(1) // Slice off the first empty entry from the split
+                                        .map((feedbackItem, index) => renderFeedbackItem(feedbackItem, index)) // Pass feedbackItem and index
                                 ) : (
                                     <p className="text-gray-600 italic">
                                         No feedback available for this module.
@@ -148,28 +147,44 @@ export default function Reviewer() {
     };
 
     return (
-        <div className="flex flex-row w-full min-h-screen bg-gray-50">
-            {/* Left Section */}
-            <div className="sticky h-screen top-16  w-1/4 pb-32 bg-white shadow-lg border-r border-gray-200 p-4 overflow-y-auto">
-                <h1 className="text-xl font-bold text-gray-800 mb-4">Modules</h1>
-                <ul className="space-y-2">
-                    {checkModules.map((module) => (
-                        <li
-                            key={module.id}
-                            onClick={() => setSelectedModule(module)}
-                            className={`cursor-pointer p-3 rounded-lg hover:bg-gray-100 transition ${selectedModule?.id === module.id
-                                    ? "bg-gray-200 font-semibold"
-                                    : "bg-white"
-                                }`}
-                        >
-                            <span>{module.title}</span>
-                        </li>
-                    ))}
-                </ul>
+        <div className="flex xl:flex-row flex-col w-full min-h-screen rounded-lg ">
+            <div className="xl:w-[25%]">
+                <div className="xl:hidden ">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                    >
+                        <span className="text-sm  text-gray-800">Modules</span>
+                        {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
+                    </button>
+                </div>
+
+                <div className={`sticky md:h-[90vh] top-16 w-full  pb-32 bg-white rounded-l-lg border-gray-200 p-4 overflow-y-auto shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]
+                ${isOpen ? "block" : "hidden"} xl:block`}
+                >
+                    <h1 className="text-xl font-bold text-gray-800 mb-4 md:block hidden">Modules</h1>
+                    <ul className="space-y-2">
+                        {checkModules.map((module) => (
+                            <li
+                                key={module.id}
+                                onClick={() => {
+                                    setSelectedModule(module);
+                                    setIsOpen(false); 
+                                }}
+                                className={`cursor-pointer p-3 rounded-lg hover:bg-gray-100 transition ${selectedModule?.id === module.id
+                                        ? "bg-gray-200 font-semibold"
+                                        : "bg-white"
+                                    }`}
+                            >
+                                <span>{module.title}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
 
             {/* Right Section */}
-            <div className=" w-3/4 p-6">
+            <div className="xl:mt-0 mt-4 xl:w-3/4 w-full xl:pl-4 ">
                 {renderModuleDetails()}
             </div>
         </div>

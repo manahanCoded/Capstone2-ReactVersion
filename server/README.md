@@ -2,8 +2,13 @@
 CREATE TABLE users(
 	id serial primary key,
 	email varchar(50) unique not null,
+    name VARCHAR(70),
+    lastname VARCHAR(70),
+    phone_number BIGINT unique;
     password text not null,
-	role varchar(45) not null
+	role varchar(45) not null,
+    image BYTEA,
+    file_mime_type TEXT
 )
 
 <!-- DATABSE FOR modules -->
@@ -14,7 +19,9 @@ CREATE TABLE module_storage_section (
     tags VARCHAR(255)[], 
     created_by INTEGER not null, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_data BYTEA,
+    file_mime_type TEXT
 );
 
 CREATE TABLE module (
