@@ -89,7 +89,8 @@ const EditPost = ({ postList, editPostID }) => {
       });
 
       if (response.data.success === true) {
-        navigate("/modules");
+        alert("Edit successfull.")
+        navigate(-1);
       }
     } catch (error) {
       alert(error.response?.data?.error || "Failed to edit module.");
@@ -102,7 +103,8 @@ const EditPost = ({ postList, editPostID }) => {
       const response = await axios.delete(`http://localhost:5000/api/module/deleteModules/${editPostID}`);
 
       if (response.status === 200) {
-        navigate("/modules");
+        alert("Delete successfull.")
+        navigate(-1);
       } else {
         console.error("Failed to delete module");
       }

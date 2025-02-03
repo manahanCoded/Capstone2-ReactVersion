@@ -79,7 +79,7 @@ export default function Unit() {
                         <div>
                             <img className="h-5 "
                                 src="/IMG_Modules/LOGO_maroon.png" alt="" />
-                            <h1 className="text-[2.5rem] font-light mt-1">{moduleName.name}</h1>
+                            <h1 className="text-[2.5rem] text-red-900 font-light mt-1">{moduleName.name}</h1>
                             <p className="mt-4 text-sm">🛠️ Blockchain may seem tough now, but soon it'll click!</p>
                             <p className="mt-4 text-">Web3 is the next evolution of the internet, leveraging
                                 decentralization, blockchain, and smart contracts to empower users with transparency, security, and digital ownership.</p>
@@ -98,11 +98,14 @@ export default function Unit() {
                     <div className="relative w-full">
                         <div className="absolute -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
                             <h3 className="w-fit text-lg font-semibold text-[#333333] p-2 border-b-4 border-red-900">Description</h3>
-                            <p className="my-8 text-sm text-gray-600">{moduleName.description}</p>
+                            <p className="my-8 text-sm text-gray-600 line-clamp-4">{moduleName.description}</p>
+                            <div className=" px-10 w-ful flex justify-end self-center">
+                            <a  className="px-4 py-2 text-white rounded-3xl text-sm bg-red-900 hover:bg-red-700 w-ful flex justify-end self-center" href="#start">Get Started</a> 
+                            </div>
                         </div>
-                        <h4 className="mt-32 mb-8 text-4xl font-extralight">Insights you'll uncover.</h4>
+                        <h4 id="start" className="mt-32 mb-8 text-4xl font-extralight">Insights you'll uncover.</h4>
                         {units.length > 0 ? (
-                            <div className="flex flex-col gap-5 pb-8">
+                            <div  className="flex flex-col gap-5 pb-8">
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
                                     const isCompleted = userScore?.completed;
@@ -146,12 +149,12 @@ export default function Unit() {
                     </div>
                     <div className="lg:block hidden bg-gray-50 lg:w-4/6 ">
                         <div className="h-64 p-8 border-b ">
-                            <h3 className="text-lg font-semibold text-[#333333]  ">Achievements</h3>
+                            <h3 className="text-lg font-semibold text-red-900  ">Achievements</h3>
                             <p className="text-sm mt-2">Awards you can earn by completing the module.</p>
                         </div>
+                        <h3 className=" px-8 pt-4 text-lg  font-semibold text-[#333333]  ">Completed Units</h3>
                         {units.length > 0 ? (
-                            <div className="flex flex-col p-8  border-b">
-                                 <h3 className="text-lg  mb-8 font-semibold text-[#333333]  ">Completed Units</h3>
+                            <div className="h-96 flex flex-col p-8  border-b overflow-y-auto">
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
                                     const score = userScore?.score || 0;

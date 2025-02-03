@@ -301,42 +301,38 @@ const updateJob = async (req, res) => {
       moreinfo,
     } = req.body;
 
-    let fileBuffer = null;
-    let fileName = null;
-    let fileMimeType = null;
-
-    if (req.file) {
-      fileBuffer = req.file.buffer;
-      fileName = req.file.originalname;
-      fileMimeType = req.file.mimetype;
-    }
-
-    await db.query(
-      `UPDATE jobs SET 
+    let query = `
+      UPDATE jobs SET 
         name = $1, phone = $2, email = $3, title = $4, jobtype = $5, remote = $6,
         experience = $7, salary = $8, state = $9, city = $10, street = $11,
-        description = $12, moreinfo = $13, file_name = $14, file_data = $15, file_mime_type = $16
-       WHERE id = $17`,
-      [
-        name,
-        phone,
-        email,
-        title,
-        jobtype,
-        remote,
-        experience,
-        salary,
-        state,
-        city,
-        street,
-        description,
-        moreinfo,
-        fileName,
-        fileBuffer,
-        fileMimeType,
-        id,
-      ]
-    );
+        description = $12, moreinfo = $13`;
+    
+    let values = [
+      name,
+      phone,
+      email,
+      title,
+      jobtype,
+      remote,
+      experience,
+      salary,
+      state,
+      city,
+      street,
+      description,
+      moreinfo
+    ];
+
+    // Check if a file is uploaded
+    if (req.file) {
+      query += `, file_name = $14, file_data = $15, file_mime_type = $16`;
+      values.push(req.file.originalname, req.file.buffer, req.file.mimetype);
+    }
+
+    query += ` WHERE id = $${values.length + 1}`; // Dynamic position for `id`
+    values.push(id);
+
+    await db.query(query, values);
 
     res.status(200).json({ message: "Job updated successfully" });
   } catch (error) {
@@ -344,6 +340,7 @@ const updateJob = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 const deleteJob = async (req, res) => {

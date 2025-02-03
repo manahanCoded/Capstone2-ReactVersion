@@ -109,7 +109,7 @@ export default function ModulesPage() {
                 {uniqueTags.length > 5 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
-                    className="text-blue-500 text-sm font-medium"
+                    className="text-red-500 text-sm font-medium"
                   >
                     {showAllTags ? "See Less" : "See More"}
                   </button>
@@ -124,7 +124,7 @@ export default function ModulesPage() {
               <div>
                 <p className="text-xl font-medium mb-4">🌟 Stay Inspired & Keep Learning! 🌟</p>
                 <p className="">💡Every expert was once a beginner. Web3 is
-                   still evolving, and you have the chance to grow with it. Keep learning, keep building!</p>
+                  still evolving, and you have the chance to grow with it. Keep learning, keep building!</p>
               </div>
               <div className="lg:hidden w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
                 <input
@@ -142,47 +142,50 @@ export default function ModulesPage() {
               filteredModules.map((module, index) => (
                 <section
                   key={index}
-                  className="h-[23rem] flex flex-col justify-between xl:w-[19rem] md:w-52 sm:w-80 w-56 rounded-md border-[1px] bg-white overflow-hidden"
+                  className="h-[24rem] flex flex-col justify-between xl:w-[19rem] md:w-52 sm:w-80 w-56 rounded-md border-[1px] bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 >
-                  <div className={`relative flex w-full min-h-36 p-3 text-white ${!module.file_url && "bg-red-900"}`}>
+                  <div
+                    className={`relative flex w-full min-h-40 p-3 text-white transition-all duration-300 ${!module.file_url && "bg-red-950"
+                      }`}
+                  >
                     {module.file_url && (
                       <img
-                        className="absolute inset-0 w-full h-full object-cover z-10"
+                        className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-300 group-hover:scale-105"
                         src={module.file_url}
                         alt={module.name}
                       />
                     )}
-                    {module.file_url && <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>}
-                    <h2 className="text-lg font-medium line-clamp-3 z-10">
-                      {module.name}
-                    </h2>
+                    {module.file_url && (
+                      <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>
+                    )}
+                    <h2 className="text-lg font-medium line-clamp-3 z-10">{module.name}</h2>
                   </div>
                   <div className="h-full p-3">
-                  <img className="h-4 w-20 mb-2"
-                  src="/IMG_Modules/LOGO_maroon.png" alt="" />
-                  <div className="w-full h-14 flex flex-row flex-wrap gap-1 overflow-hidden my-2">
-                    {module.tags.map((tag, index) => (
-                      <p
-                        key={index}
-                        className="h-fit border-2 px-2 py-1 rounded-lg lg:text-[0.6rem] text-[0.45rem] tracking-wide"
-                      >
-                        {tag}
-                      </p>
-                    ))}
-                  </div>
-                    <p className="text-sm line-clamp-3">{module.description}</p>
+                    <img className="h-4 w-20 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
+                    <div className="w-full h-14 flex flex-row flex-wrap gap-1 overflow-hidden my-2">
+                      {module.tags.map((tag, index) => (
+                        <p
+                          key={index}
+                          className="h-fit border px-2 py-1 rounded-lg lg:text-[0.6rem] text-[0.45rem] tracking-wide transition-all duration-300 hover:bg-gray-200"
+                        >
+                          {tag}
+                        </p>
+                      ))}
                     </div>
+                    <p className="text-sm line-clamp-3">{module.description}</p>
+                  </div>
                   <section className="w-full h-12 p-3 mb-3 flex justify-end items-center text-xs">
                     <div className="group">
                       <Link
                         to={`units/${module.id}`}
-                        className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white"
+                        className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white transition-all duration-300"
                       >
                         Start
                       </Link>
                     </div>
                   </section>
                 </section>
+
               ))
             ) : (
               <p>No modules available</p>

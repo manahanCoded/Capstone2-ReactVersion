@@ -341,7 +341,7 @@ export default function CreateModulePage() {
                                 key={index}
                                 className="h-72 flex flex-col justify-between lg:w-72 md:w-64 w-56 rounded-md border-[1px] bg-white overflow-hidden"
                             >
-                                <div className={`relative flex w-full h-36 p-3 text-white ${!module.file_url && "bg-red-900"}`}>
+                                <div className={`relative flex w-full h-36 p-3 text-white ${!module.file_url && "bg-red-950"}`}>
                                     {module.file_url && (
                                         <img
                                             className="absolute inset-0 w-full h-full object-cover z-10"

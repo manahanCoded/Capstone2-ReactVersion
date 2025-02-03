@@ -183,7 +183,7 @@ const Navbar = () => {
                   <AccountCircleIcon style={{ width: "2.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
               }
             </button>
-              <ExpandMoreIcon className="absolute p-0.5 bottom-1 right-6 rounded-full bg-slate-100"/>
+              <ExpandMoreIcon className="absolute p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100"/>
             </div>
             <section
               className={

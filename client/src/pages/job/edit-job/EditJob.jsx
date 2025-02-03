@@ -256,8 +256,8 @@ export default function EditJobPage() {
                     </section>
                   </div>
                 </div>
-                <div className="flex flex-row items-center">
-                  <div className="flex flex-row  items-center gap-x-4">
+                <div className="h-fit flex flex-row items-center gap-10">
+                  <div className="flex flex-col items-center gap-x-4">
                     <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

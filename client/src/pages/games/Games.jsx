@@ -1,6 +1,8 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card'; // Assuming you have Card components
-import { useNavigate } from 'react-router-dom'; // useNavigate is used for navigation in React Router
+import { useNavigate } from 'react-router-dom';
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import MaxWidthWrapper from '@/components/MaxWidthWrapper';
+import Footer from '@/components/Footer';
 
 export const games = [
   {
@@ -31,35 +33,70 @@ export const games = [
     img_2: "/Game_images/frontPage/typing2.png",
     path: '/games/typing-game'
   }
- ];
+];
 
 
 export default function Games() {
-  const navigate = useNavigate(); // Use navigate from react-router-dom
+  const navigate = useNavigate();
 
 
   return (
-    <div className="flex flex-col items-center justify-center mt-20">
-      <h1 className="text-3xl font-semibold mb-6">Challenge Yourself</h1>
-      <div className="max-w-screen-2xl h-auto">
-        <div className="flex flex-wrap justify-center gap-8">
+    <div>
+    <MaxWidthWrapper className="flex flex-col items-center justify-center mt-20 lg:mx-20">
+      <h1 className="text-3xl font-semibold mb-4">Challenge Yourself</h1>
+      <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center  gap-6 text-xs border-b-[1px] bg-white">
+        <p className="text-xl font-medium mb-4">🌟 Games 🌟</p>
+        <div className="lg:w-1/3 w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
+          <input
+            placeholder="Search Module"
+            type="text"
+            value=""
+            className="h-9 w-full py-2 pl-4 outline-none bg-slate-100"
+          />
+          <SearchOutlinedIcon className="mr-2" />
+        </div>
+      </section>
+      <MaxWidthWrapper className="max-w-screen-2xl h-screen m-auto py-8">
+        <div className="w-full flex flex-wrap  mt-4 flex-row gap-8 m-auto">
           {games.map((game, index) => (
-            <div key={index} className="p-4 w-full sm:w-1/2 lg:w-1/3">
-              <Card
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
-                onClick={() => navigate(game.path)} // Use navigate to redirect
+            <div
+              key={index}
+              className="lg:w-[48%] w-full rounded-lg h-64 relative overflow-hidden group bg-gray-800 shadow-lg transition-transform duration-300 hover:scale-105"
+            >
+              <section
+                className="flex flex-row justify-between h-full cursor-pointer transition-shadow duration-200 hover:shadow-2xl"
+                onClick={() => navigate(game.path)}
               >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <h2 className="text-2xl font-semibold mb-4">{game.title}</h2>
-                  <img src={game.img} alt={game.title} className="mb-4 border-y-[1px] w-full h-48 object-cover" />
-                  <p className="text-center text-lg">{game.description}</p>
-                  <p className="mt-4 text-sm">Click to Start</p>
-                </CardContent>
-              </Card>
+                {/* Image Section */}
+                <div className="relative w-[45%] h-full">
+                  <img
+                    src={game.img}
+                    alt={game.title}
+                    className="w-full h-full object-cover rounded-l-lg transition-all duration-300 "
+                  />
+                  {/* Dark Overlay */}
+
+                </div>
+
+                {/* Content Section */}
+                <div className="w-[60%] flex flex-col justify-center border-l border-gray-700 p-6 bg-[#230000] bg-opacity-90 group-hover:bg-opacity-100 transition-all">
+                  <h2 className="w-fit text-2xl font-semibold text-white mb-3 group-hover:text-yellow-400 transition-colors">
+                    {game.title}
+                  </h2>
+                  <p className="text-sm text-gray-300 line-clamp-3">
+                    {game.description}
+                  </p>
+                  <p className="mt-4 text-sm text-yellow-400 font-medium group-hover:underline">
+                    Click to Start
+                  </p>
+                </div>
+              </section>
             </div>
           ))}
         </div>
-      </div>
+      </MaxWidthWrapper>
+    </MaxWidthWrapper>
+      <Footer/>
     </div>
   );
 }

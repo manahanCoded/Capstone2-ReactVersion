@@ -351,10 +351,10 @@ const deleteModule = async (req, res) => {
   const { id } = req.params;
 
   try {
-
+    
+    await db.query("DELETE FROM module_scores WHERE module_id = $1", [id]);
     const result = await db.query("DELETE FROM module WHERE id = $1", [id]);
     if (result.rowCount > 0) {
-
       res.status(200).json({ message: "Module deleted successfully" });
     } else {
       res.status(404).json({ message: "Module not found" });
