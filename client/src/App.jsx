@@ -23,9 +23,11 @@ import QuestionAnswer from "./pages/question-answer/Question-answer";
 import Unit from "./pages/modules/Unit";
 import CreateModulePage from "./pages/modules/create-module/CreateModule";
 import JobHome from "./pages/job/Job-Home";
-import WarriorsDashboard from "./pages/users/warriors-dashboard/WarriorsDashboard";
 import ModulesDashboard from "./pages/users/accounts-dashboard/ModuleDashboard";
 import Retrieve from "./pages/users/Retrieve";
+import JobDashboard from "./pages/users/accounts-dashboard/JobDashboard";
+import AnnouncementsDashboard from "./pages/users/accounts-dashboard/AnnouncementDashboard";
+
 
 
 function App() {
@@ -39,8 +41,9 @@ function App() {
         <Route path="/user/retrieve" element={<Retrieve />} />
         <Route path="/user/accounts-dashboard" element={<AccountsDashboard />} />
         <Route path="/user/modules-dashboard" element={<ModulesDashboard />} />
-        <Route path="/user/warriors-dashboard" element={<WarriorsDashboard />} />
-        
+        <Route path="/user/jobs-dashboard" element={<JobDashboard />} />
+        <Route path="/user/announcements-dashboard" element={<AnnouncementsDashboard />} />        
+
         <Route path="/modules" element={<ModulesPage />} />
         <Route path="/modules/units/:id" element={<Unit />} />
         <Route path="/modules/units/docs/:id" element={<DocsPage />} />

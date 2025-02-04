@@ -154,7 +154,7 @@ export default function Unit() {
                         </div>
                         <h3 className=" px-8 pt-4 text-lg  font-semibold text-[#333333]  ">Completed Units</h3>
                         {units.length > 0 ? (
-                            <div className="h-96 flex flex-col p-8  border-b overflow-y-auto">
+                            <div className="h-96 flex flex-col p-8  border-b ">
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
                                     const score = userScore?.score || 0;

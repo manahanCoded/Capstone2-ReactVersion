@@ -1,14 +1,15 @@
 import { Router } from "express";
-import { allAnnouncement, addAnnouncement } from "./Controllers/Announcement_Controller.mjs";
+import { allAnnouncement, addAnnouncement, deleteAnnouncement, editAnnouncement } from "./Controllers/Announcement_Controller.mjs";
 
 const router = Router() 
+
 
 router.get('/allAnnouncements', allAnnouncement)
 
 router.post('/addAnnouncements', addAnnouncement)
 
-// router.post('/getPostId', getModuleId)
+router.delete('/deleteAnnouncement', deleteAnnouncement) 
 
-// router.post('/editModule', editModule)
+router.post('/editAnnouncement', editAnnouncement)
 
 export default router

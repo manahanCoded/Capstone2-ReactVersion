@@ -23,7 +23,7 @@ const AdminDashboard = () => {
                         Jobs
                     </Link>
                     <Link
-                        to="/announcement" className={`${location.pathname === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
+                        to="/user/announcements-dashboard" className={`${location.pathname === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
                         Announcement
                     </Link>
                     <Link
@@ -32,10 +32,6 @@ const AdminDashboard = () => {
                     </Link>
 
                 </section>
-                <Link
-                        to="/user/warriors-dashboard" className="py-2 px-4 rounded-sm  text-white bg-[#333333]">
-                        Data
-                    </Link>
 
                 </div>
             </MaxWidthWrapper>

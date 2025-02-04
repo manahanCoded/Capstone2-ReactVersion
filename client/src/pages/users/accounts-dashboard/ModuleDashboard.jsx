@@ -1,15 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField  } from '@mui/material';
+import { Box, CircularProgress, TextField  } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import axios from 'axios';
 import MaxWidthWrapper from '@/components/MaxWidthWrapper';
 import AdminDashboard from '@/components/AdminDashboard';
+import { useNavigate } from 'react-router-dom';
 
 export default function ModuleDashboard() {
     const [userData, setUserData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedFilter, setSelectedFilter] = useState('');
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        async function checkUser() {
+            try {
+                const res = await fetch("http://localhost:5000/api/user/profile", {
+                    method: "GET",
+                    credentials: "include",
+                });
+                if (!res.ok) {
+                    navigate("/user/login");
+                    return;
+                }
+            } catch (err) {
+                if (axios.isAxiosError(err) && err.response) {
+                    if (err.response.status === 401 || err.response.status === 403) {
+                        navigate("/user/login");
+                    }
+                } else {
+                    console.error(err);
+                }
+            }
+        }
+
+        checkUser();
+    }, [navigate]);
 
     useEffect(() => {
         const fetchData = async () => {
