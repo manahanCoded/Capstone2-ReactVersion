@@ -11,13 +11,17 @@ export default function CreateModulePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [fileName, setFileName] = useState("No file selected")
+    const [fileNameAchievement, setFileNameAchievement] = useState("No file selected")
     const [editFileName, setEditFileName] = useState("Edit file image")
+    const [editAchievementFileName, setEditAchievementFileName] = useState("Edit Achievement image")
     const [newModule, setNewModule] = useState({
         name: "",
         description: "",
         tags: "",
         created_by: "",
-        selectedFile: null
+        selectedFile: null,
+        achievementFile: "",
+        difficulty_level: ""
     });
 
 
@@ -62,6 +66,7 @@ export default function CreateModulePage() {
         setFileName(file ? file.name : "No file selected");
     };
 
+
     const handleEditFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -73,6 +78,23 @@ export default function CreateModulePage() {
         }
     };
 
+    const handleAchievement_FileChange = (e) => {
+        const file = e.target.files[0]
+        setNewModule({ ...newModule, achievementFile: file })
+        setFileNameAchievement(file ? file.name : "No file selected");
+    }
+
+    const handleEditAchievementFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setEditModule((prev) => ({
+                ...prev,
+                achievementFile: file,
+            }));
+            setEditAchievementFileName(file.name);
+        }
+    };
+
     const handleCreateModule = async (e) => {
         e.preventDefault();
 
@@ -80,18 +102,19 @@ export default function CreateModulePage() {
             const formData = new FormData();
             formData.append("name", newModule.name);
             formData.append("description", newModule.description);
+            formData.append("difficulty_level", newModule.difficulty_level);
 
-            // Split tags string into an array based on commas, then trim extra spaces from each tag
-            const tagsArray = newModule.tags
-                .split(",")   // Split the string by commas
-                .map((tag) => tag.trim()) // Trim extra spaces around each tag
-                .filter(Boolean); // Filter out empty tags
-
+            // Convert tags string into an array and store as JSON
+            const tagsArray = newModule.tags.split(",").map(tag => tag.trim()).filter(Boolean);
             formData.append("tags", JSON.stringify(tagsArray));
 
             formData.append("created_by", newModule.created_by);
+
             if (newModule.selectedFile) {
-                formData.append("file", newModule.selectedFile);
+                formData.append("file", newModule.selectedFile); 
+            }
+            if (newModule.achievementFile) {
+                formData.append("achievement_image", newModule.achievementFile); 
             }
 
             const res = await axios.post("http://localhost:5000/api/module/createModule", formData, {
@@ -101,23 +124,25 @@ export default function CreateModulePage() {
             if (res.status === 201) {
                 alert("Module created successfully!");
                 setShowCreateForm(false);
-                setNewModule({ name: "", description: "", tags: "", created_by: newModule.created_by });
+                setNewModule({
+                    name: "",
+                    description: "",
+                    tags: "",
+                    created_by: newModule.created_by,
+                    difficulty_level: "",
+                });
                 setModules((prev) => [...prev, res.data.newModule]);
                 setFileName("No file selected");
             }
         } catch (error) {
             if (error.response) {
-                const errorMessage = error.response.data.error;
-                if (errorMessage) {
-                    alert(`Error: ${errorMessage}`);
-                } else {
-                    alert("An error occurred, please try again.");
-                }
+                alert(`Error: ${error.response.data.error || "An error occurred, please try again."}`);
             } else {
                 alert("Network error or server is down. Please try again later.");
             }
         }
     };
+
 
     const handleUpdateModule = async (e) => {
         e.preventDefault();
@@ -126,19 +151,22 @@ export default function CreateModulePage() {
         try {
             const tagsArray = typeof editModule.tags === "string"
                 ? editModule.tags.split(",").map(tag => tag.trim()).filter(Boolean)
-                : editModule.tags; // If already an array, keep as is
+                : editModule.tags;
 
             // Prepare the form data
             const formData = new FormData();
             formData.append("name", editModule.name);
             formData.append("description", editModule.description);
-            formData.append("tags", JSON.stringify(tagsArray)); // Send tags as a JSON string
-
+            formData.append("difficulty_level", editModule.difficulty_level);
+            formData.append("tags", JSON.stringify(tagsArray)); 
             if (editModule.selectedFile) {
                 formData.append("file", editModule.selectedFile);
             }
 
-            // Send the request to the backend
+            if (editModule.achievementFile) {
+                formData.append("achievement_image", editModule.achievementFile); 
+            }
+
             const res = await axios.put(
                 `http://localhost:5000/api/module/updateModule/${editModule.id}`,
                 formData
@@ -178,7 +206,7 @@ export default function CreateModulePage() {
                     }));
 
                     setModules(updatedModules);
-                    
+
                 } else {
                     console.error("Error fetching modules:", response.data.message);
                     setModules([]);
@@ -249,8 +277,8 @@ export default function CreateModulePage() {
                         onSubmit={handleCreateModule}
                         className="fixed flex items-center justify-center w-full h-screen z-50 bg-black bg-opacity-50 "
                     >
-                        <div className="absolute w-[70%] h-[85%] top-3 bg-white flex flex-col gap-4 p-6 border rounded-md">
-                            <div className="w-full flex  justify-between items-center">
+                        <div className="absolute w-[70%] h-screen bg-white flex flex-col gap-4 p-6 border rounded-md">
+                            <div className="w-full flex justify-between items-center">
                                 <h3 className="text-2xl font-semibold text-red-900">Create Module</h3>
                                 <button
                                     onClick={() => setShowCreateForm(false)}
@@ -271,6 +299,58 @@ export default function CreateModulePage() {
                                     className="p-2 border rounded-md"
                                     required
                                 />
+                                <div className="flex flex-row items-center justify-between">
+                                    <div className="w-fit flex flex-col space-y-4">
+                                        <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6 text-red-600"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                                                />
+                                            </svg>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="ml-2 text-sm font-medium text-gray-700">
+                                                    Choose Achievement Image
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                onChange={handleAchievement_FileChange}
+                                                className="hidden"
+                                                accept="image/*"
+                                                name="achievement_image"
+                                            />
+                                        </label>
+                                        <span className="text-sm text-gray-500">{fileNameAchievement}</span>
+                                    </div>
+                                    <div className="w-fit flex flex-col space-y-4">
+                                        <label htmlFor="difficulty_level" className="text-sm font-medium text-gray-700">
+                                            Select Difficulty Level
+                                        </label>
+                                        <select
+                                            id="difficulty_level"
+                                            value={newModule.difficulty_level}
+                                            onChange={(e) =>
+                                                setNewModule({ ...newModule, difficulty_level: e.target.value })
+                                            }
+                                            className="p-2 border rounded-md"
+                                            required
+                                        >
+                                            <option value="" disabled>Select Difficulty</option>
+                                            <option value="easy">Easy</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="hard">Hard</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <textarea
                                     placeholder="Module Description"
                                     value={newModule.description}
@@ -281,7 +361,7 @@ export default function CreateModulePage() {
                                     rows="4"
                                     required
                                 ></textarea>
-                                <div className="w-fit flex flex-col  space-y-4">
+                                <div className="w-fit flex flex-col space-y-4">
                                     <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -299,7 +379,6 @@ export default function CreateModulePage() {
                                         </svg>
                                         <div className="flex flex-col gap-1">
                                             <span className="ml-2 text-sm font-medium text-gray-700">
-
                                                 Choose Background Image
                                             </span>
                                         </div>
@@ -308,6 +387,7 @@ export default function CreateModulePage() {
                                             onChange={handleFileChange}
                                             className="hidden"
                                             accept="image/*"
+                                            name="file"
                                         />
                                     </label>
                                     <span className="text-sm text-gray-500">{fileName}</span>
@@ -322,9 +402,10 @@ export default function CreateModulePage() {
                                     className="p-2 border rounded-md"
                                     required
                                 />
+                                {/* Difficulty Level Dropdown */}
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 rounded-md bg-red-900 hover:bg-red-700 text-white "
+                                    className="px-4 py-2 rounded-md bg-red-900 hover:bg-red-700 text-white"
                                 >
                                     Create Module
                                 </button>
@@ -403,7 +484,7 @@ export default function CreateModulePage() {
                         onSubmit={handleUpdateModule}
                         className="fixed flex items-center justify-center w-full h-screen z-50 bg-black bg-opacity-50 "
                     >
-                        <div className="absolute w-[70%] h-[85%] top-3 bg-white flex flex-col gap-4 p-6 border rounded-md">
+                        <div className="absolute w-[70%] h-screen bg-white flex flex-col gap-4 p-6 border rounded-md">
                             <div className="w-full flex  justify-between items-center">
                                 <h3 className="text-2xl font-semibold text-red-900">Edit Module</h3>
                                 <button
@@ -423,6 +504,58 @@ export default function CreateModulePage() {
                                     className="p-2 border rounded-md"
                                     required
                                 />
+                                <div className="flex flex-row items-center justify-between">
+                                    <div className="w-fit flex flex-col space-y-4">
+                                        <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6 text-red-600"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
+                                                />
+                                            </svg>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="ml-2 text-sm font-medium text-gray-700">
+                                                    Choose Achievement Image
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                onChange={handleEditAchievementFileChange}
+                                                className="hidden"
+                                                accept="image/*"
+                                                name="achievement_image"
+                                            />
+                                        </label>
+                                        <span className="text-sm text-gray-500">{editAchievementFileName}</span>
+                                    </div>
+                                    <div className="w-fit flex flex-col space-y-4">
+                                        <label htmlFor="difficulty_level" className="text-sm font-medium text-gray-700">
+                                            Select Difficulty Level
+                                        </label>
+                                        <select
+                                            id="difficulty_level"
+                                            value={editModule.difficulty_level}
+                                            onChange={(e) =>
+                                                setEditModule({ ...editModule, difficulty_level: e.target.value })
+                                            }
+                                            className="p-2 border rounded-md"
+                                            required
+                                        >
+                                            <option value="" disabled>Select Difficulty</option>
+                                            <option value="easy">Easy</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="hard">Hard</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <textarea
                                     value={editModule.description}
                                     onChange={(e) =>

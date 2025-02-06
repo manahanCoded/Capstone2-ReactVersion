@@ -14,9 +14,14 @@ router.get('/module-units/:id', units)
 
 router.get('/allModule', allModule)
 
-router.post('/createModule', upload.single("file"), createModule)
+router.post('/createModule', upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'achievement_image', maxCount: 1 },
+  ]), createModule)
 
-router.put('/updateModule/:id',upload.single("file"),  updateModule)
+router.put('/updateModule/:id',upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'achievement_image', maxCount: 1 }]),  updateModule)
 
 router.delete('/removeModule/:id', removeModule)
 

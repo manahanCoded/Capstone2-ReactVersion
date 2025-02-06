@@ -1,4 +1,4 @@
-<!-- DATABSE FOR users -->
+<!-- DATABASE FOR users -->
 CREATE TABLE users(
 	id serial primary key,
 	email varchar(50) unique not null,
@@ -11,7 +11,7 @@ CREATE TABLE users(
     file_mime_type TEXT
 )
 
-<!-- DATABSE FOR modules -->
+<!-- DATABASE FOR modules -->
 CREATE TABLE module_storage_section (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
@@ -21,9 +21,14 @@ CREATE TABLE module_storage_section (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     file_data BYTEA,
-    file_mime_type TEXT
+    file_mime_type TEXT,
+    achievement_image_data BYTEA,
+    achievement_image_mime_type TEXT,
+    difficulty_level VARCHAR(20)
 );
 
+
+<!-- DATABASE FOR Units -->
 CREATE TABLE module (
 	id serial primary key,
 	publisher INTEGER not null,
@@ -35,7 +40,7 @@ CREATE TABLE module (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
-<!-- DATABSE FOR quiz  -->
+<!-- DATABASE FOR quiz  -->
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
     module_title INTEGER NOT NULL,
@@ -49,7 +54,7 @@ CREATE TABLE questions (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-<!-- DATABSE FOR quiz scores -->
+<!-- DATABASE FOR quiz scores -->
 CREATE TABLE module_scores (
     id SERIAL PRIMARY KEY,                 
     user_id INTEGER NOT NULL,               
@@ -67,7 +72,7 @@ CREATE TABLE module_scores (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
-<!-- DATABSE FOR jobs -->
+<!-- DATABASE FOR jobs -->
 CREATE TABLE jobs(
 	id serial primary key,
 	publisher varchar(45),
@@ -99,7 +104,7 @@ CREATE TABLE job_bookmarks (
     FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE
 );
 
-<!-- DATABSE FOR announcements -->
+<!-- DATABASE FOR announcements -->
 CREATE TABLE announcements (
 	id serial primary key , 
 	publisher: text not null,
@@ -108,7 +113,7 @@ CREATE TABLE announcements (
 	date date not null
 )
 
-<!-- DATABSE FOR applicants -->
+<!-- DATABASE FOR applicants -->
 CREATE TABLE applicants (
 	id serial primary key, 
 	jobId INTEGER not null,
@@ -122,7 +127,7 @@ CREATE TABLE applicants (
 )
 
 
-<!-- DATABSE FOR email -->
+<!-- DATABASE FOR email -->
 CREATE TABLE mail (
 	id serial primary key,
 	parent_id INT REFERENCES mail(id) ON DELETE CASCADE,
@@ -138,7 +143,7 @@ CREATE TABLE mail (
 
 
 
-<!-- DATABSE FOR Question&Answer questions-->
+<!-- DATABASE FOR Question&Answer questions-->
 CREATE TABLE QA_questions (
     question_id SERIAL PRIMARY KEY, 
     user_id INT NOT NULL,           
@@ -149,7 +154,7 @@ CREATE TABLE QA_questions (
     is_resolved BOOLEAN DEFAULT FALSE 
 );
 
-<!-- DATABSE FOR Question&Answer  answers-->
+<!-- DATABASE FOR Question&Answer  answers-->
 CREATE TABLE QA_answers (
     answer_id SERIAL PRIMARY KEY,   
     question_id INT NOT NULL REFERENCES questions(question_id) ON DELETE CASCADE,
@@ -159,7 +164,7 @@ CREATE TABLE QA_answers (
     is_accepted BOOLEAN DEFAULT FALSE 
 );
 
-<!-- DATABSE FOR Question&Answer  votes-->
+<!-- DATABASE FOR Question&Answer  votes-->
 CREATE TABLE QA_votes (
     vote_id SERIAL PRIMARY KEY,     
     target_id INT NOT NULL,        

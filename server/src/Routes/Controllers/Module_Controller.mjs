@@ -11,10 +11,14 @@ const allModule_Storage = async (req, res) => {
         return res.status(404).json({ success: false, message: "Module not found" });
       }
 
-
       const module = result.rows[0];
+
+      // Convert binary data to base64 for easier handling on the frontend
       if (module.file_data) {
         module.file_data = module.file_data.toString('base64');
+      }
+      if (module.achievement_image_data) {
+        module.achievement_image_data = module.achievement_image_data.toString('base64');
       }
 
       return res.json({ success: true, listall: [module] });
@@ -26,6 +30,9 @@ const allModule_Storage = async (req, res) => {
       if (module.file_data) {
         module.file_data = module.file_data.toString('base64');
       }
+      if (module.achievement_image_data) {
+        module.achievement_image_data = module.achievement_image_data.toString('base64');
+      }
       return module;
     });
 
@@ -33,9 +40,10 @@ const allModule_Storage = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Error fetching posts" });
+    res.status(500).json({ success: false, message: "Error fetching modules" });
   }
 };
+
 
 
 
@@ -71,6 +79,7 @@ const units = async (req, res) => {
 };
 
 const addUnit = async (req, res) => {
+
   let { title, description, information , storage_section_id, publisher} = req.body;
 
   title = title.trim();
@@ -111,18 +120,19 @@ const addUnit = async (req, res) => {
 
 
 const createModule = async (req, res) => {
-  let name, description, tags, created_by;
+  let name, description, tags, created_by, difficulty_level;
 
   try {
-    ({ name, description, tags, created_by } = req.body || {});
+    ({ name, description, tags, created_by, difficulty_level } = req.body || {});
     name = name?.trim() || "";
     description = description?.trim() || "";
     created_by = created_by?.toString().trim() || "";
+    difficulty_level = difficulty_level?.trim() || "";
 
-    // Convert tags from string back to array if it is a stringified array
+    // Convert tags from string to array if necessary
     if (typeof tags === "string") {
       try {
-        tags = JSON.parse(tags); // Convert string to array
+        tags = JSON.parse(tags);
         if (!Array.isArray(tags)) throw new Error();
       } catch (error) {
         return res.status(400).json({ error: "Tags must be an array." });
@@ -134,21 +144,39 @@ const createModule = async (req, res) => {
     // Trim individual tags
     tags = tags.map((tag) => tag.trim());
 
-    const file = req.file;
+    // Ensure that `req.files` is correctly parsed using `multer`
+    if (!req.files) {
+      return res.status(400).json({ error: "File upload is required." });
+    }
+
+    const file = req.files.file ? req.files.file[0] : null;
+    const achievementImage = req.files.achievement_image ? req.files.achievement_image[0] : null;
+
     const fileData = file ? file.buffer : null;
     const fileMimeType = file ? file.mimetype : null;
+    const achievementImageData = achievementImage ? achievementImage.buffer : null;
+    const achievementImageMimeType = achievementImage ? achievementImage.mimetype : null;
 
     // Validate required fields
-    if (!name || !description || !tags.length || !created_by) {
+    if (!name || !description || !tags.length || !created_by || !difficulty_level) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
     const query = `
-      INSERT INTO module_storage_section (name, description, tags, created_by, file_data, file_mime_type)
-      VALUES ($1, $2, $3::VARCHAR[], $4, $5, $6)
+      INSERT INTO module_storage_section (
+        name, description, tags, created_by, difficulty_level, 
+        file_data, file_mime_type, 
+        achievement_image_data, achievement_image_mime_type
+      ) 
+      VALUES ($1, $2, $3::VARCHAR[], $4, $5, $6, $7, $8, $9)
       RETURNING *;
     `;
-    const values = [name, description, tags, created_by, fileData, fileMimeType];
+    const values = [
+      name, description, tags, created_by, difficulty_level, 
+      fileData, fileMimeType, 
+      achievementImageData, achievementImageMimeType
+    ];
+    
     const { rows } = await db.query(query, values);
 
     return res.status(201).json({
@@ -168,49 +196,56 @@ const createModule = async (req, res) => {
 };
 
 
-
 const updateModule = async (req, res) => {
   const { id } = req.params;
-  const { name, description, tags } = req.body;
+  const { name, description, tags, difficulty_level } = req.body;
 
-  if (!id || !name || !description || !tags) {
-    return res.status(400).json({ error: "All fields are required." });
+  if (!id || !name || !description || !tags || !difficulty_level) {
+      return res.status(400).json({ error: "All fields are required." });
   }
 
   try {
-    let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
-    const tagsString = `{${tagsArray.join(",")}}`; 
+      let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
+      const tagsString = `{${tagsArray.join(",")}}`; // Convert to PostgreSQL array format
 
-    let query = `
-      UPDATE module_storage_section
-      SET name = $1, description = $2, tags = $3
-    `;
-    let values = [name.trim(), description.trim(), tagsString];
+      let query = `
+          UPDATE module_storage_section
+          SET name = $1, description = $2, tags = $3, difficulty_level = $4
+      `;
+      let values = [name.trim(), description.trim(), tagsString, difficulty_level.trim()];
+      
+      // Handle file uploads safely
+      let index = values.length + 1;
+      if (req.files?.file) {
+          query += `, file_data = $${index}, file_mime_type = $${index + 1}`;
+          values.push(req.files.file[0].buffer, req.files.file[0].mimetype);
+          index += 2;
+      }
 
-    if (req.file) {
-      query += `, file_data = $4, file_mime_type = $5`;
-      values.push(req.file.buffer, req.file.mimetype);
-    }
+      if (req.files?.achievement_image) {
+          query += `, achievement_image_data = $${index}, achievement_image_mime_type = $${index + 1}`;
+          values.push(req.files.achievement_image[0].buffer, req.files.achievement_image[0].mimetype);
+          index += 2;
+      }
 
-    query += ` WHERE id = $${values.length + 1} RETURNING *;`;
-    values.push(id);
+      query += ` WHERE id = $${index} RETURNING *;`;
+      values.push(id);
 
-    const { rows } = await db.query(query, values);
+      const { rows } = await db.query(query, values);
+      
+      if (rows.length === 0) {
+          return res.status(404).json({ error: "Module not found." });
+      }
 
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Module not found." });
-    }
-
-    return res.status(200).json({
-      message: "Module updated successfully.",
-      updatedModule: rows[0],
-    });
+      return res.status(200).json({
+          message: "Module updated successfully.",
+          updatedModule: rows[0],
+      });
   } catch (error) {
-    console.error("Error updating module:", error);
-    return res.status(500).json({ error: "An internal server error occurred." });
+      console.error("Error updating module:", error);
+      return res.status(500).json({ error: "An internal server error occurred." });
   }
 };
-
 
  
 
@@ -343,7 +378,6 @@ const addQuestion = async (req, res) => {
     res.status(500).json({ message: "Error adding question", error: error.message });
   }
 };
-
 
 
 

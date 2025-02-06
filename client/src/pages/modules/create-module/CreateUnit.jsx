@@ -44,12 +44,12 @@ export default function CreateUnitPage() {
   
         const moduleData = await axios.get(`http://localhost:5000/api/module/allModule-storage/${id}`);
         if (moduleData.data.success) {
-          setUnitPlace(moduleData.data.module);
+          setUnitPlace(moduleData.data.listall[0]);
   
           setUserInfo((prev) => ({
             ...prev,
             publisher: data.id,
-            storage_section_id: moduleData.data.module.id,
+            storage_section_id: moduleData.data.listall[0].id,
           }));
         } else {
           setError("Module not found");
