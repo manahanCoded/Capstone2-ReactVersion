@@ -8,8 +8,15 @@ const qa_all = async (req, res) => {
             db.query("SELECT * FROM qa_votes")
         ]);
 
+        const formattedQuestions = questions.rows.map((question) => ({
+            ...question,
+            image: question.image
+                ? `data:${question.file_mime_type};base64,${question.image.toString("base64")}`
+                : null
+        }));
+
         res.status(200).json({
-            questions: questions.rows,
+            questions: formattedQuestions,
             answers: answers.rows,
             votes: votes.rows
         });
@@ -20,59 +27,63 @@ const qa_all = async (req, res) => {
 };
 
 
+
 const question = async (req, res) => {
     const { user_id, question_text, topic, topic_type } = req.body;
+    const image = req.file ? req.file.buffer : null;
+    const file_mime_type = req.file ? req.file.mimetype : null;
 
-    if (!user_id) {
-        return res.status(401);
-    }
-
-    if (!question_text || !topic || !topic_type || !user_id) {
-        return res.status(400).json({ error: 'All fields are required' });
+    if (!user_id || !question_text || !topic || !topic_type) {
+        return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
         const query = `
-        INSERT INTO QA_questions (user_id, question_text, topic, topic_type)
-        VALUES ($1, $2, $3, $4) RETURNING *;
+        INSERT INTO QA_questions (user_id, question_text, topic, topic_type, image, file_mime_type)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
       `;
-        const values = [user_id, question_text, topic, topic_type];
+        const values = [user_id, question_text, topic, topic_type, image, file_mime_type];
 
         const result = await db.query(query, values);
 
         res.status(201).json({ question: result.rows[0] });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to insert question into database' });
+        res.status(500).json({ error: "Failed to insert question into database" });
     }
 };
 
 const answer = async (req, res) => {
-    const { question_id, user_id, answer_text } = req.body;
+    const { question_id, user_id, answer_text, parent_answer_id } = req.body;
 
     if (!user_id) {
-        return res.status(401);
+        return res.status(401).json({ error: "Unauthorized" });
     }
 
-    if (!question_id || !user_id || !answer_text) {
-        return res.status(400).json({ error: "All fields are required" });
+    if (!question_id || !answer_text) {
+        return res.status(400).json({ error: "Question ID and answer text are required" });
     }
 
     try {
         const result = await db.query(
-            "INSERT INTO QA_answers (question_id, user_id, answer_text, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *",
-            [question_id, user_id, answer_text]
+            `INSERT INTO QA_answers (question_id, user_id, answer_text, created_at, parent_answer_id) 
+             VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) 
+             RETURNING *`,
+            [question_id, user_id, answer_text, parent_answer_id || null] // Allow null if it's a direct answer
         );
+
         res.status(201).json({
             message: "Answer submitted successfully",
-            answer_id: result.rows[0].answer_id, 
-            answer: result.rows[0] 
+            answer_id: result.rows[0].answer_id,
+            answer: result.rows[0]
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to submit answer" });
     }
-}
+};
+
+
 
 const vote = async (req, res) => {
     const { target_id, target_type, user_id, vote_type } = req.body;
@@ -170,4 +181,6 @@ const isAccepted = async (req,res)=>{
 
 
 
-export { qa_all, question, answer, vote, delete_item, isAccepted }
+
+
+export { qa_all, question, answer, vote, delete_item, isAccepted}

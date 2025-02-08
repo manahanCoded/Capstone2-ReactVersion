@@ -151,7 +151,9 @@ CREATE TABLE QA_questions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     topic VARCHAR(100) NOT NULL,
 	topic_type varchar(50) NOT NULL,         
-    is_resolved BOOLEAN DEFAULT FALSE 
+    is_resolved BOOLEAN DEFAULT FALSE,
+    image BYTEA,
+    file_mime_type TEXT
 );
 
 <!-- DATABASE FOR Question&Answer  answers-->
