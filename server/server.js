@@ -5,6 +5,7 @@ import session from "express-session";
 import cors from "cors";
 import env from "dotenv";
 import cookieParser from "cookie-parser";
+import pgSession from "connect-pg-simple";
 
 //ROUTES
 import User_Routes from "./src/Routes/User_Routes.mjs";
@@ -14,39 +15,54 @@ import Announcement_Routes from "./src/Routes/Announcement_Routes.mjs"
 import Dashboard_Routes from "./src/Routes/Dashboard_Routes.mjs"
 import Mail_Routes from "./src/Routes/Mail_Routes.mjs"
 import QA_Routes from "./src/Routes/QA_Routes.mjs"
+import pkg from "pg";
 
 const app = express();
 
-
+const { Pool } = pkg;
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 env.config();
 
+const pgPool = new Pool({
+  connectionString: process.env.DATABASE_URL, 
+  ssl: { rejectUnauthorized: false },
+});
+
 app.use(
-  session({
+  session({ store: new (pgSession(session))({
+    pool: pgPool,
+    tableName: "session", 
+  }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production" ? true : false,
       httpOnly: true,
-      sameSite: "none", 
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
       maxAge: 60 * 60000, 
     },
   })
 );
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
+    origin: [
+      "http://localhost:5173", 
+      "https://capstone2-react-version.vercel.app", 
+      "https://capstone2-react-version-k6mb.vercel.app"
+    ],
+    credentials: true, 
   })
 );
+
 
 app.use("/api/user", User_Routes);
 app.use("/api/job", Job_Routes);

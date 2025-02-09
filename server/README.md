@@ -2,6 +2,7 @@
 CREATE TABLE users(
 	id serial primary key,
 	email varchar(50) unique not null,
+    type VARCHAR(45),
     name VARCHAR(70),
     lastname VARCHAR(70),
     phone_number BIGINT unique,

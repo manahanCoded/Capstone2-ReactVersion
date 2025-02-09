@@ -67,7 +67,7 @@ const google_login_callback = (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).redirect(`http://localhost:5173/user/login`);
+      return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
     }
 
     req.login(user, (err) => {
@@ -76,7 +76,7 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`http://localhost:5173`);
+      return res.redirect(`${process.env.CLIENT_URL}`);
     });
   })(req, res, next);
 };

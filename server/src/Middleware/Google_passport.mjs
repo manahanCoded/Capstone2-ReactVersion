@@ -10,7 +10,7 @@ env.config();
 passport.use(new GoogleStrategy({
     clientID: process.env.Google_ID, 
     clientSecret: process.env.Client_Secret,
-    callbackURL: 'http://localhost:5000/api/user/auth/google/callback',
+    callbackURL: `${process.env.CLIENT_URL}/api/user/auth/google/callback`,
     passReqToCallback: true
   },
   async (request, accessToken, refreshToken, profile, done) => {
