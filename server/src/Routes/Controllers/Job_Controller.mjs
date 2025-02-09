@@ -323,13 +323,13 @@ const updateJob = async (req, res) => {
       moreinfo
     ];
 
-    // Check if a file is uploaded
+
     if (req.file) {
       query += `, file_name = $14, file_data = $15, file_mime_type = $16`;
       values.push(req.file.originalname, req.file.buffer, req.file.mimetype);
     }
 
-    query += ` WHERE id = $${values.length + 1}`; // Dynamic position for `id`
+    query += ` WHERE id = $${values.length + 1}`; 
     values.push(id);
 
     await db.query(query, values);

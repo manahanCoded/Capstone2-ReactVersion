@@ -134,6 +134,10 @@ const Navbar = () => {
           >
             Games
           </Link>
+          <a href="http://localhost:3000/" 
+          className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900">
+            Demo
+          </a>
           <Link
             to="/jobs-home"
             className={
@@ -145,14 +149,14 @@ const Navbar = () => {
             Jobs
           </Link>
           <Link
-            to="/quetion-answer"
+            to="/forum"
             className={
-              location.pathname === "/quetion-answer"
+              location.pathname === "/forum"
                 ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
                 : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
             }
           >
-            Q&A
+            Forum
           </Link>
         </div>
         {user ? (

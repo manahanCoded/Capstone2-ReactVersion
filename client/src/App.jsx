@@ -5,7 +5,7 @@ import Login from "./pages/users/Login";
 import Register from "./pages/users/Register";
 import ModulesPage from "./pages/modules/Modules";
 import Games from "./pages/games/Games";
-import GuessingGame from "./pages/games/guessing-game/guess";
+import GuessingGame from "./pages/games/guessing-game/Guess";
 import HangmanGame from "./pages/games/hangman/Hangman";
 import Scramble from "./pages/games/scramble/Scramble";
 import TypingGame from "./pages/games/typing-game/Typing";
@@ -19,7 +19,6 @@ import Email from "./pages/email/Email";
 import AccountsDashboard from "./pages/users/accounts-dashboard/AccountsDashboard";
 import Profile from "./pages/profile/Profile";
 import Edit from "./pages/modules/edit-module/Edit";
-import QuestionAnswer from "./pages/question-answer/Question-answer";
 import Unit from "./pages/modules/Unit";
 import CreateModulePage from "./pages/modules/create-module/CreateModule";
 import JobHome from "./pages/job/Job-Home";
@@ -27,6 +26,7 @@ import ModulesDashboard from "./pages/users/accounts-dashboard/ModuleDashboard";
 import Retrieve from "./pages/users/Retrieve";
 import JobDashboard from "./pages/users/accounts-dashboard/JobDashboard";
 import AnnouncementsDashboard from "./pages/users/accounts-dashboard/AnnouncementDashboard";
+import Forum from "./pages/Forum/Forum";
 
 
 
@@ -63,7 +63,7 @@ function App() {
         <Route path="/jobs/create-job" element={<CreateJobPage />} />
         <Route path="/jobs/edit-job/:jobEditID" element={<EditJobPage />} />
 
-        <Route path="/quetion-answer" element={<QuestionAnswer />} />
+        <Route path="/forum" element={<Forum />} />
 
 
         <Route path="/email" element={<Email />} />
