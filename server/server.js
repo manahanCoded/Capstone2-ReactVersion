@@ -19,12 +19,12 @@ import pkg from "pg";
 
 const app = express();
 
-const { Pool } = pkg;
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 env.config();
 
+const { Pool } = pkg;
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL, 
   ssl: { rejectUnauthorized: false },

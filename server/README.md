@@ -1,3 +1,11 @@
+<!-- DATABASE FOR session-->
+CREATE TABLE session (
+    sid VARCHAR PRIMARY KEY,
+    sess JSON NOT NULL,
+    expire TIMESTAMP(6) NOT NULL
+);
+
+
 <!-- DATABASE FOR users -->
 CREATE TABLE users(
 	id serial primary key,
@@ -176,3 +184,4 @@ CREATE TABLE QA_votes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (target_id, target_type, user_id) 
 );
+

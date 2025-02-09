@@ -6,6 +6,8 @@ import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Footer from "@/components/Footer";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Unit() {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -18,7 +20,7 @@ export default function Unit() {
     useEffect(() => {
         async function checkUserStatus() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -40,15 +42,15 @@ export default function Unit() {
     useEffect(() => {
         async function fetchUnitsAndScores() {
             try {
-                const unitsRes = await axios.get(`http://localhost:5000/api/module/module-units/${id}`);
+                const unitsRes = await axios.get(`${API_URL}/api/module/module-units/${id}`);
                 setUnits(unitsRes.data.listall);
 
                 if (checkUser) {
-                    const scoresRes = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser.id}`);
+                    const scoresRes = await axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`);
                     setUserScores(scoresRes.data);
                 }
 
-                const moduleData = await axios.get(`http://localhost:5000/api/module/allModule-storage/${id}`);
+                const moduleData = await axios.get(`${API_URL}/api/module/allModule-storage/${id}`);
                 if (moduleData.data.success && moduleData.data.listall.length > 0) {
                     const module = moduleData.data.listall[0];
                     setModuleName({
