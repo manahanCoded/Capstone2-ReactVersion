@@ -4,6 +4,8 @@ import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Dashboard(review) {
     const [checkUser, setCheckUser] = useState(null);
     const [checkModules, setCheckModules] = useState([]);
@@ -12,7 +14,7 @@ export default function Dashboard(review) {
 
     useEffect(() => {
         async function fetchUser() {
-            const res = await fetch("http://localhost:5000/api/user/profile", {
+            const res = await fetch(`${API_URL}/api/user/profile`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -25,7 +27,7 @@ export default function Dashboard(review) {
     useEffect(() => {
         async function getModule() {
             try {
-                const res = await axios.get("http://localhost:5000/api/module/allModule");
+                const res = await axios.get(`${API_URL}/api/module/allModule`);
                 setCheckModules(res.data.listall);
             } catch (error) {
                 console.error("Error fetching modules:", error);
@@ -38,7 +40,7 @@ export default function Dashboard(review) {
         if (checkUser) {
             async function getScore() {
                 try {
-                    const res = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser?.id}`);
+                    const res = await axios.get(`${API_URL}/api/module/get-user-score/${checkUser?.id}`);
                     setCheckScores(res.data);
                 } catch (error) {
                     console.error("Error fetching scores:", error);

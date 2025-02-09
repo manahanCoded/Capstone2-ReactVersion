@@ -6,6 +6,8 @@ import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function EditPost({ postList, editPostID }) {
   const [checkAdminData, setCheckAdmin] = useState(null);
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ export default function EditPost({ postList, editPostID }) {
   useEffect(() => {
     async function handleCheckAdmin() {
       try {
-        const res = await fetch("http://localhost:5000/api/user/profile", {
+        const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -81,7 +83,7 @@ export default function EditPost({ postList, editPostID }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/module/editModule", {
+      const response = await axios.post(`${API_URL}/api/module/editModule`, {
         title: userInfo.title,
         description: userInfo.description,
         information: userInfo.information,
@@ -100,7 +102,7 @@ export default function EditPost({ postList, editPostID }) {
 
   const deleteModule = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/module/deleteModules/${editPostID}`);
+      const response = await axios.delete(`${API_URL}/api/module/deleteModules/${editPostID}`);
 
       if (response.status === 200) {
         alert("Delete successfull.")

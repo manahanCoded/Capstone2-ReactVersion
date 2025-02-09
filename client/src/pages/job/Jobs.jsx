@@ -12,6 +12,9 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+
 export default function JobsPage() {
   const navigate = useNavigate()
   const [checkAdmin, setCheckAdmin] = useState(null);
@@ -28,7 +31,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const res = await fetch("http://localhost:5000/api/user/profile", {
+      const res = await fetch(`${API_URL}/api/user/profile`, {
         method: "GET",
         credentials: "include",
       });
@@ -41,7 +44,7 @@ export default function JobsPage() {
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/job/display");
+        const res = await axios.get(`${API_URL}/api/job/display`);
 
         if (res.status === 200) {
           setDisplayJobs(res.data);
@@ -56,7 +59,7 @@ export default function JobsPage() {
 
     const fetchBookmarkedJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/job/bookmarks", {
+        const res = await axios.get(`${API_URL}/api/job/bookmarks`, {
           withCredentials: true,
         });
         if (res.status === 200) {
@@ -76,7 +79,7 @@ export default function JobsPage() {
     try {
       if (bookmarkedJobs.includes(jobId)) {
         const res = await axios.delete(
-          `http://localhost:5000/api/job/bookmarks/${jobId}`,
+          `${API_URL}/api/job/bookmarks/${jobId}`,
           { withCredentials: true }
         );
 
@@ -88,7 +91,7 @@ export default function JobsPage() {
         setBookmarkedJobs(bookmarkedJobs.filter((id) => id !== jobId));
       } else {
         const res = await axios.post(
-          "http://localhost:5000/api/job/bookmarks",
+          `${API_URL}/api/job/bookmarks`,
           { job_id: jobId },
           { withCredentials: true }
         );

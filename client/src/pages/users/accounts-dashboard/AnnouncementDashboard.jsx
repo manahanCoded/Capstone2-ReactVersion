@@ -7,7 +7,7 @@ import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import "react-quill-new/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AnnouncementsDashboard() {
     const [announcements, setAnnouncements] = useState([]);
@@ -21,7 +21,7 @@ export default function AnnouncementsDashboard() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -46,7 +46,7 @@ export default function AnnouncementsDashboard() {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/announcement/allAnnouncements");
+                const response = await fetch(`${API_URL}/api/announcement/allAnnouncements`);
                 const data = await response.json();
                 setAnnouncements(data);
             } catch (error) {
@@ -60,7 +60,7 @@ export default function AnnouncementsDashboard() {
 
     const handleDelete = async (id) => {
         try {
-            await fetch("http://localhost:5000/api/announcement/deleteAnnouncement", {
+            await fetch(`${API_URL}/api/announcement/deleteAnnouncement`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id }),
@@ -82,7 +82,7 @@ export default function AnnouncementsDashboard() {
     };
 
     const handleSaveEdit = () => {
-        fetch("http://localhost:5000/api/announcement/editAnnouncement", {
+        fetch(`${API_URL}/api/announcement/editAnnouncement`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(editingRow),

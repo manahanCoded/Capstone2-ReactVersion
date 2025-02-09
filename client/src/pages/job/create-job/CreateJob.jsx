@@ -13,6 +13,9 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import SignpostOutlinedIcon from "@mui/icons-material/SignpostOutlined";
 import PersonIcon from "@mui/icons-material/Person";
 
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function CreateJobPage() {
     const [isClient, setIsClient] = useState(false);
     const [stateid, setStateId] = useState(0);
@@ -74,7 +77,7 @@ export default function CreateJobPage() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -122,7 +125,7 @@ export default function CreateJobPage() {
         });
       
         try {
-          const res = await axios.post("http://localhost:5000/api/job/create", formData);
+          const res = await axios.post(`${API_URL}/api/job/create`, formData);
           if (res.status === 201) {
             alert("Job created successfully.");
           } else {
@@ -142,7 +145,7 @@ export default function CreateJobPage() {
 
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/announcement/addAnnouncements",
+                `${API_URL}/api/announcement/addAnnouncements`,
                 newAnnouncement,
                 {
                     withCredentials: true,

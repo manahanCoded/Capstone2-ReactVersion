@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function CreateModulePage() {
     const [checkAdmin, setCheckAdmin] = useState();
     const [modules, setModules] = useState();
@@ -33,7 +35,7 @@ export default function CreateModulePage() {
     useEffect(() => {
         async function handleCheckAdmin() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -117,7 +119,7 @@ export default function CreateModulePage() {
                 formData.append("achievement_image", newModule.achievementFile); 
             }
 
-            const res = await axios.post("http://localhost:5000/api/module/createModule", formData, {
+            const res = await axios.post(`${API_URL}/api/module/createModule`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
@@ -168,7 +170,7 @@ export default function CreateModulePage() {
             }
 
             const res = await axios.put(
-                `http://localhost:5000/api/module/updateModule/${editModule.id}`,
+                `${API_URL}/api/module/updateModule/${editModule.id}`,
                 formData
             );
 
@@ -197,7 +199,7 @@ export default function CreateModulePage() {
     useEffect(() => {
         async function handleModules() {
             try {
-                const response = await axios.get("http://localhost:5000/api/module/allModule-storage");
+                const response = await axios.get(`${API_URL}/api/module/allModule-storage`);
 
                 if (response.data.success && response.data.listall) {
                     const updatedModules = response.data.listall.map(module => ({
@@ -224,7 +226,7 @@ export default function CreateModulePage() {
         if (!window.confirm("Are you sure you want to delete this module?")) return;
 
         try {
-            const res = await axios.delete(`http://localhost:5000/api/module/removeModule/${id}`);
+            const res = await axios.delete(`${API_URL}/api/module/removeModule/${id}`);
 
             if (res.status === 200) {
                 alert("Module deleted successfully!");

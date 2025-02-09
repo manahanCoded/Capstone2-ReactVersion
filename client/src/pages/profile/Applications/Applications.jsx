@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function UserApplications({ checkUser }) {
     const [applications, setApplications] = useState([]);
@@ -9,7 +10,7 @@ export default function UserApplications({ checkUser }) {
         async function fetchApplications() {
             if (checkUser?.email) {
                 try {
-                    const res = await axios.get(`http://localhost:5000/api/job/display-user-appointment/${checkUser.email}`);
+                    const res = await axios.get(`${API_URL}/api/job/display-user-appointment/${checkUser.email}`);
                     setApplications(res.data);
                 } catch (error) {
                     console.error("Error fetching applications:", error);

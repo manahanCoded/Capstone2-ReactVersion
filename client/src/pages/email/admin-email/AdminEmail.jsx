@@ -7,6 +7,7 @@ import axios from "axios";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminDashboard from "@/components/AdminDashboard";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AdminEmail() {
     const [checkAdmin, setCheckAdmin] = useState(null)
@@ -49,7 +50,7 @@ export default function AdminEmail() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -85,7 +86,7 @@ export default function AdminEmail() {
     useEffect(() => {
         const application = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/job/display-appointment");
+                const res = await axios.get(`${API_URL}/api/job/display-appointment`);
                 setApplicants(res.data);
                 setMail(res.data[0]);
             } catch (error) {
@@ -132,7 +133,7 @@ export default function AdminEmail() {
 
         try {
             setSuccessReply(true);
-            const res = await axios.post("http://localhost:5000/api/mail/sendMail", updatedReply, {
+            const res = await axios.post(`${API_URL}/api/mail/sendMail`, updatedReply, {
                 withCredentials: true,
             });
 
@@ -164,7 +165,7 @@ export default function AdminEmail() {
 
         try {
             setSuccessReply(true);
-            const res = await axios.post("http://localhost:5000/api/mail/replyMail", updatedReply, {
+            const res = await axios.post(`${API_URL}/api/mail/replyMail`, updatedReply, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "application/json"
@@ -183,7 +184,7 @@ export default function AdminEmail() {
     useEffect(() => {
         const updateResponse = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/mail/allMail");
+                const res = await axios.get(`${API_URL}/api/mail/allMail`);
                 setViewReply(res.data);
             } catch (error) {
                 console.error("Error fetching applicants:", error);
@@ -216,7 +217,7 @@ export default function AdminEmail() {
                 if (!confirmDelete) return;
             }
 
-            const res = await axios.delete(`http://localhost:5000/api/mail/deleteMail/${replyIdFromEvent}`);
+            const res = await axios.delete(`${API_URL}/api/mail/deleteMail/${replyIdFromEvent}`);
             if (res.status === 200) {
                 alert("Reply deleted successfully!");
                 setViewReply((prevReplies) => prevReplies.filter((r) => r.id !== replyIdFromEvent));
@@ -299,7 +300,7 @@ export default function AdminEmail() {
                                     {mail?.resumeUrl.startsWith('data:image/') ? (
                                         <img src={mail?.resumeUrl} alt="Applicant Resume" style={{ width: "200px", height: "auto" }} />
                                     ) : (
-                                        <a href={`http://localhost:5000/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
+                                        <a href={`${API_URL}/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
                                         Download Resume
                                       </a>
                                     )}

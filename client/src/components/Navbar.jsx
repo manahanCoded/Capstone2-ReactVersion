@@ -7,9 +7,10 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 import axios from "axios";
 import "react-quill-new/dist/quill.snow.css"
+
+const API_URL = import.meta.env.VITE_API_URL || "${API_URL}";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -26,7 +27,7 @@ const Navbar = () => {
   useEffect(() => {
     async function checkUser() {
       try {
-        const res = await fetch("http://localhost:5000/api/user/profile", {
+        const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -55,7 +56,7 @@ const Navbar = () => {
 
   async function Logout_User() {
     try {
-      const response = await fetch("http://localhost:5000/api/user/logout", {
+      const response = await fetch(`${API_URL}/api/user/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -74,7 +75,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchAllAnnouncement = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/announcement/allAnnouncements");
+        const res = await axios.get(`${API_URL}/api/announcement/allAnnouncements`);
 
         if (res.status === 200) {
           setDisplayAnnouncement(res.data);

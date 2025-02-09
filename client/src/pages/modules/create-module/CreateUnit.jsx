@@ -8,6 +8,8 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ExitToApp } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function CreateUnitPage() {
   const [typeForm, setTypeForm] = useState("createModule");
   const [unitPlace, setUnitPlace] = useState([])
@@ -26,7 +28,7 @@ export default function CreateUnitPage() {
   useEffect(() => {
     async function handleCheckAdmin() {
       try {
-        const res = await fetch("http://localhost:5000/api/user/profile", {
+        const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -42,7 +44,7 @@ export default function CreateUnitPage() {
           return;
         }
   
-        const moduleData = await axios.get(`http://localhost:5000/api/module/allModule-storage/${id}`);
+        const moduleData = await axios.get(`${API_URL}/api/module/allModule-storage/${id}`);
         if (moduleData.data.success) {
           setUnitPlace(moduleData.data.listall[0]);
   
@@ -98,7 +100,7 @@ export default function CreateUnitPage() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/module/addModule", {
+      const res = await axios.post(`${API_URL}/api/module/addModule`, {
         title: userInfo.title,
         description: userInfo.description,
         information: userInfo.information,
@@ -194,7 +196,7 @@ export default function CreateUnitPage() {
     });
 
     try {
-      const response = await axios.post("http://localhost:5000/api/module/addQuestions", {
+      const response = await axios.post(`${API_URL}/api/module/addQuestions`, {
         module_title,
         questions: updatedQuestions,
       });

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import "quill/dist/quill.snow.css";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Reviewer() {
     const [checkUser, setCheckUser] = useState(null);
@@ -13,7 +14,7 @@ export default function Reviewer() {
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => {
         async function fetchUser() {
-            const res = await fetch("http://localhost:5000/api/user/profile", {
+            const res = await fetch(`${API_URL}/api/user/profile`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -26,7 +27,7 @@ export default function Reviewer() {
     useEffect(() => {
         async function getModule() {
             try {
-                const res = await axios.get("http://localhost:5000/api/module/allModule");
+                const res = await axios.get(`${API_URL}/api/module/allModule`);
                 setCheckModules(res.data.listall);
             } catch (error) {
                 console.error("Error fetching modules:", error);
@@ -39,7 +40,7 @@ export default function Reviewer() {
         if (checkUser) {
             async function getScore() {
                 try {
-                    const res = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser?.id}`);
+                    const res = await axios.get(`${API_URL}/api/module/get-user-score/${checkUser?.id}`);
                     setCheckScores(res.data);
                 } catch (error) {
                     console.error("Error fetching scores:", error);

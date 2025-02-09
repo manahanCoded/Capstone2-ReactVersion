@@ -16,6 +16,8 @@ import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Forum() {
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +51,7 @@ export default function Forum() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -67,7 +69,7 @@ export default function Forum() {
     useEffect(() => {
         async function handleAll_QA() {
             try {
-                const res = await fetch("http://localhost:5000/api/question-answer/all");
+                const res = await fetch(`${API_URL}/api/question-answer/all`);
                 const data = await res.json();
                 setAll_QA(data);
             } catch (err) {
@@ -117,7 +119,7 @@ export default function Forum() {
         }
 
         try {
-            const response = await fetch("http://localhost:5000/api/question-answer/question", {
+            const response = await fetch(`${API_URL}/api/question-answer/question`, {
                 method: "POST",
                 body: formData,
             });
@@ -171,8 +173,8 @@ export default function Forum() {
     const handleAnswerSubmit = async (e, questionId, parentAnswerId = null) => {
         e.preventDefault();
 
-        const answerKey = parentAnswerId || questionId; // Use parentAnswerId if replying to an answer
-        const answerText = answers[answerKey]; // Get answer text from correct key
+        const answerKey = parentAnswerId || questionId; 
+        const answerText = answers[answerKey]; 
 
         if (!checkUser?.id) {
             alert("Log in first");
@@ -189,11 +191,11 @@ export default function Forum() {
             question_id: questionId,
             user_id: checkUser.id,
             answer_text: answerText,
-            parent_answer_id: parentAnswerId, // Include parent answer ID if replying to an answer
+            parent_answer_id: parentAnswerId, 
         };
 
         try {
-            const response = await fetch("http://localhost:5000/api/question-answer/answer", {
+            const response = await fetch(`${API_URL}/api/question-answer/answer`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(answerData),
@@ -206,7 +208,7 @@ export default function Forum() {
                     ...prevData,
                     answers: [...prevData.answers, data.answer],
                 }));
-                setAnswers((prevAnswers) => ({ ...prevAnswers, [answerKey]: "" })); // Reset correct input
+                setAnswers((prevAnswers) => ({ ...prevAnswers, [answerKey]: "" })); 
             } else {
                 alert("Error submitting answer: " + data.error);
             }
@@ -226,7 +228,7 @@ export default function Forum() {
             navigate("/user/login")
         }
         try {
-            const response = await fetch("http://localhost:5000/api/question-answer/vote", {
+            const response = await fetch("${API_URL}/api/question-answer/vote", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -273,7 +275,7 @@ export default function Forum() {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/question-answer/delete/${questionId}`, {
+            const response = await fetch(`${API_URL}/api/question-answer/delete/${questionId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -299,7 +301,7 @@ export default function Forum() {
 
     const handleAccept = async (acceptID, isAccepted) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/question-answer/accept/${acceptID}`, {
+            const res = await fetch(`${API_URL}/api/question-answer/accept/${acceptID}`, {
                 method: "PATCH",
                 credentials: "include",
             });

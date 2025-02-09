@@ -13,6 +13,7 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function CheckJobPage() {
   const { jobsID } = useParams();
@@ -37,7 +38,7 @@ export default function CheckJobPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const res = await fetch("http://localhost:5000/api/user/profile", {
+      const res = await fetch(`${API_URL}/api/user/profile`, {
         method: "GET",
         credentials: "include",
       });
@@ -52,7 +53,7 @@ export default function CheckJobPage() {
 
   useEffect(() => {
     const fetchJobData = async () => {
-      const res = await fetch("http://localhost:5000/api/job/display");
+      const res = await fetch(`${API_URL}/api/job/display`);
       if (!res.ok) {
         throw new Error("Failed to fetch jobs data");
       }
@@ -110,7 +111,7 @@ export default function CheckJobPage() {
 
 
     try {
-      const response = await fetch('http://localhost:5000/api/job/upload-appointment', {
+      const response = await fetch(`${API_URL}/api/job/upload-appointment`, {
         method: 'POST',
         body: formData,
       });

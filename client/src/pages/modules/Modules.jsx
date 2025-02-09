@@ -5,6 +5,8 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import Footer from "@/components/Footer";
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function ModulesPage() {
   const [modules, setModules] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +16,7 @@ export default function ModulesPage() {
     async function fetchModulesAndUser() {
       try {
 
-        const modulesRes = await fetch("http://localhost:5000/api/module/allModule-storage");
+        const modulesRes = await fetch(`${API_URL}/api/module/allModule-storage`);
         const modulesData = await modulesRes.json();
 
         if (modulesData.listall) {
@@ -28,7 +30,7 @@ export default function ModulesPage() {
           setModules([]);
         }
 
-        const userRes = await fetch("http://localhost:5000/api/user/profile", {
+        const userRes = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
         });

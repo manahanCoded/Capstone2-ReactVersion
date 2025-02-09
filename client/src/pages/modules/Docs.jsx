@@ -7,6 +7,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import Dashboard from "@/components/Dashboard";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function DocsPage() {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ export default function DocsPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const res = await fetch("http://localhost:5000/api/user/profile", {
+      const res = await fetch(`${API_URL}/api/user/profile`, {
         method: "GET",
         credentials: "include",
       });
@@ -42,7 +44,7 @@ export default function DocsPage() {
   useEffect(() => {
     async function fetchModule() {
       try {
-        const response = await axios.post("http://localhost:5000/api/module/getPostId", {
+        const response = await axios.post(`${API_URL}/api/module/getPostId`, {
           ids: id,
         });
         if (response.data.success) {
@@ -63,7 +65,7 @@ export default function DocsPage() {
         try {
           const title = posts[0].title;
           const res = await axios.get(
-            `http://localhost:5000/api/module/allQuestions?title=${encodeURIComponent(title)}`
+            `${API_URL}/api/module/allQuestions?title=${encodeURIComponent(title)}`
           );
           setItemQuiz(res.data);
         } catch (error) {
@@ -138,7 +140,7 @@ export default function DocsPage() {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/module/update-module-score", progressData);
+      await axios.post(`${API_URL}/api/module/update-module-score`, progressData);
     } catch (error) {
       console.error("Error saving quiz progress:", error);
     }

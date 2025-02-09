@@ -4,7 +4,7 @@ import { Container, Typography, Box, TextField } from "@mui/material";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import AdminDashboard from "@/components/AdminDashboard";
 import { useNavigate } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function JobDashboards() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function JobDashboards() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -40,7 +40,7 @@ export default function JobDashboards() {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/job/display");
+                const response = await fetch(`${API_URL}/api/job/display`);
                 const data = await response.json();
                 setJobs(data);
             } catch (error) {

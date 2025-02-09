@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function Register() {
   const [user, setUser] = useState({
     name: "",
@@ -19,7 +19,7 @@ export default function Register() {
 
   useEffect(() => {
     const checkLogin = async () => {
-      const response = await fetch("http://localhost:5000/api/user/profile", {
+      const response = await fetch(`${API_URL}/api/user/profile`, {
         method: "GET",
         credentials: "include",
       });
@@ -50,7 +50,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/user/register", {
+      const response = await fetch(`${API_URL}/api/user/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -175,7 +175,7 @@ export default function Register() {
                   className="md:h-10 h-8 rounded mb-2 mt-3 px-2 cursor-pointer bg-red-700 text-white hover:bg-red-900"
                 />
                 <Link
-                  to="http://localhost:5000/api/user/auth/google"
+                  to={`${API_URL}/api/user/auth/google`}
                   className="md:h-10 h-8 rounded mb-2 mt-2 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
                 >
                   <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />

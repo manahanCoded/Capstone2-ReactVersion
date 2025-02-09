@@ -8,6 +8,7 @@ import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function UserEmail() {
     const [checkUser, setCheckUser] = useState(null)
@@ -49,7 +50,7 @@ export default function UserEmail() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -78,7 +79,7 @@ export default function UserEmail() {
     useEffect(() => {
         async function fetchApplications() {
             try {
-                const res = await axios.get(`http://localhost:5000/api/job/display-user-appointment/${checkUser?.email}`);
+                const res = await axios.get(`${API_URL}/api/job/display-user-appointment/${checkUser?.email}`);
                 setApplicants(res.data);
                 setMail(res.data[0]);
             } catch (error) {
@@ -127,7 +128,7 @@ export default function UserEmail() {
 
         try {
             setSuccessReply(true);
-            const res = await axios.post("http://localhost:5000/api/mail/sendMail", updatedReply, {
+            const res = await axios.post(`${API_URL}/api/mail/sendMail`, updatedReply, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "application/json"
@@ -162,7 +163,7 @@ export default function UserEmail() {
 
         try {
             setSuccessReply(true);
-            const res = await axios.post("http://localhost:5000/api/mail/replyMail", updatedReply, {
+            const res = await axios.post(`${API_URL}/api/mail/replyMail`, updatedReply, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "application/json"
@@ -181,7 +182,7 @@ export default function UserEmail() {
     useEffect(() => {
         const updateResponse = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/mail/allMail");
+                const res = await axios.get(`${API_URL}/api/mail/allMail`);
                 setViewReply(res.data);
             } catch (error) {
                 console.error("Error fetching applicants:", error);
@@ -277,11 +278,11 @@ export default function UserEmail() {
                                     {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
                                         <img
                                             className="mt-8"
-                                            src={`http://localhost:5000${mail.resume}`} alt="Resume" />
+                                            src={`${API_URL}${mail.resume}`} alt="Resume" />
                                     ) : (
                                         <div className="mt-8 w-full flex justify-end items-end ">
                                             <a
-                                                href={`http://localhost:5000${mail.resume}`}
+                                                href={`${API_URL}${mail.resume}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className=" bg-[#333333] px-4 py-2 text-white rounded-md"

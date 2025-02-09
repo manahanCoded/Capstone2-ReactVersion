@@ -12,7 +12,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import EmailIcon from '@mui/icons-material/Email';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function Profile() {
     const navigate = useNavigate()
     const [checkUser, setCheckUser] = useState();
@@ -22,7 +22,7 @@ export default function Profile() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });

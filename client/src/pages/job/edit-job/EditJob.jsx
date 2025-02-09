@@ -13,6 +13,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function EditJobPage() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function EditJobPage() {
   useEffect(() => {
     async function checkUser() {
       try {
-        const res = await fetch("http://localhost:5000/api/user/profile", {
+        const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -72,7 +73,7 @@ export default function EditJobPage() {
       async function fetchJobData() {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/job/specific-job/${jobEditID}`
+            `${API_URL}/api/job/specific-job/${jobEditID}`
           );
           setSpecificJob(response.data);
         } catch (error) {
@@ -149,7 +150,7 @@ export default function EditJobPage() {
   
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/job/upDatejob/${jobEditID}`,
+        `${API_URL}/api/job/upDatejob/${jobEditID}`,
         formData,
         {
           headers: {
@@ -167,7 +168,7 @@ export default function EditJobPage() {
 
   const deleteJob = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/job/delete/${jobEditID}`);
+      const response = await axios.delete(`${API_URL}/api/job/delete/${jobEditID}`);
       if (response.status === 200) {
         alert("Job deleted successfully!");
         navigate("/jobs");

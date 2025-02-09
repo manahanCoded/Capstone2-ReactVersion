@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AdminDashboard from "@/components/AdminDashboard";
 import { DataGrid } from "@mui/x-data-grid";
 import { InputLabel, FormControl, Select, MenuItem, Box, CircularProgress, TextField } from "@mui/material";
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function AccountsDashboard() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function AccountsDashboard() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -40,7 +40,7 @@ export default function AccountsDashboard() {
     useEffect(() => {
         const handleAccounts = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/user/allUsers", {
+                const response = await axios.get(`${API_URL}/api/user/allUsers`, {
                     withCredentials: true,
                 });
                 setAccounts(response.data);
@@ -65,7 +65,7 @@ export default function AccountsDashboard() {
     const handleRoleChange = async (email, newRole) => {
         try {
             await axios.put(
-                "http://localhost:5000/api/user/updateRole",
+                `${API_URL}/api/user/updateRole`,
                 { email, role: newRole },
                 { withCredentials: true }
             );

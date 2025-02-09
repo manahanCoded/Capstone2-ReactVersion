@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Achievements() {
     const navigate = useNavigate();
     const [units, setUnits] = useState([]);
@@ -14,7 +16,7 @@ export default function Achievements() {
     useEffect(() => {
         async function fetchUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -37,13 +39,13 @@ export default function Achievements() {
         if (!checkUser.id) return;
 
         try {
-            const unitsRes = await axios.get(`http://localhost:5000/api/module/allModule`);
+            const unitsRes = await axios.get(`${API_URL}/api/module/allModule`);
             setUnits(unitsRes.data.listall);
 
-            const scoresRes = await axios.get(`http://localhost:5000/api/module/get-user-score/${checkUser.id}`);
+            const scoresRes = await axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`);
             setUserScores(scoresRes.data);
 
-            const moduleData = await axios.get(`http://localhost:5000/api/module/allModule-storage`);
+            const moduleData = await axios.get(`${API_URL}/api/module/allModule-storage`);
             if (moduleData.data.success && moduleData.data.listall.length > 0) {
                 const moduleStorage = moduleData.data.listall;
                 setModuleName(moduleStorage); 

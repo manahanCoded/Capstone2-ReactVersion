@@ -5,7 +5,7 @@ import axios from 'axios';
 import MaxWidthWrapper from '@/components/MaxWidthWrapper';
 import AdminDashboard from '@/components/AdminDashboard';
 import { useNavigate } from 'react-router-dom';
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function ModuleDashboard() {
     const [userData, setUserData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ export default function ModuleDashboard() {
     useEffect(() => {
         async function checkUser() {
             try {
-                const res = await fetch("http://localhost:5000/api/user/profile", {
+                const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -42,7 +42,7 @@ export default function ModuleDashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/module/get-all-user-info');
+                const response = await axios.get(`${API_URL}/api/module/get-all-user-info`);
                 if (response.headers['content-type'].includes('application/json')) {
                     const data = response.data;
                     if (Array.isArray(data)) {

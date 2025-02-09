@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import EditPost from "./Editpost"; 
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const Edit = () => {
   const params = useParams();
 
@@ -15,7 +17,7 @@ const Edit = () => {
     const fetchPost = async () => {
       try {
         if (editPostID) {
-          const response = await axios.post(`http://localhost:5000/api/module/getPostId`, {
+          const response = await axios.post(`${API_URL}/api/module/getPostId`, {
             ids: params.editPostID,
           });
 
