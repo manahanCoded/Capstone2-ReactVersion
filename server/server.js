@@ -6,7 +6,7 @@ import cors from "cors";
 import env from "dotenv";
 import cookieParser from "cookie-parser";
 
-// ROUTES
+
 import User_Routes from "./src/Routes/User_Routes.mjs";
 import Job_Routes from "./src/Routes/Job_Routes.mjs";
 import Module_Routes from "./src/Routes/Module_Routes.mjs";
@@ -41,6 +41,11 @@ app.use(
     credentials: true,
   })
 );
+
+app.get("/", (req, res) => {
+  res.send("Backend is working!");
+});
+
 
 app.use("/api/user", User_Routes);
 app.use("/api/job", Job_Routes);
