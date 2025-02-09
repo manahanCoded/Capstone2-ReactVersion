@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Footer from "@/components/Footer";
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Home() {
+
+  console.log(API_URL)
   return (
     <>
 
