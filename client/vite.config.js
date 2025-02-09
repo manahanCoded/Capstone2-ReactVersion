@@ -10,4 +10,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://capstone2-react-version-7wzg.vercel.app",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })
