@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; 
 import axios from "axios";
-import EditPost from "./EditPost"; 
+import EditPost from "./Editpost"; 
 
 const Edit = () => {
   const params = useParams();

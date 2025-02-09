@@ -6,7 +6,7 @@ import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-const EditPost = ({ postList, editPostID }) => {
+export default function EditPost({ postList, editPostID }) {
   const [checkAdminData, setCheckAdmin] = useState(null);
   const navigate = useNavigate();
 
@@ -229,4 +229,4 @@ const EditPost = ({ postList, editPostID }) => {
   );
 };
 
-export default EditPost;
+
