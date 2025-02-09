@@ -28,7 +28,7 @@ export default function JobsPage() {
   const [selectedSalary, setSelectedSalary] = useState("");
   const [selectedJobTypes, setSelectedJobTypes] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  console.log("API_URL:", API_URL);
+
   useEffect(() => {
     async function checkUser() {
       const res = await fetch(`${API_URL}/api/user/profile`, {
