@@ -4,7 +4,7 @@ CREATE TABLE users(
 	email varchar(50) unique not null,
     name VARCHAR(70),
     lastname VARCHAR(70),
-    phone_number BIGINT unique;
+    phone_number BIGINT unique,
     password text not null,
 	role varchar(45) not null,
     image BYTEA,
@@ -35,7 +35,7 @@ CREATE TABLE module (
 	title text UNIQUE not null,
 	description text not null,
 	information text not null,
-    storage_section_id INTEGER NOT NULL REFERENCES storage_section(id),
+    storage_section_id INTEGER NOT NULL REFERENCES module_storage_section(id),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
@@ -68,8 +68,7 @@ CREATE TABLE module_scores (
 	completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	perfect_score INTEGER,                     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (module_id) REFERENCES module(id) ON DELETE CASCADE,
-    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+    FOREIGN KEY (module_id) REFERENCES module(id) ON DELETE CASCADE
 );
 
 <!-- DATABASE FOR jobs -->
@@ -89,8 +88,8 @@ CREATE TABLE jobs(
 	city text,
 	street text,
 	description text,
-	moreInfo test,
-	date date
+	moreInfo text,
+	date date,
     file_name TEXT,
     file_data BYTEA,
     file_mime_type TEXT
@@ -107,7 +106,7 @@ CREATE TABLE job_bookmarks (
 <!-- DATABASE FOR announcements -->
 CREATE TABLE announcements (
 	id serial primary key , 
-	publisher: text not null,
+	publisher text not null,
 	title text not null,
 	description text not null,
 	date date not null
@@ -122,8 +121,8 @@ CREATE TABLE applicants (
 	email text not null,
 	application text not null,
 	date date not null,
-	resume TYPE BYTEA,
-    file_mime_type TEXT;
+	resume BYTEA,
+    file_mime_type TEXT
 )
 
 
@@ -159,7 +158,7 @@ CREATE TABLE QA_questions (
 <!-- DATABASE FOR Question&Answer  answers-->
 CREATE TABLE QA_answers (
     answer_id SERIAL PRIMARY KEY,   
-    question_id INT NOT NULL REFERENCES questions(question_id) ON DELETE CASCADE,
+    question_id INT NOT NULL REFERENCES QA_questions(question_id) ON DELETE CASCADE,
     user_id INT NOT NULL,          
     answer_text TEXT NOT NULL,      
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
