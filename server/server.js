@@ -40,11 +40,11 @@ app.use(
     saveUninitialized: false,
     resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: process.env.NODE_ENV === "production", // true in production
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
-      maxAge: 60 * 60000, 
-    },
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },    
   })
 );
 
@@ -56,8 +56,9 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", 
-      "https://capstone2-react-version.vercel.app", 
-      "https://capstone2-react-version-k6mb.vercel.app"
+      "https://capstone2-react-version.vercel.app",
+      "https://capstone2-react-version-manahancodeds-projects.vercel.app", 
+      "https://capstone2-react-version-git-master-manahancodeds-projects.vercel.app"
     ],
     credentials: true, 
   })
