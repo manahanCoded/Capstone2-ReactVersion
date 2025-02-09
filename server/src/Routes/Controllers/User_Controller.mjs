@@ -76,7 +76,7 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`${process.env.CLIENT_URL}`);
+      return res.redirect(`https://capstone2-react-version.vercel.app"}`);
     });
   })(req, res, next);
 };
