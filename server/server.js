@@ -30,27 +30,26 @@ const pgPool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-app.use(
-  session({ store: new (pgSession(session))({
+app.use(session({
+  store: new (pgSession(session))({
     pool: pgPool,
-    tableName: "session", 
+    tableName: "session",
   }),
-    name: "Crypto_Warriors",
-    secret: process.env.SECRET_COOKIE || "defaultSecret",
-    saveUninitialized: false,
-    resave: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", 
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, 
-    },    
-  })
-);
-
+  name: "Crypto_Warriors",
+  secret: process.env.SECRET_COOKIE || "defaultSecret",
+  saveUninitialized: false,
+  resave: false,
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    sameSite: "none" ,
+    maxAge: 24 * 60 * 60 * 1000,
+  },
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 app.use(
   cors({
