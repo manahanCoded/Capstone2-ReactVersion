@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Register() {
   const [user, setUser] = useState({
     name: "",

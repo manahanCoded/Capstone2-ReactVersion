@@ -31,12 +31,11 @@ const pgPool = new Pool({
 });
 
 app.use(
-  session({
-    store: new (pgSession(session))({
-      pool: pgPool,
-      tableName: "session",
-    }),
-    name: "CryptoWarriors",
+  session({ store: new (pgSession(session))({
+    pool: pgPool,
+    tableName: "session", 
+  }),
+    name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
@@ -44,11 +43,10 @@ app.use(
       secure: true,
       httpOnly: true,
       sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, 
-    },
+      maxAge: 24 * 60 * 60 * 1000
+    },    
   })
 );
-
 
 
 app.use(passport.initialize());
