@@ -31,20 +31,21 @@ const pgPool = new Pool({
 });
 
 app.use(
-  session({ store: new (pgSession(session))({
-    pool: pgPool,
-    tableName: "session", 
-  }),
+  session({
+    store: new (pgSession(session))({
+      pool: pgPool,
+      tableName: "session",
+    }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production", // Set true for HTTPS
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, 
-    },    
+      sameSite: "none", // Required for cross-origin cookies
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
 
