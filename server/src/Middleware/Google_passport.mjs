@@ -10,7 +10,7 @@ env.config();
 passport.use(new GoogleStrategy({
     clientID: process.env.Google_ID, 
     clientSecret: process.env.Client_Secret,
-    callbackURL: 'https://capstone2-react-version-7wzg.vercel.app/api/user/auth/google/callback',
+    callbackURL: 'https://capstone2-react-version-kqvu.vercel.app/api/user/auth/google/callback',
     passReqToCallback: true
   },
   async (request, accessToken, refreshToken, profile, done) => {
