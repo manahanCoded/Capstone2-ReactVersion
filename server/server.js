@@ -24,28 +24,19 @@ app.use(cookieParser());
 
 env.config();
 
-const { Pool } = pkg;
-const pgPool = new Pool({
-  connectionString: process.env.DATABASE_URL, 
-  ssl: { rejectUnauthorized: false },
-});
 
 app.use(
-  session({
-    store: new (pgSession(session))({
-      pool: pgPool,
-      tableName: "session",
-    }),
+  session({ 
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Set true for HTTPS
+      secure: process.env.NODE_ENV === "production", 
       httpOnly: true,
-      sameSite: "none", // Required for cross-origin cookies
-      maxAge: 24 * 60 * 60 * 1000,
-    },
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, 
+    },    
   })
 );
 
@@ -80,4 +71,4 @@ if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-export default app;
+

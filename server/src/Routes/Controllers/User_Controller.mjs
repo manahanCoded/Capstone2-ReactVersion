@@ -7,13 +7,15 @@ import { validationResult, matchedData } from "express-validator"
 
 import env from "dotenv"
 
-env.config();
 
 
+env.config()
 
 const login = (req, res) => {
+
+  const problem = validationResult(req)
+
   try {
-    const problem = validationResult(req)
     if (!problem.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
@@ -31,8 +33,6 @@ const login = (req, res) => {
         console.error("Authentication error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      console.log("Session after login:", req.session);
-      console.log("User:", req.user); 
       if (!user) {
         return res.status(401).json({ error: "Invalid Credentials" });
       }
@@ -59,7 +59,6 @@ const google_login = (req, res, next) => {
   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 };
 
-
 const google_login_callback = (req, res, next) => {
   passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
     if (err) {
@@ -76,9 +75,8 @@ const google_login_callback = (req, res, next) => {
         console.error("Error during Google login:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      console.log("Session after google login:", req.session);
-      console.log("User:", req.user); 
-      return res.redirect(`${process.env.CLIENT_URL}`);
+
+      return res.redirect(`http://localhost:5000`);
     });
   })(req, res, next);
 };
@@ -86,14 +84,13 @@ const google_login_callback = (req, res, next) => {
 const register = async (req, res) => {
 
   const problem = validationResult(req)
+  const { name, lastname, phone_number, email, password, confirmPassword } = matchedData(req)
+  const saltRounds = 10;
   try {
 
     if (!problem.isEmpty()) {
       return res.status(400).json({ errors: problem.array() });
     }
-
-    const { name, lastname, phone_number, email, password, confirmPassword } = matchedData(req)
-    const saltRounds = 10;
 
     const checkEmail = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -120,8 +117,6 @@ const register = async (req, res) => {
         console.error("Login new register Failed.");
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      console.log("Session after register:", req.session);
-      console.log("User:", req.user); 
       return res.status(200).json({
         message: "Registration successful!",
         user: { id: user.id, email: user.email },
@@ -266,8 +261,8 @@ const userInfo = (req, res) => {
     name: req.user.name,
     lastname: req.user.lastname,
     role: req.user.role,
-    image: imageBase64,
-    file_mime_type: req.user.file_mime_type,
+    image: imageBase64,  
+    file_mime_type: req.user.file_mime_type, 
     type: req.user.type,
   })
 };

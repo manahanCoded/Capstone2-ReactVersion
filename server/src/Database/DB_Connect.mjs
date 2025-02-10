@@ -10,12 +10,9 @@ const db = new pg.Pool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     port: process.env.DB_PORT || 5432, 
-    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: true } : false,
   });
   
 
 db.connect()
-  .then(() => console.log("Connected to NeonDB "))
-  .catch((err) => console.error("Database connection error", err));
 
 export default db;
