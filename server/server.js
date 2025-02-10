@@ -31,12 +31,7 @@ app.use(
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", 
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, 
-    },    
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000, signed: true },   
   })
 );
 
