@@ -36,7 +36,12 @@ app.use(
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000, signed: true },   
+    cookie: { 
+      secure: true, // ✅ Set secure only in production
+      httpOnly: true,  // ✅ Prevents client-side JavaScript from accessing the cookie
+      sameSite: "None", // ✅ Required for cross-site cookies
+      maxAge: 24 * 60 * 60 * 1000, 
+    },  
   })
 );
 
@@ -51,6 +56,8 @@ app.use(
       "https://cryptowarriors.netlify.app"
     ],
     credentials: true, 
+    methods: "GET, POST, PUT, DELETE, OPTIONS",
+    allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   })
 );
 
