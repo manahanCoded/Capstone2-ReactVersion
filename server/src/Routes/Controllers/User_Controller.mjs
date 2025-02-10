@@ -42,21 +42,12 @@ const login = (req, res) => {
           console.error("Error during login:", err);
           return res.status(500).json({ error: "Internal Server Error" });
         }
-      
-        req.session.save((err) => {
-          if (err) {
-            console.error("Session save error:", err);
-            return res.status(500).json({ error: "Internal Server Error" });
-          }
-          console.log("Session saved successfully:", req.session);
-      
-          return res.status(200).json({
-            message: "Successfully Logged in",
-            user: { id: user.id, email: user.email },
-          });
+
+        return res.status(200).json({
+          message: "Successfully Logged in",
+          user: { id: user.id, email: user.email },
         });
       });
-      
     })(req, res);
   } catch (err) {
     console.error("Login Error", err);
@@ -85,19 +76,10 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      req.session.save((err) => {
-        if (err) {
-          console.error("Session save error:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
-        console.log("Session saved successfully:", req.session);
-
-        return res.redirect(`https://capstone2-react-version.vercel.app`);
-      });
+      return res.redirect(`https://capstone2-react-version.vercel.app`);
     });
   })(req, res, next);
 };
-
 
 const register = async (req, res) => {
 
@@ -269,6 +251,10 @@ const userInfo = (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
+
+  console.log("🔍 Checking session on profile request:");
+  console.log("🔍 req.session:", req.session);
+  console.log("🔍 req.user:", req.user);
 
 
   const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
