@@ -7,15 +7,13 @@ import { validationResult, matchedData } from "express-validator"
 
 import env from "dotenv"
 
+env.config();
 
 
-env.config()
 
 const login = (req, res) => {
-
-  const problem = validationResult(req)
-
   try {
+    const problem = validationResult(req)
     if (!problem.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
@@ -59,6 +57,7 @@ const google_login = (req, res, next) => {
   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 };
 
+
 const google_login_callback = (req, res, next) => {
   passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
     if (err) {
@@ -76,7 +75,7 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`https://capstone2-react-version.vercel.app`);
+      return res.redirect(`${process.env.CLIENT_URL}`);
     });
   })(req, res, next);
 };
@@ -84,13 +83,14 @@ const google_login_callback = (req, res, next) => {
 const register = async (req, res) => {
 
   const problem = validationResult(req)
-  const { name, lastname, phone_number, email, password, confirmPassword } = matchedData(req)
-  const saltRounds = 10;
   try {
 
     if (!problem.isEmpty()) {
       return res.status(400).json({ errors: problem.array() });
     }
+
+    const { name, lastname, phone_number, email, password, confirmPassword } = matchedData(req)
+    const saltRounds = 10;
 
     const checkEmail = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -261,8 +261,8 @@ const userInfo = (req, res) => {
     name: req.user.name,
     lastname: req.user.lastname,
     role: req.user.role,
-    image: imageBase64,  
-    file_mime_type: req.user.file_mime_type, 
+    image: imageBase64,
+    file_mime_type: req.user.file_mime_type,
     type: req.user.type,
   })
 };

@@ -24,6 +24,15 @@ app.use(cookieParser());
 
 env.config();
 
+
+app.use(
+  cors({
+    origin: "https://capstone2-react-version.vercel.app",
+    credentials: true, 
+  })
+);
+
+
 const { Pool } = pkg;
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL, 
@@ -40,26 +49,16 @@ app.use(session({
   saveUninitialized: false,
   resave: false,
   cookie: {
-    secure: true,
+    secure: true, 
     httpOnly: true,
-    sameSite: "none" ,
+    sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000,
   },
 }));
 
+
 app.use(passport.initialize());
 app.use(passport.session());
-
-
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173", 
-      "https://capstone2-react-version.vercel.app",
-    ],
-    credentials: true, 
-  })
-);
 
 
 app.use("/api/user", User_Routes);
