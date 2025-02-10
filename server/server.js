@@ -27,7 +27,7 @@ env.config();
 
 app.use(
   cors({
-    origin: "https://capstone2-react-version.vercel.app/",
+    origin: ["https://capstone2-react-version.vercel.app"], 
     credentials: true, 
   })
 );
@@ -75,4 +75,4 @@ if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-export default app;
+
