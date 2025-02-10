@@ -5,7 +5,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function Register() {
   const [user, setUser] = useState({

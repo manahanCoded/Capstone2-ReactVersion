@@ -31,6 +31,8 @@ const login = (req, res) => {
         console.error("Authentication error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
+      console.log("Session after login:", req.session);
+      console.log("User:", req.user); 
       if (!user) {
         return res.status(401).json({ error: "Invalid Credentials" });
       }
@@ -74,7 +76,8 @@ const google_login_callback = (req, res, next) => {
         console.error("Error during Google login:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-
+      console.log("Session after google login:", req.session);
+      console.log("User:", req.user); 
       return res.redirect(`${process.env.CLIENT_URL}`);
     });
   })(req, res, next);
@@ -117,6 +120,8 @@ const register = async (req, res) => {
         console.error("Login new register Failed.");
         return res.status(500).json({ error: "Internal Server Error" });
       }
+      console.log("Session after register:", req.session);
+      console.log("User:", req.user); 
       return res.status(200).json({
         message: "Registration successful!",
         user: { id: user.id, email: user.email },
