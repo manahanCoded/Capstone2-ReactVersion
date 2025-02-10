@@ -31,22 +31,24 @@ const pgPool = new Pool({
 });
 
 app.use(
-  session({ store: new (pgSession(session))({
-    pool: pgPool,
-    tableName: "session", 
-  }),
-    name: "Crypto_Warriors",
+  session({
+    store: new (pgSession(session))({
+      pool: pgPool,
+      tableName: "session",
+    }),
+    name: "CryptoWarriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // true in production
+      secure: true,
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    },    
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000, 
+    },
   })
 );
+
 
 
 app.use(passport.initialize());
