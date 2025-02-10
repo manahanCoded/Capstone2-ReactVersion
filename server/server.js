@@ -56,8 +56,6 @@ app.use(
     origin: [
       "http://localhost:5173", 
       "https://capstone2-react-version.vercel.app",
-      "https://capstone2-react-version-manahancodeds-projects.vercel.app", 
-      "https://capstone2-react-version-git-master-manahancodeds-projects.vercel.app"
     ],
     credentials: true, 
   })
