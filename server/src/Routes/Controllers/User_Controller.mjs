@@ -252,10 +252,6 @@ const userInfo = (req, res) => {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
 
-  console.log("🔍 Checking session on profile request:");
-  console.log("🔍 req.session:", req.session);
-  console.log("🔍 req.user:", req.user);
-
 
   const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
 
