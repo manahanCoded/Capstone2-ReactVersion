@@ -10,7 +10,7 @@ env.config();
 passport.use(new GoogleStrategy({
     clientID: process.env.Google_ID, 
     clientSecret: process.env.Client_Secret,
-    callbackURL: 'https://cryptowarriors-be.onrender.com/api/user/auth/google/callback',
+    callbackURL: 'httpss://capstone2-react-version-7wzg.vercel.app/api/user/auth/google/callback',
     passReqToCallback: true
   },
   async (request, accessToken, refreshToken, profile, done) => {
@@ -21,6 +21,7 @@ passport.use(new GoogleStrategy({
       if (!emails || emails.length === 0) {
         return done(new Error("No email found"), null);
       }
+      console.log(profile)
 
       const email = emails[0].value; 
 

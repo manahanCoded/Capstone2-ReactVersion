@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 env.config();
 
-
+try {
 const pgStore = pgSession(session);
 app.use(
   session({
@@ -44,7 +44,10 @@ app.use(
     },  
   })
 );
-
+console.log("Session store initialized!");
+} catch (error) {
+  console.error("Error setting up session store:", error);
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
