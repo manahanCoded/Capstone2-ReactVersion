@@ -76,7 +76,7 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`http://localhost:5000`);
+      return res.redirect(`http://localhost:5173`);
     });
   })(req, res, next);
 };

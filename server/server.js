@@ -15,7 +15,7 @@ import Announcement_Routes from "./src/Routes/Announcement_Routes.mjs"
 import Dashboard_Routes from "./src/Routes/Dashboard_Routes.mjs"
 import Mail_Routes from "./src/Routes/Mail_Routes.mjs"
 import QA_Routes from "./src/Routes/QA_Routes.mjs"
-import pkg from "pg";
+import db from "./src/Database/DB_Connect.mjs";
 
 const app = express();
 
@@ -25,8 +25,13 @@ app.use(cookieParser());
 env.config();
 
 
+const pgStore = pgSession(session);
 app.use(
-  session({ 
+  session({
+    store: new pgStore({
+      pool: db,
+      tableName: "session", // Custom session table name (optional)
+    }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
