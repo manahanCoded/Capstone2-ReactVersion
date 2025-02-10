@@ -76,7 +76,7 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`http://localhost:5173`);
+      return res.redirect(`https://cryptowarriors.netlify.app`);
     });
   })(req, res, next);
 };
