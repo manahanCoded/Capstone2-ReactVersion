@@ -24,41 +24,45 @@ app.use(cookieParser());
 
 env.config();
 
-
-app.use(
-  cors({
-    origin: ["https://capstone2-react-version.vercel.app/"], 
-    credentials: true, 
-  })
-);
-
-
 const { Pool } = pkg;
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL, 
   ssl: { rejectUnauthorized: false },
 });
 
-app.use(session({
-  store: new (pgSession(session))({
+app.use(
+  session({ store: new (pgSession(session))({
     pool: pgPool,
-    tableName: "session",
+    tableName: "session", 
   }),
-  name: "Crypto_Warriors",
-  secret: process.env.SECRET_COOKIE || "defaultSecret",
-  saveUninitialized: false,
-  resave: false,
-  cookie: {
-    secure: true, 
-    httpOnly: true,
-    sameSite: "none",
-    maxAge: 24 * 60 * 60 * 1000,
-  },
-}));
+    name: "Crypto_Warriors",
+    secret: process.env.SECRET_COOKIE || "defaultSecret",
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, 
+    },    
+  })
+);
 
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", 
+      "https://capstone2-react-version.vercel.app",
+      "https://capstone2-react-version-manahancodeds-projects.vercel.app", 
+      "https://capstone2-react-version-git-master-manahancodeds-projects.vercel.app"
+    ],
+    credentials: true, 
+  })
+);
 
 
 app.use("/api/user", User_Routes);
@@ -75,4 +79,4 @@ if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-
+export default app;
