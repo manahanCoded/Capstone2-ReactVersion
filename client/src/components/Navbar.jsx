@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from "axios";
 import "react-quill-new/dist/quill.snow.css"
 
-const API_URL = import.meta.env.VITE_API_URL || "${API_URL}";
+const API_URL = "https://capstone2-react-version-kqvu.vercel.app";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
