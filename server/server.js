@@ -35,24 +35,23 @@ app.use(
     }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
-    saveUninitialized: false,
-    resave: false,
-    cookie: { 
-      secure: process.env.NODE_ENV === "production", // ✅ Required for cross-site cookies (use HTTPS)
-      httpOnly: true, // ✅ Prevents client-side access to cookies
-      sameSite: "none", // ✅ Required for cross-site requests
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    },  
+    saveUninitialized: true,  // 🔥 Force saving uninitialized sessions
+    resave: true,  // 🔥 Try forcing session resave
+    cookie: {
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
+app.use(passport.initialize());
+app.use(passport.session());
 
 console.log("Session store initialized!");
 } catch (error) {
   console.error("Error setting up session store:", error);
 }
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(
   cors({
@@ -65,7 +64,8 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log("Session data after login:", req.session);
+  console.log("🔍 Current Session Data:", req.session);
+  console.log("🔍 Current User:", req.user);
   next();
 });
 
