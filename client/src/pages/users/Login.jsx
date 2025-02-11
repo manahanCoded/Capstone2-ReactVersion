@@ -37,9 +37,7 @@ export default function Login() {
     try {
       const response = await fetch(`${API_URL}/api/user/login`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Access-Control-Allow-Origin': 'https://cryptowarriors.netlify.app' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
         credentials: "include",
       });
