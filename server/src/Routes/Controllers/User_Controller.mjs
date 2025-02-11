@@ -55,6 +55,11 @@ const login = (req, res) => {
   }
 };
 
+const google_login = (req, res, next) => {
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+};
+
+
 const google_login_callback = (req, res, next) => {
   passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
     if (err) {
