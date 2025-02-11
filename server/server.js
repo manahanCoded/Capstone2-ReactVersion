@@ -32,6 +32,7 @@ try {
       store: new pgStore({
         pool: db,
         tableName: "session",
+        createTableIfMissing: true,
       }),
       name: "Crypto_Warriors",
       secret: process.env.SECRET_COOKIE || "defaultSecret",
