@@ -74,7 +74,7 @@ app.use((req, res, next) => {
   if (err) {
     console.error('Error querying session table:', err);
   } else {
-    console.log('Session table data:', res.rows);
+    console.log('Session table data:');
   }
 });
   next();
