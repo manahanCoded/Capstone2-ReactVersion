@@ -26,27 +26,27 @@ app.use(cookieParser());
 env.config();
 
 try {
-const pgStore = pgSession(session);
-app.use(
-  session({
-    store: new pgStore({
-      pool: db,
-      tableName: "session",
-    }),
-    name: "Crypto_Warriors",
-    secret: process.env.SECRET_COOKIE || "defaultSecret",
-    saveUninitialized: false,
-    resave: false,
-    cookie: { 
-      secure: true, // ✅ Required for cross-site cookies (use HTTPS)
-      httpOnly: true, // ✅ Prevents client-side access to cookies
-      sameSite: "none", // ✅ Required for cross-site requests
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    },  
-  })
-);
+  const pgStore = pgSession(session);
+  app.use(
+    session({
+      store: new pgStore({
+        pool: db,
+        tableName: "session",
+      }),
+      name: "Crypto_Warriors",
+      secret: process.env.SECRET_COOKIE || "defaultSecret",
+      saveUninitialized: false,
+      resave: false,
+      cookie: {
+        secure: process.env.NODE_ENV === "production", // Set to true only in production
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use 'none' in production, 'lax' in development
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      },
+    })
+  );
 
-console.log("Session store initialized!");
+  console.log("Session store initialized!");
 } catch (error) {
   console.error("Error setting up session store:", error);
 }
@@ -57,23 +57,22 @@ app.use(passport.session());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", 
-      "https://cryptowarriors.netlify.app"
+      "http://localhost:5173",
+      "https://cryptowarriors.netlify.app",
     ],
-    credentials: true, 
+    credentials: true,
   })
 );
 
-app.use((req, res, next) => {
-  console.log("Session data after login:", req.session);
-  next();
-});
 
 app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
   console.log(`Session ID: ${req.sessionID}`);
+  console.log(`Session data: ${JSON.stringify(req.session)}`);
+  console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
   next();
 });
+
 
 app.use("/api/user", User_Routes);
 app.use("/api/job", Job_Routes);
@@ -82,6 +81,12 @@ app.use("/api/announcement", Announcement_Routes)
 app.use("/api/dashboard", Dashboard_Routes)
 app.use("/api/mail", Mail_Routes)
 app.use("/api/question-answer", QA_Routes)
+
+
+app.use((err, req, res, next) => {
+  console.error("Error:", err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
 
 
 if (process.env.NODE_ENV !== "production") {
