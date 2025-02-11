@@ -55,17 +55,12 @@ const login = (req, res) => {
   }
 };
 
-const google_login = (req, res, next) => {
-  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
-};
-
 const google_login_callback = (req, res, next) => {
   passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
     if (err) {
       console.error("Google authentication error:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
-
     if (!user) {
       return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
     }
@@ -76,10 +71,12 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`https://cryptowarriors.netlify.app`);
+      console.log("User successfully logged in:", user); // Check if this runs
+      return res.redirect("https://cryptowarriors.netlify.app");
     });
   })(req, res, next);
 };
+
 
 const register = async (req, res) => {
 

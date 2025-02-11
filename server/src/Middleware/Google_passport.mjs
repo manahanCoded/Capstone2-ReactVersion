@@ -49,21 +49,22 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.serializeUser((user, done) => {
-  console.log("Gosssssogle USER ID (SERIALIZED): ", user.id);
+  if (!user) {
+    return done(new Error("No user provided"));
+  }
+  console.log("Serializing user:", user.id);
   return done(null, user.id);
 });
-  
+
 passport.deserializeUser(async (userID, done) => {
-  console.log("USsssseR ID (DESERIALIZED): ", userID);
   try {
-    const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]); // ✅ Use "id"
+    const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
     if (checkUser.rowCount === 0) {
-      throw new Error("No user found");
+      return done(new Error("No user found"));
     }
     return done(null, checkUser.rows[0]);
   } catch (err) {
     console.error("Error in deserialization:", err);
-    return done(err, null);
+    return done(err);
   }
 });
-
