@@ -67,7 +67,7 @@ const google_login_callback = (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
+      return res.status(401).json({ error: "Authentication failed" });
     }
 
     req.login(user, (err) => {
@@ -76,7 +76,16 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      return res.redirect(`https://cryptowarriors.netlify.app`);
+      // Send user data directly instead of redirecting
+      return res.status(200).json({
+        message: "Successfully logged in via Google",
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          type: user.type
+        }
+      });
     });
   })(req, res, next);
 };
