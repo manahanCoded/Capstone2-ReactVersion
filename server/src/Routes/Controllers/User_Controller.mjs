@@ -1,5 +1,5 @@
-import "../../Middleware/Local_passport.mjs";
 import "../../Middleware/Google_passport.mjs"
+import "../../Middleware/Local_passport.mjs";
 import passport from "passport";
 import db from "../../Database/DB_Connect.mjs";
 import bcrypt from "bcrypt";
