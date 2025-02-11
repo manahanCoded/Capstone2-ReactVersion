@@ -19,8 +19,9 @@ env.config();
   });
   
   
-  db.on("connect", () => {
-    console.log("Connected to the database");
-  });
+  db.query("SELECT NOW()")
+  .then((res) => console.log("🕒 Database time:", res.rows[0].now))
+  .catch((err) => console.error("❌ Database connection error:", err));
+
 
 export default db;

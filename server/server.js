@@ -70,7 +70,7 @@ app.use((req, res, next) => {
   console.log(`Session ID: ${req.sessionID}`);
   console.log(`Session data: ${JSON.stringify(req.session)}`);
   console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
-  
+  console.log("DATABASE_URL:", process.env.DATABASE_URL);
   next();
 });
 
