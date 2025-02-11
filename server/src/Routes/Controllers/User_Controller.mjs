@@ -37,7 +37,7 @@ const login = (req, res) => {
         return res.status(401).json({ error: "Invalid Credentials" });
       }
 
-      req.login(user, (err) => {
+      req.logIn(user, (err) => {
         if (err) {
           console.error("Error during login:", err);
           return res.status(500).json({ error: "Internal Server Error" });
@@ -70,7 +70,7 @@ const google_login_callback = (req, res, next) => {
       return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
     }
 
-    req.login(user, (err) => {
+    req.logIn(user, (err) => {
       if (err) {
         console.error("Error during Google login:", err);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -255,8 +255,6 @@ const userInfo = (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
-
-
   const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
 
   return res.status(200).json({
