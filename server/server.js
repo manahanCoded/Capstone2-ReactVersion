@@ -38,9 +38,9 @@ try {
       saveUninitialized: false,
       resave: false,
       cookie: {
-        secure: process.env.NODE_ENV === "production", // Set to true only in production
+        secure: true, // Set to true only in production
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use 'none' in production, 'lax' in development
+        sameSite: "none" , // Use 'none' in production, 'lax' in development
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       },
     })
@@ -70,6 +70,13 @@ app.use((req, res, next) => {
   console.log(`Session ID: ${req.sessionID}`);
   console.log(`Session data: ${JSON.stringify(req.session)}`);
   console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
+  db.query('SELECT * FROM session', (err, res) => {
+    if (err) {
+      console.error('Error querying session table:', err);
+    } else {
+      console.log('Session table data:', res.rows);
+    }
+  });
   next();
 });
 
