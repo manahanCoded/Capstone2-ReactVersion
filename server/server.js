@@ -65,6 +65,10 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  console.log("Session data:", req.session);
+  next();
+});
 
 app.use("/api/user", User_Routes);
 app.use("/api/job", Job_Routes);
