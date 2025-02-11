@@ -11,6 +11,7 @@ env.config();
 //     database: process.env.DB_DATABASE,
 //     port: process.env.DB_PORT || 5432, 
 //   });
+// db.connect()
 
   const db = new pkg.Pool({
     connectionString: process.env.DATABASE_URL, // Uses a single connection string
@@ -18,7 +19,8 @@ env.config();
   });
   
   
-
-db.connect()
+  db.on("connect", () => {
+    console.log("Connected to the database");
+  });
 
 export default db;

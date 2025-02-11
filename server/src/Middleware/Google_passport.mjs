@@ -8,7 +8,8 @@ env.config();
 
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  console.log("🔍 serializeUser user:", user.id);
+  return done(null, user.id);
 });
 
 passport.deserializeUser(async (userID, done) => {
