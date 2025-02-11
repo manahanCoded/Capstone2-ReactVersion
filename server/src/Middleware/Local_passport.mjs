@@ -36,12 +36,12 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  console.log(" USER ID: ", user.id)
+  console.log(" asdasdasd USER ID: ", user.id)
   return done(null, user.id);
 });
 
 passport.deserializeUser(async (userID, done) => {
-  console.log(" USER ID: ", userID)
+  console.log("asdasdasdasd USER ID: ", userID)
   try {
     const checkID = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
     if (checkID.rowCount === 0) {

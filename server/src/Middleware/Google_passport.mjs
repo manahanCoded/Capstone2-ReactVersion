@@ -58,6 +58,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (userID, done) => {
   try {
+    console.log(" deserializeUser:", user.id);
     const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
     if (checkUser.rowCount === 0) {
       return done(new Error("No user found"));
