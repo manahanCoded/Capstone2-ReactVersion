@@ -38,7 +38,7 @@ app.use(
     saveUninitialized: false,
     resave: false,
     cookie: { 
-      secure: process.env.NODE_ENV === "production", // ✅ Required for cross-site cookies (use HTTPS)
+      secure: true, // ✅ Required for cross-site cookies (use HTTPS)
       httpOnly: true, // ✅ Prevents client-side access to cookies
       sameSite: "none", // ✅ Required for cross-site requests
       maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -66,6 +66,12 @@ app.use(
 
 app.use((req, res, next) => {
   console.log("Session data after login:", req.session);
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log(`Request URL: ${req.url}`);
+  console.log(`Session ID: ${req.sessionID}`);
   next();
 });
 

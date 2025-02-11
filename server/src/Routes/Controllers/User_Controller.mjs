@@ -61,7 +61,7 @@ const google_login = (req, res, next) => {
 
 
 const google_login_callback = (req, res, next) => {
-  passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
+  passport.authenticate("google", { failureRedirect: "/login" }, (err, user) => {
     if (err) {
       console.error("Google authentication error:", err);
       return res.status(500).json({ error: "Internal Server Error" });

@@ -8,11 +8,6 @@ env.config();
 
 
 passport.serializeUser((user, done) => {
-  if (!user) {
-    console.error("❌ No user provided for serialization");
-    return done(null);
-  }
-  console.log("✅ Serializing user:", user.id);
   done(null, user.id);
 });
 
