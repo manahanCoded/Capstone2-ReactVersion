@@ -30,10 +30,8 @@ try {
   app.use(
     session({
       store: new pgStore({
-        conObject: { 
-          connectionString: process.env.DATABASE_URL, 
-          ssl: { rejectUnauthorized: true } 
-        }
+        pool: db,
+        tableName: "session",
       }),
       name: "Crypto_Warriors",
       secret: process.env.SECRET_COOKIE || "defaultSecret",
@@ -72,6 +70,13 @@ app.use((req, res, next) => {
   console.log(`Session ID: ${req.sessionID}`);
   console.log(`Session data: ${JSON.stringify(req.session)}`);
   console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
+  db.query('SELECT * FROM session', (err, res) => {
+  if (err) {
+    console.error('Error querying session table:', err);
+  } else {
+    console.log('Session table data:');
+  }
+});
   next();
 });
 
