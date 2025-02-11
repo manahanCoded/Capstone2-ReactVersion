@@ -35,14 +35,14 @@ app.use(
     }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
-    saveUninitialized: true,  // 🔥 Force saving uninitialized sessions
-    resave: true,  // 🔥 Try forcing session resave
+    saveUninitialized: false,
+    resave: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", 
+      secure: true, 
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, 
-    },  
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
 app.use(passport.initialize());
@@ -64,8 +64,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log("🔍 Current Session Data:", req.session);
-  console.log("🔍 Current User:", req.user);
+  console.log("Session data after login:", req.session);
   next();
 });
 

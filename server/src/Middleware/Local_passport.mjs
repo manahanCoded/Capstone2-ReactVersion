@@ -3,7 +3,35 @@ import db from "../Database/DB_Connect.mjs";
 import bcrypt from "bcrypt";
 import passport from "passport";
 
-passport.use(
+
+passport.serializeUser((user, done) => {
+  if (!user) {
+    console.error("❌ No user provided for serialization");
+    return done(new Error("No user provided"));
+  }
+  console.log("✅ Serializing user:", user.id);
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (userID, done) => {
+  try {
+    console.log("🔍 Deserializing user:", userID);
+    const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
+
+    if (checkUser.rowCount === 0) {
+      console.error("❌ No user found in DB for ID:", userID);
+      return done(new Error("No user found"));
+    }
+
+    console.log("✅ User found:", checkUser.rows[0]);
+    return done(null, checkUser.rows[0]);
+  } catch (err) {
+    console.error("❌ Error in deserialization:", err);
+    return done(err);
+  }
+});
+
+export default passport.use(
   "local",
   new Strategy(
     { usernameField: "email", passwordField: "password" },
@@ -35,21 +63,3 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, done) => {
-  console.log(" asdasdasd USER ID: ", user.id)
-  return done(null, user.id);
-});
-
-passport.deserializeUser(async (userID, done) => {
-  try {
-    console.log("Deserializing user:", userID);
-    const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
-    if (checkUser.rowCount === 0) {
-      return done(new Error("No user found"));
-    }
-    return done(null, checkUser.rows[0]);
-  } catch (err) {
-    console.error("Error in deserialization:", err);
-    return done(err);
-  }
-});
