@@ -40,7 +40,7 @@ app.use(
     cookie: { 
       secure: true, // ✅ Set secure only in production
       httpOnly: true,  // ✅ Prevents client-side JavaScript from accessing the cookie
-      sameSite: "None", // ✅ Required for cross-site cookies
+      sameSite: "Lax", // ✅ Required for cross-site cookies
       maxAge: 24 * 60 * 60 * 1000, 
     },  
   })
@@ -66,7 +66,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log("Session data:", req.session);
+  console.log("Session data after login:", req.session);
   next();
 });
 

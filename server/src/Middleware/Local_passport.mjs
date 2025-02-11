@@ -41,15 +41,15 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async (userID, done) => {
-  console.log("asdasdasdasd USER ID: ", userID)
   try {
-    const checkID = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
-    if (checkID.rowCount === 0) {
-      throw new Error("No user ID found");
+    console.log("Deserializing user:", userID);
+    const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
+    if (checkUser.rowCount === 0) {
+      return done(new Error("No user found"));
     }
-    return done(null, checkID.rows[0]);
+    return done(null, checkUser.rows[0]);
   } catch (err) {
     console.error("Error in deserialization:", err);
-    return done(err, null, { error: "Internal Server Error" });
+    return done(err);
   }
 });
