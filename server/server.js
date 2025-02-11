@@ -57,7 +57,6 @@ app.use(passport.session());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
       "https://cryptowarriors.netlify.app",
     ],
     credentials: true, // ✅ Important for cookies & sessions
