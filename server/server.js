@@ -60,7 +60,8 @@ app.use(
       "http://localhost:5173",
       "https://cryptowarriors.netlify.app",
     ],
-    credentials: true,
+    credentials: true, // ✅ Important for cookies & sessions
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 

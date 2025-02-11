@@ -20,8 +20,8 @@ env.config();
   
   
   db.query("SELECT NOW()")
-  .then((res) => console.log("🕒 Database time:", res.rows[0].now))
-  .catch((err) => console.error("❌ Database connection error:", err));
+  .then((res) => console.log(" Database time:", res.rows[0].now))
+  .catch((err) => console.error("Database connection error:", err));
 
 
 export default db;
