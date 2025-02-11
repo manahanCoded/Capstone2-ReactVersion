@@ -31,20 +31,21 @@ app.use(
   session({
     store: new pgStore({
       pool: db,
-      tableName: "session", // Custom session table name (optional)
+      tableName: "session",
     }),
     name: "Crypto_Warriors",
     secret: process.env.SECRET_COOKIE || "defaultSecret",
     saveUninitialized: false,
     resave: false,
     cookie: { 
-      secure: true, // ✅ Set secure only in production
-      httpOnly: true,  // ✅ Prevents client-side JavaScript from accessing the cookie
-      sameSite: "none", // ✅ Required for cross-site cookies
-      maxAge: 24 * 60 * 60 * 1000, 
+      secure: process.env.NODE_ENV === "production", // ✅ Required for cross-site cookies (use HTTPS)
+      httpOnly: true, // ✅ Prevents client-side access to cookies
+      sameSite: "none", // ✅ Required for cross-site requests
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     },  
   })
 );
+
 console.log("Session store initialized!");
 } catch (error) {
   console.error("Error setting up session store:", error);

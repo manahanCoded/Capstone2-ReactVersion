@@ -76,7 +76,9 @@ const google_login_callback = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      console.log("User successfully logged in:", user); // Check if this runs
+      console.log("✅ User successfully logged in:", user);
+      console.log("🛠 Session after login:", req.session); // Debugging
+
       return res.redirect("https://cryptowarriors.netlify.app");
     });
   })(req, res, next);
