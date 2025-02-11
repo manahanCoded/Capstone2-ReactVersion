@@ -29,20 +29,22 @@ try {
   const pgStore = pgSession(session);
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        secure: true,  // Set to false if not using HTTPS in dev
-        httpOnly: true,
-        sameSite: "none",
-      },
-      store: new (require("connect-pg-simple")(session))({
-        pool: db, // Your PostgreSQL pool
+      store: new pgStore({
+        pool: db,
+        createTableIfMissing: true,
       }),
+      name: "Crypto_Warriors",
+      secret: process.env.SECRET_COOKIE || "defaultSecret",
+      saveUninitialized: false,
+      resave: false,
+      cookie: {
+        secure: true, // Set to true only in production
+        httpOnly: true,
+        sameSite: "none" , // Use 'none' in production, 'lax' in development
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      },
     })
   );
-  
 
   console.log("Session store initialized!");
 } catch (error) {
@@ -63,21 +65,6 @@ app.use(
 );
 
 
-app.use((req, res, next) => {
-  console.log("Middleware Check - User:", req.user);
-  console.log(`Request URL: ${req.url}`);
-  console.log(`Session ID: ${req.sessionID}`);
-  console.log(`Session data: ${JSON.stringify(req.session)}`);
-  console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
-  db.query('SELECT * FROM session', (err, res) => {
-  if (err) {
-    console.error('Error querying session table:', err);
-  } else {
-    console.log('Session table data:');
-  }
-});
-  next();
-});
 
 
 app.use("/api/user", User_Routes);
@@ -87,12 +74,16 @@ app.use("/api/announcement", Announcement_Routes)
 app.use("/api/dashboard", Dashboard_Routes)
 app.use("/api/mail", Mail_Routes)
 app.use("/api/question-answer", QA_Routes)
-app.get("/api/debug-session", (req, res) => {
-  res.json({
-    session: req.session,
-    passport: req.session.passport,
-  });
+
+app.use((req, res, next) => {
+  console.log("Middleware Check - User:", req.user);
+  console.log(`Request URL: ${req.url}`);
+  console.log(`Session ID: ${req.sessionID}`);
+  console.log(`Session data: ${JSON.stringify(req.session)}`);
+  console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
+  next();
 });
+
 
 
 app.use((err, req, res, next) => {
