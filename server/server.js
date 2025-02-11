@@ -30,7 +30,10 @@ try {
   app.use(
     session({
       store: new pgStore({
-        conObject: { connectionString: process.env.DATABASE_URL }
+        conObject: { 
+          connectionString: process.env.DATABASE_URL, 
+          ssl: { rejectUnauthorized: false } 
+        }
       }),
       name: "Crypto_Warriors",
       secret: process.env.SECRET_COOKIE || "defaultSecret",
