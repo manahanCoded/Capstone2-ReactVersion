@@ -32,7 +32,7 @@ try {
       store: new pgStore({
         conObject: { 
           connectionString: process.env.DATABASE_URL, 
-          ssl: { rejectUnauthorized: false } 
+          ssl: { rejectUnauthorized: true } 
         }
       }),
       name: "Crypto_Warriors",
