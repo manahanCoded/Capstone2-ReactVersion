@@ -49,12 +49,12 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.serializeUser((user, done) => {
-  console.log("Google USER ID (SERIALIZED): ", user.id);
+  console.log("Gosssssogle USER ID (SERIALIZED): ", user.id);
   return done(null, user.id);
 });
   
 passport.deserializeUser(async (userID, done) => {
-  console.log("USER ID (DESERIALIZED): ", userID);
+  console.log("USsssseR ID (DESERIALIZED): ", userID);
   try {
     const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]); // ✅ Use "id"
     if (checkUser.rowCount === 0) {
