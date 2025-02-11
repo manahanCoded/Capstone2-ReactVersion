@@ -39,9 +39,9 @@ try {
       saveUninitialized: false,
       resave: false,
       cookie: {
-        secure: process.env.NODE_ENV === "production", // Set to true in production (HTTPS)
+        secure: true, // Set to true in production (HTTPS)
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use 'none' in production, 'lax' in development
+        sameSite: "none", // Use 'none' in production, 'lax' in development
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       },
     })

@@ -1,5 +1,5 @@
-import "../../Middleware/Google_passport.mjs"
 import "../../Middleware/Local_passport.mjs";
+import "../../Middleware/Google_passport.mjs"
 import passport from "passport";
 import db from "../../Database/DB_Connect.mjs";
 import bcrypt from "bcrypt";
@@ -37,7 +37,7 @@ const login = (req, res) => {
         return res.status(401).json({ error: "Invalid Credentials" });
       }
 
-      req.logIn(user, (err) => {
+      req.login(user, (err) => {
         if (err) {
           console.error("Error during login:", err);
           return res.status(500).json({ error: "Internal Server Error" });
@@ -59,31 +59,27 @@ const google_login = (req, res, next) => {
   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 };
 
-
 const google_login_callback = (req, res, next) => {
-  passport.authenticate("google", { failureRedirect: "/login" }, (err, user) => {
+  passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
     if (err) {
       console.error("Google authentication error:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
+
     if (!user) {
       return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
     }
 
-    req.logIn(user, (err) => {
+    req.login(user, (err) => {
       if (err) {
         console.error("Error during Google login:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      console.log("✅ User successfully logged in:", user);
-      console.log("🛠 Session after login:", req.session); // Debugging
-
-      return res.redirect("https://cryptowarriors.netlify.app");
+      return res.redirect(`https://cryptowarriors.netlify.app`);
     });
   })(req, res, next);
 };
-
 
 const register = async (req, res) => {
 
@@ -255,6 +251,8 @@ const userInfo = (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
+
+
   const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
 
   return res.status(200).json({
