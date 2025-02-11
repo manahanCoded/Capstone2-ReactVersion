@@ -20,6 +20,7 @@ import db from "./src/Database/DB_Connect.mjs";
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieParser());
 
 env.config();
