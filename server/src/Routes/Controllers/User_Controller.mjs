@@ -67,7 +67,7 @@ const google_login_callback = (req, res, next) => {
     req.login(user, (err) => {
       if (err) return res.status(500).json({ error: "Internal Server Error" });
 
-      return res.redirect(`${process.env.CLIENT_UR}`);
+      return res.redirect(`${process.env.CLIENT_URL}`);
     });
   })(req, res, next);
 };
