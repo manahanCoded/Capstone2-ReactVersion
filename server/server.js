@@ -39,9 +39,9 @@ try {
       saveUninitialized: false,
       resave: false,
       cookie: {
-        secure: true, // Set to true in production (HTTPS)
+        secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
         httpOnly: true,
-        sameSite: "none", // Use 'none' in production, 'lax' in development
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' in production, 'lax' in development
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       },
     })
@@ -93,7 +93,5 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}

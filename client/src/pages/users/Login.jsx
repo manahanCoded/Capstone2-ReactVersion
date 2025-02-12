@@ -4,6 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Link, useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function Login() {
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -33,7 +34,7 @@ export default function Login() {
 
   const submit_Login = async (e) => {
     e.preventDefault();
-  
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/user/login`, {
         method: "POST",
@@ -41,9 +42,9 @@ export default function Login() {
         body: JSON.stringify(user),
         credentials: "include",
       });
-  
-      const data = await response.json(); 
-  
+
+      const data = await response.json();
+
       if (!response.ok) {
         if (data.errors) {
           const errorMessages = data.errors.map((error) => error.msg).join("\n");
@@ -54,14 +55,16 @@ export default function Login() {
           alert("An unexpected error occurred.");
         }
       } else {
-        navigate("/"); 
+        navigate("/");
       }
     } catch (error) {
       console.error("Login Error:", error);
       alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
-  
+
 
   return (
     <div className=" h-screen overflow-hidden">
@@ -75,10 +78,10 @@ export default function Login() {
             onSubmit={submit_Login}
             className="xl:w-fit w-full h-[90%] flex flex-row overflow-hidden bg-[#333333] "
           >
-              <section className="w-[35%] px-12 py-8 text-white hidden lg:block">
-              <img src="/IMG_Auth/CW_icon.png" 
-              className="h-56"
-              alt="" />
+            <section className="w-[35%] px-12 py-8 text-white hidden lg:block">
+              <img src="/IMG_Auth/CW_icon.png"
+                className="h-56"
+                alt="" />
               <h1 className="text-3xl font-semibold mb-4">Become a <span className="text-red-600">Crypto Warrior </span>Today</h1>
               <p className="text-sm">Unlock your learning journey! Sign in or register to access educational resources and courses.</p>
             </section>
@@ -110,19 +113,21 @@ export default function Login() {
                   />
                   <div className="w-full flex items-center justify-end text-red-700 hover:undeline text-sm mb-4">
                     <Link to="/user/retrieve">Forgot Password?</Link>
-                </div>
-                <input
-                  required
-                  type="submit"
-                  className="md:h-10 h-8 rounded mb-2 mt-3 px-2 cursor-pointer bg-red-700 text-white hover:bg-red-900"
-                />
-                <Link
-                  to={`${API_URL}/api/user/auth/google`}
-                  className="md:h-10 h-8 rounded mb-2 mt-2 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
-                >
-                  <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />
-                  Or sign up with Google
-                </Link>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`bg-blue-500 text-white p-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    {loading ? "Logging in..." : "Login"}
+                  </button>
+                  <Link
+                    to={`${API_URL}/api/user/auth/google`}
+                    className="md:h-10 h-8 rounded mb-2 mt-2 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
+                  >
+                    <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />
+                    Or sign up with Google
+                  </Link>
                 </div>
               </div>
               <div className="flex justify-between items-center">
