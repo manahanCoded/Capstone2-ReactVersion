@@ -51,6 +51,9 @@ try {
 } catch (error) {
   console.error("Error setting up session store:", error);
 }
+
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: [
