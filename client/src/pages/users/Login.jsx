@@ -15,7 +15,7 @@ export default function Login() {
   useEffect(() => {
   const checkLogin = async () => {
     try {
-      const { data } = await axios.get(`https://cryptowarriors-be.onrender.com/profile`, {
+      const { data } = await axios.get(`https://cryptowarriors-be.onrender.com/api/user/profile`, {
         withCredentials: true,
       });
 
@@ -36,7 +36,7 @@ const submit_Login = async (e) => {
   e.preventDefault();
   setLoading(true);
   try {
-    const { data } = await axios.post(`https://cryptowarriors-be.onrender.com/login`, user, {
+    const { data } = await axios.post(`https://cryptowarriors-be.onrender.com/api/user/login`, user, {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });
@@ -115,7 +115,7 @@ const submit_Login = async (e) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`bg-blue-500 text-white p-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`bg-red-700 hover:bg-red-900 text-white p-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     {loading ? "Logging in..." : "Login"}
                   </button>
