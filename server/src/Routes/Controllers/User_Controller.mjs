@@ -60,23 +60,14 @@ const google_login = (req, res, next) => {
 };
 
 const google_login_callback = (req, res, next) => {
-  passport.authenticate("google", { failureRedirect: "/" }, (err, user) => {
-    if (err) {
-      console.error("Google authentication error:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
-
-    if (!user) {
-      return res.status(401).redirect(`${process.env.CLIENT_URL}/user/login`);
-    }
+  passport.authenticate("google", { failureRedirect: `${process.env.CLIENT_URL}/login` }, (err, user) => {
+    if (err) return res.status(500).json({ error: "Internal Server Error" });
+    if (!user) return res.redirect(`${process.env.CLIENT_URL}/login`);
 
     req.login(user, (err) => {
-      if (err) {
-        console.error("Error during Google login:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
+      if (err) return res.status(500).json({ error: "Internal Server Error" });
 
-      return res.redirect(`https://cryptowarriors.netlify.app`);
+      return res.redirect(`${process.env.CLIENT_UR}`);
     });
   })(req, res, next);
 };

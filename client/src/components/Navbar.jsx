@@ -30,16 +30,10 @@ const Navbar = () => {
   useEffect(() => {
     async function checkUser() {
       try {
-        const res = await fetch(`${API_URL}/api/user/profile`, {
-          method: "GET",
-          credentials: "include",
+        const res = await axios.get(`https://cryptowarriors-be.onrender.com/api/user/profile`, {
+          withCredentials: true,
         });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          setUser(null);
-        }
+        setUser(res.data);
       } catch (error) {
         setUser(null);
       }

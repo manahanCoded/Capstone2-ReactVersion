@@ -13,57 +13,55 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkLogin = async () => {
-      const response = await fetch(`${API_URL}/api/user/profile`, {
-        method: "GET",
-        credentials: "include",
+  const checkLogin = async () => {
+    try {
+      const { data } = await axios.get(`https://cryptowarriors-be.onrender.com/profile`, {
+        withCredentials: true,
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.id) {
+      if (data.id) {
         navigate("/");
       } else {
         console.log("User not logged in");
       }
-    };
-
-    checkLogin();
-  }, [navigate]);
-
-
-  const submit_Login = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/api/user/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-        credentials: "include",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.errors) {
-          const errorMessages = data.errors.map((error) => error.msg).join("\n");
-          alert(errorMessages);
-        } else if (data.error) {
-          alert(data.error);
-        } else {
-          alert("An unexpected error occurred.");
-        }
-      } else {
-        navigate("/");
-      }
     } catch (error) {
-      console.error("Login Error:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+      console.log("Error checking login:", error);
     }
   };
+
+  checkLogin();
+}, [navigate]);
+
+const submit_Login = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const { data } = await axios.post(`https://cryptowarriors-be.onrender.com/login`, user, {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    });
+
+    navigate("/");
+  } catch (error) {
+    console.error("Login Error:", error);
+    
+    if (error.response) {
+      const { errors, error: errorMsg } = error.response.data;
+
+      if (errors) {
+        alert(errors.map((err) => err.msg).join("\n"));
+      } else if (errorMsg) {
+        alert(errorMsg);
+      } else {
+        alert("An unexpected error occurred.");
+      }
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
