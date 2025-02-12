@@ -25,32 +25,26 @@ app.use(cookieParser());
 
 env.config();
 
-// Session store setup
-try {
-  const pgStore = pgSession(session);
-  app.use(
-    session({
-      store: new pgStore({
-        pool: db,
-        createTableIfMissing: true,
-      }),
-      name: "Crypto_Warriors",
-      secret: process.env.SECRET_COOKIE || "defaultSecret",
-      saveUninitialized: false,
-      resave: false,
-      cookie: {
-        secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
-        httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' in production, 'lax' in development
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-      },
-    })
-  );
+const pgStore = pgSession(session);
+app.use(
+  session({
+    store: new pgStore({
+      pool: db,
+      createTableIfMissing: true,
+    }),
+    name: "Crypto_Warriors",
+    secret: process.env.SECRET_COOKIE || "defaultSecret",
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },
+  })
+);
 
-  console.log("Session store initialized!");
-} catch (error) {
-  console.error("Error setting up session store:", error);
-}
 
 app.set('trust proxy', 1);
 
@@ -59,30 +53,16 @@ app.use(
     origin: [
       "https://cryptowarriors.netlify.app",
     ],
-    credentials: true, // Allow credentials (cookies)
+    credentials: true,
   })
 );
 
 
-// Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CORS configuration
 
-// Logging middleware
-app.use((req, res, next) => {
-  console.log("Middleware Check - User:", req.user);
-  console.log(`Request URL: ${req.url}`);
-  console.log(`Session ID: ${req.sessionID}`);
-  console.log(`Session data: ${JSON.stringify(req.session)}`);
-  console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
-  console.log("🚀 Checking session before routes:", req.session);
-  console.log("🚀 Checking req.user before routes:", req.user);
-  next();
-});
 
-// Routes
 app.use("/api/user", User_Routes);
 app.use("/api/job", Job_Routes);
 app.use("/api/module", Module_Routes);
@@ -91,12 +71,12 @@ app.use("/api/dashboard", Dashboard_Routes);
 app.use("/api/mail", Mail_Routes);
 app.use("/api/question-answer", QA_Routes);
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
   console.error("Error:", err.stack);
   res.status(500).json({ error: "Something went wrong!" });
 });
 
-// Start server
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

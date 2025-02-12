@@ -8,24 +8,21 @@ env.config();
 
 
 passport.serializeUser((user, done) => {
-  console.log("🔍 serializeUser user:", user.id);
   return done(null, user.id);
 });
 
 passport.deserializeUser(async (userID, done) => {
   try {
-    console.log("🔍 Deserializing user:", userID);
     const checkUser = await db.query("SELECT * FROM users WHERE id = $1", [userID]);
 
     if (checkUser.rowCount === 0) {
-      console.error("❌ No user found in DB for ID:", userID);
-      return done(null, false); // Ensure this returns `false` instead of an error
+      console.error(" No user found in DB for ID:", userID);
+      return done(null, false); 
     }
 
-    console.log("✅ User found in DB:", checkUser.rows[0]);
-    return done(null, checkUser.rows[0]); // Attach user to session
+    return done(null, checkUser.rows[0]); 
   } catch (err) {
-    console.error("❌ Error in deserialization:", err);
+    console.error(" Error in deserialization:", err);
     return done(err, null);
   }
 });
@@ -45,7 +42,7 @@ export default passport.use(new GoogleStrategy({
       if (!emails || emails.length === 0) {
         return done(new Error("No email found"), null);
       }
-      console.log(profile)
+
 
       const email = emails[0].value; 
 

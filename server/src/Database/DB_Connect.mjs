@@ -14,14 +14,11 @@ env.config();
 // db.connect()
 
   const db = new pkg.Pool({
-    connectionString: process.env.DATABASE_URL, // Uses a single connection string
+    connectionString: process.env.DATABASE_URL,
     ssl:  {rejectUnauthorized: false }
   });
   
-  
-  db.query("SELECT NOW()")
-  .then((res) => console.log(" Database time:", res.rows[0].now))
-  .catch((err) => console.error("Database connection error:", err));
+
 
 
 export default db;
