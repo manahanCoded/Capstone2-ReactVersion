@@ -19,14 +19,14 @@ passport.deserializeUser(async (userID, done) => {
 
     if (checkUser.rowCount === 0) {
       console.error("❌ No user found in DB for ID:", userID);
-      return done(new Error("No user found"));
+      return done(null, false); // Ensure this returns `false` instead of an error
     }
 
-    console.log("✅ User found:", checkUser.rows[0]);
-    return done(null, checkUser.rows[0]);
+    console.log("✅ User found in DB:", checkUser.rows[0]);
+    return done(null, checkUser.rows[0]); // Attach user to session
   } catch (err) {
     console.error("❌ Error in deserialization:", err);
-    return done(err);
+    return done(err, null);
   }
 });
 

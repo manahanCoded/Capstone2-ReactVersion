@@ -51,21 +51,34 @@ try {
 } catch (error) {
   console.error("Error setting up session store:", error);
 }
-
-// Passport initialization
-app.use(passport.initialize());
-app.use(passport.session());
-
-// CORS configuration
 app.use(
   cors({
     origin: [
       "https://cryptowarriors.netlify.app",
     ],
     credentials: true, // Allow credentials (cookies)
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+
+app.use(function (request, response, next) {
+  if (request.session && !request.session.regenerate) {
+    request.session.regenerate = (cb) => {
+      cb();
+    };
+  }
+  if (request.session && !request.session.save) {
+    request.session.save = (cb) => {
+      cb();
+    };
+  }
+  next();
+});
+
+// Passport initialization
+app.use(passport.initialize());
+app.use(passport.session());
+
+// CORS configuration
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -74,6 +87,8 @@ app.use((req, res, next) => {
   console.log(`Session ID: ${req.sessionID}`);
   console.log(`Session data: ${JSON.stringify(req.session)}`);
   console.log(`Cookies: ${JSON.stringify(req.cookies)}`);
+  console.log("🚀 Checking session before routes:", req.session);
+  console.log("🚀 Checking req.user before routes:", req.user);
   next();
 });
 

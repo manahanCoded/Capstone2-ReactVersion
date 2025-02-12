@@ -66,11 +66,16 @@ const google_login_callback = (req, res, next) => {
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ error: "Internal Server Error" });
-
-      return res.redirect(`${process.env.CLIENT_URL}`);
+    
+      req.session.save((err) => {
+        if (err) console.error("❌ Error saving session:", err);
+        console.log("✅ Session saved:", req.session);
+        return res.redirect(`${process.env.CLIENT_URL}`);
+      });
     });
   })(req, res, next);
 };
+
 
 const register = async (req, res) => {
 
