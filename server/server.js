@@ -45,6 +45,9 @@ app.use(
   })
 );
 
+console.log("aSDASD", process.env.NODE_ENV)
+console.log("SSSS",process.env.NODE_ENV === 'production')
+
 
 app.set('trust proxy', 1);
 
