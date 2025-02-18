@@ -31,7 +31,6 @@ export default function Unit() {
                 const data = await res.json();
                 setCheckUser(data);
             } catch (err) {
-                console.error("Failed to fetch user profile:", err);
                 navigate("/user/login");
             }
         }
@@ -66,7 +65,6 @@ export default function Unit() {
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                alert("Failed to load data.");
             }
         }
 

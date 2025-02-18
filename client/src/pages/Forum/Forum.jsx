@@ -228,7 +228,7 @@ export default function Forum() {
             navigate("/user/login")
         }
         try {
-            const response = await fetch("${API_URL}/api/question-answer/vote", {
+            const response = await fetch(`${API_URL}/api/question-answer/vote`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -181,36 +181,22 @@ const display_appointments = async (req, res) => {
           };
         }
 
-        const formattedDate = `${appointmentDate.toLocaleString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-        })} ${appointmentDate.toLocaleString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        })}`;
-
         let resumeUrl = null;
         if (applicant.resume) {
-          const resumeResult = await db.query("SELECT resume, file_mime_type FROM applicants WHERE id = $1", [applicant.id]);
-          if (resumeResult.rows.length > 0) {
-            const resumeData = resumeResult.rows[0].resume;
-            const mimeType = resumeResult.rows[0].file_mime_type;
+            const resumeData = applicant.resume;
+            const mimeType = applicant.file_mime_type;
 
             const resumeBase64 = resumeData.toString('base64');
 
-            if (mimeType && mimeType.startsWith('image/')) {
+            if (applicant.file_mime_type?.startsWith("image/")) {
               resumeUrl = `data:${mimeType};base64,${resumeBase64}`;
             } else {
               resumeUrl = `data:application/octet-stream;base64,${resumeBase64}`;
             }
           }
-        }
 
         return {
           ...applicant,
-          date: formattedDate,
           resumeUrl: resumeUrl || null,
         };
       })
@@ -256,14 +242,43 @@ const downloadApplication = async (req, res) => {
 
 const displayUser_appointments = async (req, res) => {
   try {
-    const { user } = req.params
-    const result = await db.query("SELECT * FROM applicants WHERE email = $1 ORDER BY id DESC", [user]);
-    res.status(200).json(result.rows);
+    const { user } = req.params;
+
+    const result = await db.query(
+      "SELECT * FROM applicants WHERE email = $1 ORDER BY id DESC",
+      [user]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No applicants found" });
+    }
+
+    const formattedApplicants = result.rows.map((applicant) => {
+      let resumeUrl = null;
+
+      if (applicant.resume) {
+        const resumeBase64 = applicant.resume.toString("base64");
+
+        if (applicant.file_mime_type?.startsWith("image/")) {
+          resumeUrl = `data:${applicant.file_mime_type};base64,${resumeBase64}`;
+        } else {
+          resumeUrl = `data:application/octet-stream;base64,${resumeBase64}`;
+        }
+      }
+
+      return {
+        ...applicant,
+        resumeUrl,
+      };
+    });
+
+    res.status(200).json(formattedApplicants);
   } catch (error) {
     console.error("Error querying database:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 const specific_job = async (req, res) => {
   const { id } = req.params;

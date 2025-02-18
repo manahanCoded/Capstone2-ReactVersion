@@ -1,10 +1,9 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useLocation, useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
@@ -273,26 +272,19 @@ export default function UserEmail() {
                             <p>{mail?.fullname}</p>
                             <h2 className="text-md font-semibold">Application Details</h2>
                             <p>{mail?.application}</p>
-                            {mail?.resume && (
+                            <div className='mt-4'>
+                            {mail?.resumeUrl && (
                                 <>
-                                    {mail.resume.match(/\.(png|jpg|jpeg|gif)$/i) ? (
-                                        <img
-                                            className="mt-8"
-                                            src={`${API_URL}${mail.resume}`} alt="Resume" />
+                                    {mail?.resumeUrl.startsWith('data:image/') ? (
+                                        <img src={mail?.resumeUrl} alt="Applicant Resume" style={{ width: "200px", height: "auto" }} />
                                     ) : (
-                                        <div className="mt-8 w-full flex justify-end items-end ">
-                                            <a
-                                                href={`${API_URL}${mail.resume}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className=" bg-[#333333] px-4 py-2 text-white rounded-md"
-                                            >
-                                                Download Resume
-                                            </a>
-                                        </div>
+                                        <a href={`${API_URL}/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
+                                        Download Resume
+                                      </a>
                                     )}
                                 </>
                             )}
+                            </div>
                         </MaxWidthWrapper>
                     </section>
                     <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">

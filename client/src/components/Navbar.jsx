@@ -138,8 +138,8 @@ const Navbar = () => {
           >
             Games
           </Link>
-          <a href="http://localhost:3000/" 
-          className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900">
+          <a href="https://cryptowarriorsdemo.netlify.app/"
+            className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900">
             Demo
           </a>
           <Link
@@ -170,28 +170,28 @@ const Navbar = () => {
               onClick={openNotification}
             >
               {notification ?
-                <NotificationsIcon  />
+                <NotificationsIcon />
                 :
-                <NotificationsNoneIcon  />
+                <NotificationsNoneIcon />
               }
             </button>
             <div>
-            <button
-              className="relative h-14 hover:text-red-900"
-              onClick={openProfile}
-            >
-              {
-                user.image ?
-                  <img
-                    src={`data:${user.file_mime_type};base64,${user.image}`
-                    }
-                    className="h-10 w-10 object-cover rounded-full"
-                    alt="Profile Picture"
-                  /> :
-                  <AccountCircleIcon style={{ width: "2.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
-              }
-            </button>
-              <ExpandMoreIcon className="absolute p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100"/>
+              <button
+                className="relative h-14 hover:text-red-900"
+                onClick={openProfile}
+              >
+                {
+                  user.image ?
+                    <img
+                      src={`data:${user.file_mime_type};base64,${user.image}`
+                      }
+                      className="h-10 w-10 object-cover rounded-full"
+                      alt="Profile Picture"
+                    /> :
+                    <AccountCircleIcon style={{ width: "2.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
+                }
+              </button>
+              <ExpandMoreIcon className="absolute p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100" />
             </div>
             <section
               className={
@@ -235,14 +235,25 @@ const Navbar = () => {
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
                 ) : null}
-                <Link
-                  to={`/email`}
-                  onClick={openProfile}
-                  className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
-                >
-                  <p className=" group-hover:text-white">Email</p>
-                  <ExitToAppIcon className="group-hover:text-white" />
-                </Link>
+                {user.role === "admin" ? 
+                  <Link
+                    to={`/admin-email`}
+                    onClick={openProfile}
+                    className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
+                  >
+                    <p className=" group-hover:text-white">Email</p>
+                    <ExitToAppIcon className="group-hover:text-white" />
+                  </Link>
+                  :
+                  <Link
+                    to={`/user-email`}
+                    onClick={openProfile}
+                    className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
+                  >
+                    <p className=" group-hover:text-white">Email</p>
+                    <ExitToAppIcon className="group-hover:text-white" />
+                  </Link>
+                }
                 <Link
                   to={`/profile`}
                   onClick={openProfile}

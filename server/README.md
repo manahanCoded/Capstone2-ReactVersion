@@ -93,7 +93,7 @@ CREATE TABLE jobs(
 	phone varchar(45),
 	email varchar(45),
 	title varchar(100),
-	applicants varchar(15),
+	applicants INTEGER DEFAULT 0,
 	remote varchar(45),
 	experience varchar(100),
 	jobtype varchar(45),

@@ -24,7 +24,7 @@ const allModule_Storage = async (req, res) => {
       return res.json({ success: true, listall: [module] });
     }
 
-    const result = await db.query("SELECT * FROM module_storage_section ORDER BY id");
+    const result = await db.query("SELECT * FROM module_storage_section ORDER BY id DESC");
 
     const modulesWithImages = result.rows.map(module => {
       if (module.file_data) {
@@ -324,7 +324,23 @@ const editModule = async (req, res) => {
   }
 };
 
+const deleteModule = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    
+    await db.query("DELETE FROM module_scores WHERE module_id = $1", [id]);
+    const result = await db.query("DELETE FROM module WHERE id = $1", [id]);
+    if (result.rowCount > 0) {
+      res.status(200).json({ message: "Module deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Module not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting module:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const addQuestion = async (req, res) => {
   let { module_title, questions } = req.body;
@@ -379,29 +395,88 @@ const addQuestion = async (req, res) => {
   }
 };
 
-
-
-const deleteModule = async (req, res) => {
-  const { id } = req.params;
+const updateQuestions = async (req, res) => {
 
   try {
-    
-    await db.query("DELETE FROM module_scores WHERE module_id = $1", [id]);
-    const result = await db.query("DELETE FROM module WHERE id = $1", [id]);
-    if (result.rowCount > 0) {
-      res.status(200).json({ message: "Module deleted successfully" });
-    } else {
-      res.status(404).json({ message: "Module not found" });
+    const { questions, module_id } = req.body;
+
+    if (!questions || !Array.isArray(questions)) {
+      return res.status(400).json({ message: "Invalid questions data" });
     }
+
+    const allowedOptions = ["A", "B", "C", "D"];
+
+    for (const question of questions) {
+      const {
+        question_id,
+        question_text,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        correct_option,
+      } = question;
+
+      if (!correct_option || !allowedOptions.includes(correct_option)) {
+        return res.status(400).json({
+          message: "Invalid correct option. Must be A, B, C, or D.",
+        });
+      }
+
+      if (question_id) {
+        await db.query(
+          `UPDATE questions 
+           SET question_text = $1, 
+               option_a = $2, 
+               option_b = $3, 
+               option_c = $4, 
+               option_d = $5, 
+               correct_option = $6, 
+               updated_at = NOW() 
+           WHERE id = $7`,
+          [question_text, option_a, option_b, option_c, option_d, correct_option, question_id]
+        );
+      } else {
+        await db.query(
+          `INSERT INTO questions 
+           (module_title, question_text, option_a, option_b, option_c, option_d, correct_option, created_at) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+          [module_id, question_text, option_a, option_b, option_c, option_d, correct_option]
+        );
+      }
+    }
+
+    res.status(200).json({ message: "Questions saved successfully" });
+
   } catch (error) {
-    console.error("Error deleting module:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error saving questions:", error);
+    res.status(500).json({ message: "Error saving questions", error });
   }
 };
 
+
+const deleteQuestion = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Invalid question ID" });
+    }
+
+    await db.query("DELETE FROM questions WHERE id = $1", [id]);
+
+    res.status(200).json({ message: "Question deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    res.status(500).json({ message: "Error deleting question", error });
+  }
+};
+
+
+
 const allQuestion = async (req, res) => {
-  const title = req.query.title;
- 
+  const id = req.query.id;
+
   try {
     const result = await db.query(`
       SELECT 
@@ -417,8 +492,8 @@ const allQuestion = async (req, res) => {
         q.updated_at
       FROM module m  
       INNER JOIN questions q ON m.id = q.module_title  
-      WHERE m.title = $1;
-    `, [title]);
+      WHERE m.id = $1;
+    `, [id]);
 
     res.status(200).json(result.rows);
   } catch (error) {
@@ -538,4 +613,4 @@ const getAllModule_UserInfo = async (req, res) => {
 
 
 
-export {allModule_Storage, units, updateModule, removeModule, allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion ,deleteModule, user_score, getUser_score, getAllModule_UserInfo};
+export {allModule_Storage, units, updateModule, removeModule, deleteQuestion,  allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion, updateQuestions ,deleteModule, user_score, getUser_score, getAllModule_UserInfo};

@@ -9,7 +9,6 @@ export default passport.use(
   new Strategy(
     { usernameField: "email", passwordField: "password" },
     async (username, password, done) => {
-      console.log(username)
       try {
         const UsernameCheck = await db.query(
           "SELECT * FROM users WHERE email = $1",

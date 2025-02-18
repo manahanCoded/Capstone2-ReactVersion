@@ -734,7 +734,7 @@ export default function EditJobPage() {
                       onChange={(value) => setInformation({ ...information, description: value })}
                       formats={formats}
                       placeholder="Write something..."
-                      className="bg-white border rounded h-[55vh]"
+                      className="bg-white border rounded h-[55vh] overflow-y-auto"
                     />
                     <label className="block text-base text-gray-700 mb-2 mt-4">
                       More Information
@@ -749,7 +749,7 @@ export default function EditJobPage() {
                       onChange={(value) => setInformation({ ...information, moreinfo: value })}
                       formats={formats}
                       placeholder="Write something..."
-                      className="bg-white border rounded h-[55vh]"
+                      className="bg-white border rounded h-[55vh] overflow-y-auto"
                     />
                   </div>
                 )}

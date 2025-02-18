@@ -63,9 +63,9 @@ export default function DocsPage() {
     if (posts.length > 0) {
       async function fetchQuestions() {
         try {
-          const title = posts[0].title;
+          const title = posts[0].id;
           const res = await axios.get(
-            `${API_URL}/api/module/allQuestions?title=${encodeURIComponent(title)}`
+            `${API_URL}/api/module/allQuestions?id=${encodeURIComponent(id)}`
           );
           setItemQuiz(res.data);
         } catch (error) {

@@ -50,7 +50,7 @@ export default function Profile() {
 
 
     return (
-        <div className="relative h-fit w-full mt-14 bg-slate-100">
+        <div className=" w-full mt-14 bg-slate-100">
       
             <MaxWidthWrapper className=" flex md:flex-row flex-col py-2 h-fit  rounded-md ">
                 <section className="sticky top-16 rounded-lg flex flex-col items-center gap-6 md:py-6 md:h-[90vh] h-12 md:w-80 w-full md:mb-0 mb-4  bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">

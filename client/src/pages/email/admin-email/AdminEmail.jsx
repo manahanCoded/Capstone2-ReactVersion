@@ -63,7 +63,7 @@ export default function AdminEmail() {
                 setReply((prev) => (({ ...prev, admin: data.email })))
 
                 if (data.role === "client") {
-                    navigate("/email");
+                    navigate("/user-email");
                 }
 
 
@@ -256,6 +256,14 @@ export default function AdminEmail() {
                     <section className="h-full overflow-y-auto py-4">
                         <MaxWidthWrapper>
                             {filteredApplicants?.map((applicant, index) => {
+                                 const formattedDate = new Intl.DateTimeFormat("en-US", {
+                                    month: "short",
+                                    day: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                }).format(new Date(applicant.date));
                                 return (
                                     <section
                                         key={index}
@@ -265,7 +273,7 @@ export default function AdminEmail() {
                                     >
                                         <div className="flex flex-row justify-between">
                                             <h3 className="font-semibold">{applicant.fullname}</h3>
-                                            <p className="text-xs text-gray-400">{applicant.date}</p>
+                                            <p className="text-xs text-gray-400">{formattedDate}</p>
                                         </div>
                                         <p className="line-clamp-2 text-xs">{applicant.application}</p>
                                         <p className="bg-[#333333] py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">

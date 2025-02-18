@@ -47,7 +47,7 @@ export default function UserApplications({ checkUser }) {
                                 </div>
                                 <h3 className="font-semibold text-lg text-gray-800 mt-2">{application.job_title}</h3>
                                 <div className="flex justify-end mt-4">
-                                    <Link to="/email" className="bg-[#333333] text-white text-xs px-4 py-3 rounded-md shadow hover:bg-gray-800 transition">
+                                    <Link to="/admin-email" className="bg-[#333333] text-white text-xs px-4 py-3 rounded-md shadow hover:bg-gray-800 transition">
                                         Check Email
                                     </Link>
                                 </div>

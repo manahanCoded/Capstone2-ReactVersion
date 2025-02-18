@@ -29,6 +29,8 @@ export default function JobsPage() {
   const [selectedJobTypes, setSelectedJobTypes] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     async function checkUser() {
       const res = await fetch(`${API_URL}/api/user/profile`, {
@@ -43,6 +45,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     const fetchAllJobs = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(`${API_URL}/api/job/display`);
 
@@ -55,6 +58,7 @@ export default function JobsPage() {
       } catch (error) {
         console.error("Error fetching all jobs:", error);
       }
+      setLoading(false);
     };
 
     const fetchBookmarkedJobs = async () => {
@@ -371,74 +375,80 @@ export default function JobsPage() {
                 <SearchOutlinedIcon className="mr-2" />
               </div>
             </div>
-            <div className="flex flex-wrap flow-row sm:gap-6 gap-x-2 gap-y-6">
-              {currentJobs.map((job, index) => (
-                <section
-                key={job.id}
-                className={`xl:w-96 md:w-80 sm:w-72 w-[14.5rem] sm:h-[24rem] flex flex-col justify-between py-1 gap-y-2 pb-4 md:px-2 border-[1px] rounded-2xl transition-all duration-300 hover:border-red-700 hover:scale-105 hover:shadow-lg`}
-              >
-                <div className={`relative overflow-hidden sm:h-72 h-56 flex flex-col justify-between rounded-3xl p-4 transition-all duration-300 ${!job.file_data && "bg-red-950"}`}>
-                  <img
-                    className="absolute inset-0 w-full h-full object-cover -z-10"
-                    src={job.file_data}
-                    alt=""
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-75 -z-10 transition-opacity duration-300 hover:bg-opacity-50"></div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs line-clamp-1 px-2 py-1 rounded-full tracking-wide bg-white">
-                      {new Date(job.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-                    </p>
-                    <div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleBookmark(job.id);
-                        }}
-                        className={`transition-colors duration-300 ${bookmarkedJobs.includes(job.id) ? "text-white" : "hover:text-white"}`}
-                      >
-                        {bookmarkedJobs.includes(job.id) ? <BookmarkIcon /> : <BookmarkBorderIcon className="text-white" />}
-                      </button>
+            {loading ? (
+              <div className="w-full flex justify-center items-center">
+                <p className="text-lg font-medium animate-pulse">Loading Jobs...</p>
+              </div>
+            ) :
+              <div className="flex flex-wrap flow-row sm:gap-6 gap-x-2 gap-y-6">
+                {currentJobs.map((job, index) => (
+                  <section
+                    key={job.id}
+                    className={`xl:w-96 md:w-80 sm:w-72 w-[14.5rem] sm:h-[24rem] flex flex-col justify-between py-1 gap-y-2 pb-4 md:px-2 border-[1px] rounded-2xl transition-all duration-300 hover:border-red-700 hover:scale-105 hover:shadow-lg`}
+                  >
+                    <div className={`relative overflow-hidden sm:h-72 h-56 flex flex-col justify-between rounded-3xl p-4 transition-all duration-300 ${!job.file_data && "bg-red-950"}`}>
+                      <img
+                        className="absolute inset-0 w-full h-full object-cover -z-10"
+                        src={job.file_data}
+                        alt=""
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-75 -z-10 transition-opacity duration-300 hover:bg-opacity-50"></div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs line-clamp-1 px-2 py-1 rounded-full tracking-wide bg-white">
+                          {new Date(job.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                        </p>
+                        <div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleBookmark(job.id);
+                            }}
+                            className={`transition-colors duration-300 ${bookmarkedJobs.includes(job.id) ? "text-white" : "hover:text-white"}`}
+                          >
+                            {bookmarkedJobs.includes(job.id) ? <BookmarkIcon /> : <BookmarkBorderIcon className="text-white" />}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="md:h-32 pr-10">
+                        <h3 className="mt-2 font-medium md:text-3xl text-2xl line-clamp-2 text-white">
+                          {job.title}
+                        </h3>
+                      </div>
+                      <div className="w-full flex flex-wrap flex-row items-center sm:gap-4 gap-2 md:text-[0.7rem] text-[0.5rem] text-black">
+                        <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.remote}</p>
+                        <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.jobtype}</p>
+                        <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.experience}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="md:h-32 pr-10">
-                    <h3 className="mt-2 font-medium md:text-3xl text-2xl line-clamp-2 text-white">
-                      {job.title}
-                    </h3>
-                  </div>
-                  <div className="w-full flex flex-wrap flex-row items-center sm:gap-4 gap-2 md:text-[0.7rem] text-[0.5rem] text-black">
-                    <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.remote}</p>
-                    <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.jobtype}</p>
-                    <p className="px-2 py-1 rounded-full tracking-wide bg-white">{job.experience}</p>
-                  </div>
-                </div>
-                <section className="w-full flex justify-between items-center px-3 gap-2">
-                  <div className="flex flex-col">
-                    <p className="sm:text-xl font-medium italic">{job?.salary ? job.salary : "Unpaid"}</p>
-                    <p className="sm:text-sm text-xs text-gray-500">{job.city}</p>
-                  </div>
-                  <div className="flex flex-row items-center sm:gap-2 gap-1">
-                    {checkAdmin?.role === "admin" && (
-                      <Link
-                        to={`/jobs/edit-job/${job.id}`}
-                        className="line-clamp-1 border-[1px] md:font-medium text-xs rounded-md sm:p-2 px-1 py-0.5 bg-[#333333] hover:bg-[#121212] transition-colors duration-300 text-white"
-                      >
-                        Edit Job
-                        <EditIcon className="ml-1" />
-                      </Link>
-                    )}
-                    <Link
-                      to={`/jobs/jobDetails/${job.id}`}
-                      className="line-clamp-1 border-[1px] md:font-medium text-xs rounded-md sm:p-2 px-1 py-0.5 bg-red-900 hover:bg-red-700 transition-colors duration-300 text-white"
-                    >
-                      Details
-                      <AdsClickIcon className="ml-1" />
-                    </Link>
-                  </div>
-                </section>
-              </section>
-              
-              ))}
-            </div>
+                    <section className="w-full flex justify-between items-center px-3 gap-2">
+                      <div className="flex flex-col">
+                        <p className="sm:text-xl font-medium italic">{job?.salary ? job.salary : "Unpaid"}</p>
+                        <p className="sm:text-sm text-xs text-gray-500">{job.city}</p>
+                      </div>
+                      <div className="flex flex-row items-center sm:gap-2 gap-1">
+                        {checkAdmin?.role === "admin" && (
+                          <Link
+                            to={`/jobs/edit-job/${job.id}`}
+                            className="line-clamp-1 border-[1px] md:font-medium text-xs rounded-md sm:p-2 px-1 py-0.5 bg-[#333333] hover:bg-[#121212] transition-colors duration-300 text-white"
+                          >
+                            Edit Job
+                            <EditIcon className="ml-1" />
+                          </Link>
+                        )}
+                        <Link
+                          to={`/jobs/jobDetails/${job.id}`}
+                          className="line-clamp-1 border-[1px] md:font-medium text-xs rounded-md sm:p-2 px-1 py-0.5 bg-red-900 hover:bg-red-700 transition-colors duration-300 text-white"
+                        >
+                          Details
+                          <AdsClickIcon className="ml-1" />
+                        </Link>
+                      </div>
+                    </section>
+                  </section>
+
+                ))}
+              </div>
+            }
             {/* Pagination Controls */}
             <div className="flex justify-center mt-4 gap-2">
               <button

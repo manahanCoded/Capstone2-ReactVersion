@@ -14,6 +14,7 @@ export default function EditProfile() {
         lastname: "",
         image: "",
         file_mime_type: "",
+        phone_number: ""
     });
     const [formData, setFormData] = useState({
         email: "",
@@ -24,6 +25,7 @@ export default function EditProfile() {
         oldPassword: "",
         newPassword: "",
         confirmPassword: "",
+        phone_number: "",
     });
 
     useEffect(() => {
@@ -51,6 +53,7 @@ export default function EditProfile() {
                     oldPassword: "",
                     newPassword: "",
                     confirmPassword: "",
+                    phone_number: data.phone_number || "",
                 });
             } catch (err) {
                 console.error("Failed to fetch user profile:", err);
@@ -65,12 +68,12 @@ export default function EditProfile() {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
 
-            setFormData((prev) => ({
-                ...prev,
-                image: file, 
-                file_mime_type: file.type
-            }));
-     
+        setFormData((prev) => ({
+            ...prev,
+            image: file,
+            file_mime_type: file.type
+        }));
+
     };
 
     const handleFormSubmit = async (e) => {
@@ -84,6 +87,7 @@ export default function EditProfile() {
         formDataToSend.append("newPassword", formData.newPassword);
         formDataToSend.append("confirmPassword", formData.confirmPassword);
         formDataToSend.append("image", formData.image);
+        formDataToSend.append("phone_number", formData.phone_number);
 
         try {
             const res = await axios.put(`${API_URL}/api/user/update`, formDataToSend, {
@@ -154,46 +158,59 @@ export default function EditProfile() {
                                     </div>
                                 </section>
                                 :
-                                 <section className="flex flex-row gap-x-5 mb-2">
-                                 <div className="w-[48%] flex flex-col gap-2">
-                                     <label >Name</label>
-                                     <input type="text"
-                                         value={formData.name}
-                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                         placeholder="Name"
-                                         className="md:h-10 h-8 rounded px-2 border-[1px] border-black" />
-                                 </div>
-                                 <div className="w-[48%] flex flex-col gap-2">
-                                     <label >Last name</label>
-                                     <input type="text"
-                                         value={formData.lastname}
-                                         onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
-                                         placeholder="Last name"
-                                         className="md:h-10 h-8 rounded px-2 border-[1px] border-black" />
-                                 </div>
-                             </section> 
+                                <section className="flex flex-row gap-x-5 mb-2">
+                                    <div className="w-[48%] flex flex-col gap-2">
+                                        <label >Name</label>
+                                        <input type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            placeholder="Name"
+                                            className="md:h-10 h-8 rounded px-2 border-[1px] border-black" />
+                                    </div>
+                                    <div className="w-[48%] flex flex-col gap-2">
+                                        <label >Last name</label>
+                                        <input type="text"
+                                            value={formData.lastname}
+                                            onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                                            placeholder="Last name"
+                                            className="md:h-10 h-8 rounded px-2 border-[1px] border-black" />
+                                    </div>
+                                </section>
                             }
-                            {editPassword?
-                            <section className="flex flex-row gap-5">
-                                <div className="w-[48%] flex flex-col gap-2">
-                                    <label >Confrim Password</label>
-                                    <input type="password"
+                            {editPassword ?
+                                <section className="flex flex-row gap-5">
+                                    <div className="w-[48%] flex flex-col gap-2">
+                                        <label >Confrim Password</label>
+                                        <input type="password"
                                             value={formData.confirmPassword}
                                             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                                             placeholder="Re-enter new password"
                                             className="md:h-10 h-8 rounded px-2 border-[1px] border-black" />
-                                </div>
-                            </section>
-                            :
-                             <section className="flex flex-row gap-5">
-                             <div className="w-[48%] flex flex-col gap-2">
-                                 <label >Email</label>
-                                 <p
-                                     className="md:h-10 h-8 py-2.5 rounded px-2 bg-gray-100 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-                                     {checkUser?.email ? checkUser.email : "Please edit email"}
-                                 </p>
-                             </div>
-                         </section>
+                                    </div>
+                                </section>
+                                :
+                                <section className="flex flex-row gap-5">
+                                    <div className="w-[48%] flex flex-col gap-2">
+                                        <label >Email</label>
+                                        <p
+                                            className="md:h-10 h-8 py-2.5 rounded px-2 bg-gray-100 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+                                            {checkUser?.email ? checkUser.email : "Please edit email"}
+                                        </p>
+                                    </div>
+                                    <div className="w-[48%] flex flex-col gap-2">
+                                        <label >Phone number</label>
+                                        <input
+                                            type="tel"
+                                            placeholder="Mobile number"
+                                            value={formData.phone_number}
+                                            onChange={(e) => {
+                                                const onlyNumbers = e.target.value.replace(/\D/g, "");
+                                                setFormData({ ...formData, phone_number: onlyNumbers });
+                                            }}
+                                           className="md:h-10 h-8 rounded px-2 border-[1px] border-black"
+                                        />
+                                    </div>
+                                </section>
                             }
                             <button className=" w-[48%] mt-7 md:h-10 h-8 py-2.5 rounded px-2 text-white bg-red-900 hover:bg-red-700 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
                                 Submit

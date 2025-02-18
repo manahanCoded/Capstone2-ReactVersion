@@ -8,12 +8,15 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function ModulesPage() {
+  const [checkUser ,setCheckUser] = useState([])
   const [modules, setModules] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState(new Set());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchModulesAndUser() {
+      setLoading(true);
       try {
 
         const modulesRes = await fetch(`${API_URL}/api/module/allModule-storage`);
@@ -41,6 +44,7 @@ export default function ModulesPage() {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setLoading(false); 
     }
 
     fetchModulesAndUser();
@@ -139,8 +143,11 @@ export default function ModulesPage() {
                 <SearchOutlinedIcon className="mr-2" />
               </div>
             </section>
-            {/* Display filtered modules */}
-            {filteredModules && filteredModules.length > 0 ? (
+            {loading ? (
+              <div className="w-full flex justify-center items-center">
+                <p className="text-lg font-medium animate-pulse">Loading modules...</p>
+              </div>
+            ) : filteredModules.length > 0 ? (
               filteredModules.map((module, index) => (
                 <section
                   key={index}

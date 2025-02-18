@@ -51,7 +51,8 @@ app.set('trust proxy', 1);
 app.use(
   cors({
     origin: [
-      "https://cryptowarriors.netlify.app",
+      `${process.env.CLIENT_URL}`,
+      "http://localhost:5173"
     ],
     credentials: true,
   })
@@ -71,11 +72,6 @@ app.use("/api/dashboard", Dashboard_Routes);
 app.use("/api/mail", Mail_Routes);
 app.use("/api/question-answer", QA_Routes);
 
-
-app.use((err, req, res, next) => {
-  console.error("Error:", err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
-});
 
 
 const PORT = process.env.PORT || 5000;

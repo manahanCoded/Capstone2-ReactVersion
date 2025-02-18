@@ -15,7 +15,6 @@ import JobPage from "./pages/job/Jobs";
 import CheckJobPage from "./pages/job/CheckJob";
 import CreateJobPage from "./pages/job/create-job/CreateJob";
 import EditJobPage from "./pages/job/edit-job/EditJob";
-import Email from "./pages/email/Email";
 import AccountsDashboard from "./pages/users/accounts-dashboard/AccountsDashboard";
 import Profile from "./pages/profile/Profile";
 import Edit from "./pages/modules/edit-module/Edit";
@@ -27,6 +26,8 @@ import Retrieve from "./pages/users/Retrieve";
 import JobDashboard from "./pages/users/accounts-dashboard/JobDashboard";
 import AnnouncementsDashboard from "./pages/users/accounts-dashboard/AnnouncementDashboard";
 import Forum from "./pages/Forum/Forum";
+import UserEmail from "./pages/email/user-email/UserEmail";
+import AdminEmail from "./pages/email/admin-email/AdminEmail";
 
 
 
@@ -66,8 +67,9 @@ function App() {
         <Route path="/forum" element={<Forum />} />
 
 
-        <Route path="/email" element={<Email />} />
-
+        <Route path="/user-email" element={<UserEmail />} />
+        <Route path="/admin-email" element={<AdminEmail />} />
+        
         <Route path="/profile" element={<Profile />} />
 
       </Routes>

@@ -69,8 +69,11 @@ const google_login_callback = (req, res, next) => {
     
       req.session.save((err) => {
         if (err) console.error("❌ Error saving session:", err);
-        console.log("✅ Session saved:", req.session);
-        return res.redirect(`${process.env.CLIENT_URL}`);
+        if(process.env.NODE_ENV === "production"){
+           return res.redirect(`${process.env.CLIENT_URL}`);
+        }
+        return res.redirect("http://localhost:5173");
+        
       });
     });
   })(req, res, next);
@@ -190,7 +193,7 @@ const retrieve = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { email, oldPassword, newPassword, confirmPassword, name, lastname } = req.body;
+  const { email, oldPassword, newPassword, phone_number ,confirmPassword, name, lastname } = req.body;
   const image = req.file ? req.file.buffer : null;
   const fileMimeType = req.file ? req.file.mimetype : null;
 
@@ -224,13 +227,13 @@ const updateUser = async (req, res) => {
 
     if (image) {
       await db.query(
-        `UPDATE users SET name = $1, lastname = $2, image = $3, file_mime_type = $4 WHERE id = $5`,
-        [name, lastname, image, fileMimeType, user.id]
+        `UPDATE users SET name = $1, lastname = $2, image = $3, phone_number = $4 file_mime_type = $5 WHERE id = $6`,
+        [name, lastname, image, phone_number, fileMimeType, user.id]
       );
     } else {
       await db.query(
-        `UPDATE users SET name = $1, lastname = $2 WHERE id = $3`,
-        [name, lastname, user.id]
+        `UPDATE users SET name = $1, lastname = $2,  phone_number = $4 WHERE id = $3`,
+        [name, lastname, user.id,  phone_number]
       );
     }
 
@@ -256,6 +259,7 @@ const userInfo = (req, res) => {
     email: req.user.email,
     name: req.user.name,
     lastname: req.user.lastname,
+    phone_number: req.user.phone_number,
     role: req.user.role,
     image: imageBase64,  
     file_mime_type: req.user.file_mime_type, 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo} from "./Controllers/Module_Controller.mjs";
+import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo, updateQuestions, deleteQuestion} from "./Controllers/Module_Controller.mjs";
 import multer from "multer";
 
 
@@ -35,7 +35,11 @@ router.get('/allQuestions', allQuestion)
 
 router.post('/addQuestions', addQuestion)
 
+router.post("/updateQuestions", updateQuestions);
+
 router.delete('/deleteModules/:id', deleteModule)
+
+router.delete("/deleteQuestion/:id", deleteQuestion);
 
 router.post("/update-module-score", user_score)
 
