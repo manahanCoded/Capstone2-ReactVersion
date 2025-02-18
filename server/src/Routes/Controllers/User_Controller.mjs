@@ -68,11 +68,13 @@ const google_login_callback = (req, res, next) => {
       if (err) return res.status(500).json({ error: "Internal Server Error" });
     
       req.session.save((err) => {
-        if (err) console.error("❌ Error saving session:", err);
-        if(process.env.NODE_ENV === "production"){
+        if (err) console.error(" Error saving session:", err);
+        if(process.env.NODE_ENV == "production"){
            return res.redirect(`${process.env.CLIENT_URL}`);
+        }else{
+
+          return res.redirect("http://localhost:5173");
         }
-        return res.redirect("http://localhost:5173");
         
       });
     });
