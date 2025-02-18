@@ -27,8 +27,7 @@ passport.deserializeUser(async (userID, done) => {
   }
 });
 
-
-export default passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy({
     clientID: process.env.Google_ID, 
     clientSecret: process.env.Client_Secret,
     callbackURL: process.env.NODE_ENV === 'production' ?  `${process.env.CLIENT_URL}/api/user/auth/google/callback`: "http://localhost:5000/api/user/auth/google/callback" ,

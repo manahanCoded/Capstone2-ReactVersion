@@ -72,7 +72,7 @@ const google_login_callback = (req, res, next) => {
         if(process.env.NODE_ENV === 'production'){
            return res.redirect(`${process.env.CLIENT_URL}`);
         }
-         return res.redirect("https://cryptowarriors.netlify.app");
+         return res.redirect("http://localhost:5173");
         
       });
     });

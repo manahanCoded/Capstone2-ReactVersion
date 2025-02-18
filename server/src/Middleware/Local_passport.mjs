@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import passport from "passport";
 
 
-export default passport.use(
+passport.use(
   "local",
   new Strategy(
     { usernameField: "email", passwordField: "password" },
