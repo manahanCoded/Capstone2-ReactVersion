@@ -1,11 +1,15 @@
 import express from "express";
-import bodyParser from "body-parser";
 import passport from "passport";
 import session from "express-session";
 import cors from "cors";
 import env from "dotenv";
 import cookieParser from "cookie-parser";
 import pgSession from "connect-pg-simple";
+
+//  prevent malicious activities like unintentional excessive traffic (DDoS, brute force attacks, and abuse)
+import rateLimit from "express-rate-limit";
+import slowDown from "express-slow-down";
+import ExpressBrute from "express-brute";
 
 // ROUTES
 import User_Routes from "./src/Routes/User_Routes.mjs";
@@ -46,6 +50,20 @@ app.use(
   })
 );
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: "Too many requests, please try again later.",
+  headers: true,
+});
+
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000, 
+  delayAfter: 50, 
+  delayMs: 500,
+});
+
+
 
 app.set('trust proxy', 1);
 
@@ -56,6 +74,7 @@ app.use(
       "http://localhost:5173"
     ],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -65,13 +84,13 @@ app.use(passport.session());
 
 
 
-app.use("/api/user", User_Routes);
-app.use("/api/job", Job_Routes);
-app.use("/api/module", Module_Routes);
-app.use("/api/announcement", Announcement_Routes);
-app.use("/api/dashboard", Dashboard_Routes);
-app.use("/api/mail", Mail_Routes);
-app.use("/api/question-answer", QA_Routes);
+app.use("/api/user", limiter, speedLimiter, User_Routes);
+app.use("/api/job", limiter, Job_Routes);
+app.use("/api/module", limiter, Module_Routes);
+app.use("/api/announcement", limiter, speedLimiter, Announcement_Routes);
+app.use("/api/dashboard", limiter, speedLimiter, Dashboard_Routes);
+app.use("/api/mail", limiter, speedLimiter, Mail_Routes);
+app.use("/api/question-answer", limiter, speedLimiter, QA_Routes);
 
 
 
