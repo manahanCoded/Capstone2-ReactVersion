@@ -193,9 +193,10 @@ const retrieve = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { email, oldPassword, newPassword, phone_number ,confirmPassword, name, lastname } = req.body;
+  const { email, oldPassword, newPassword, phone_number, confirmPassword, name, lastname } = req.body;
   const image = req.file ? req.file.buffer : null;
   const fileMimeType = req.file ? req.file.mimetype : null;
+
   try {
     const findUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     if (findUser.rowCount === 0) {
@@ -204,6 +205,7 @@ const updateUser = async (req, res) => {
 
     const user = findUser.rows[0];
 
+    // Password update logic
     if (newPassword) {
       if (!oldPassword) {
         return res.status(400).json({ error: "Old password is required to update password." });
@@ -217,22 +219,24 @@ const updateUser = async (req, res) => {
       }
 
       const updatedPassword = await bcrypt.hash(newPassword, 10);
-
-      await db.query(
-        "UPDATE users SET password = $1 WHERE id = $2",
-        [updatedPassword, user.id]
-      );
+      await db.query("UPDATE users SET password = $1 WHERE id = $2", [updatedPassword, user.id]);
     }
+
+    const phoneToUpdate = phone_number && !isNaN(phone_number) ? phone_number : user.phone_number;
 
     if (image) {
       await db.query(
-        `UPDATE users SET name = $1, lastname = $2, image = $3, phone_number = $4, file_mime_type = $5 WHERE id = $6`,
-        [name, lastname, image, phone_number, fileMimeType, user.id]
+        `UPDATE users 
+         SET name = $1, lastname = $2, image = $3, phone_number = $4, file_mime_type = $5 
+         WHERE id = $6`,
+        [name || user.name, lastname || user.lastname, image, phoneToUpdate, fileMimeType, user.id]
       );
     } else {
       await db.query(
-        `UPDATE users SET name = $1, lastname = $2,  phone_number = $4 WHERE id = $3`,
-        [name, lastname, user.id,  phone_number]
+        `UPDATE users 
+         SET name = $1, lastname = $2, phone_number = $3 
+         WHERE id = $4`,
+        [name || user.name, lastname || user.lastname, phoneToUpdate, user.id]
       );
     }
 
@@ -242,6 +246,7 @@ const updateUser = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 
