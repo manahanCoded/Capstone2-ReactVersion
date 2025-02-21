@@ -196,7 +196,6 @@ const updateUser = async (req, res) => {
   const { email, oldPassword, newPassword, phone_number ,confirmPassword, name, lastname } = req.body;
   const image = req.file ? req.file.buffer : null;
   const fileMimeType = req.file ? req.file.mimetype : null;
-
   try {
     const findUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     if (findUser.rowCount === 0) {
@@ -227,7 +226,7 @@ const updateUser = async (req, res) => {
 
     if (image) {
       await db.query(
-        `UPDATE users SET name = $1, lastname = $2, image = $3, phone_number = $4 file_mime_type = $5 WHERE id = $6`,
+        `UPDATE users SET name = $1, lastname = $2, image = $3, phone_number = $4, file_mime_type = $5 WHERE id = $6`,
         [name, lastname, image, phone_number, fileMimeType, user.id]
       );
     } else {
