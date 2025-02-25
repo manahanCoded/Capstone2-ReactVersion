@@ -229,7 +229,7 @@ export default function Scramble() {
             tries <= 0 ? 'mt-20' : '-mt-44'
           } z-10 pointer-events-auto p-1`}
         >
-          <div className="game-modal content bg-white max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
+          <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-4xl font-bold text-white">
               Total Score: {score}{' '}
             </h4>
