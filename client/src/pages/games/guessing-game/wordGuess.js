@@ -1,165 +1,125 @@
-export let guessWordList = [
+export let blockchainGuess = [
   {
-    word: 'miner',
-    hint: 'a participant who validates transactions',
+    word: 'genesis',
+    hint: 'The first block of a blockchain',
   },
-  {
-    word: 'token',
-    hint: 'digital asset on a blockchain',
-  },
-  {
-    word: 'crypto',
-    hint: 'short for cryptocurrency',
-  },
-  {
-    word: 'ledger',
-    hint: 'a record of transactions',
-  },
-  {
-    word: 'nonce',
-    hint: 'a number used in mining',
-  },
-  {
-    word: 'smart',
-    hint: 'related to contracts on a blockchain',
-  },
-  {
-    word: 'gas',
-    hint: 'fee for executing transactions',
-  },
-  {
-    word: 'wallet',
-    hint: 'used to store digital assets',
-  },
-  {
-    word: 'public',
-    hint: 'visible to everyone in the network',
-  },
-  {
-    word: 'private',
-    hint: 'kept secret for security purposes',
-  },
-  {
-    word: 'key',
-    hint: 'used for cryptographic functions',
-  },
-  {
-    word: 'proof',
-    hint: 'method of reaching consensus',
-  },
-  {
-    word: 'stake',
-    hint: 'tokens locked for consensus',
-  },
-
   {
     word: 'peer',
-    hint: 'a participant in a P2P network',
-  },
-  {
-    word: 'consensus',
-    hint: 'agreement among network participants',
-  },
-  {
-    word: 'faucet',
-    hint: 'gives free cryptocurrency',
-  },
-  {
-    word: 'crypto',
-    hint: 'relates to encrypted currencies',
-  },
-  {
-    word: 'contract',
-    hint: 'self-executing digital agreement',
-  },
-
-  {
-    word: 'bitcoin',
-    hint: 'the first cryptocurrency',
-  },
-  {
-    word: 'blocktime',
-    hint: 'time to create a new block',
-  },
-  {
-    word: 'fork',
-    hint: 'divergence in a blockchain',
-  },
-  {
-    word: 'oracle',
-    hint: 'connects smart contracts to real-world data',
-  },
-  {
-    word: 'shard',
-    hint: 'a subset of blockchain data',
+    hint: 'A participant in a blockchain network',
   },
   {
     word: 'nonce',
-    hint: 'used in cryptographic processes',
+    hint: 'A number used once to validate a blockchain block',
   },
   {
-    word: 'DAO',
-    hint: 'decentralized autonomous organization',
+    word: 'sharding',
+    hint: 'A scaling solution that splits the blockchain into smaller parts',
   },
   {
-    word: 'dapp',
-    hint: 'decentralized application',
+    word: 'immutability',
+    hint: 'The characteristic of blockchain that prevents changes to past records',
   },
   {
-    word: 'staking',
-    hint: 'locking crypto to support a network',
+    word: 'oracles',
+    hint: 'Third-party services that provide real-world data to blockchains',
   },
+  {
+    word: 'validator',
+    hint: 'A participant responsible for confirming transactions in blockchain',
+  },
+  {
+    word: 'protocol',
+    hint: 'A set of rules governing blockchain operations',
+  },
+  {
+    word: 'interoperability',
+    hint: 'The ability of different blockchains to communicate',
+  },
+  {
+    word: 'publickey',
+    hint: 'A cryptographic key used to receive blockchain transactions',
+  },
+]
 
+export let cryptoGuess = [
   {
-    word: 'exchange',
-    hint: 'platform for trading cryptocurrencies',
+    word: 'defi',
+    hint: 'A financial system built on blockchain without intermediaries',
   },
   {
-    word: 'ledger',
-    hint: 'record of financial transactions',
+    word: 'fomo',
+    hint: 'A term describing the fear of missing out on crypto investments',
   },
   {
     word: 'whale',
-    hint: 'a large holder of cryptocurrency',
+    hint: 'An individual or entity holding large amounts of cryptocurrency',
   },
   {
-    word: 'fiat',
-    hint: 'traditional currency like USD',
-  },
-  {
-    word: 'halving',
-    hint: 'reduces mining rewards periodically',
+    word: 'rugpull',
+    hint: 'A scam where developers abandon a project after taking funds',
   },
   {
     word: 'airdrop',
-    hint: 'free tokens distributed to users',
+    hint: 'Free distribution of crypto tokens to promote a project',
   },
   {
-    word: 'token',
-    hint: 'digital asset in blockchain',
+    word: 'bearmarket',
+    hint: 'A prolonged period of declining cryptocurrency prices',
   },
   {
-    word: 'defi',
-    hint: 'decentralized finance applications',
+    word: 'hotwallet',
+    hint: 'An online cryptocurrency wallet connected to the internet',
   },
   {
-    word: 'NFT',
-    hint: 'non-fungible token',
+    word: 'coldstorage',
+    hint: 'An offline method of storing cryptocurrency for security',
   },
   {
-    word: 'chainlink',
-    hint: 'oracle blockchain network',
+    word: 'pumpanddump',
+    hint: 'A market manipulation scheme where prices are inflated and then dumped',
   },
   {
-    word: 'lightning',
-    hint: 'a fast payment protocol',
+    word: 'halving',
+    hint: 'An event that reduces the number of new cryptocurrency rewards',
+  },
+]
+
+export let nftGuess = [
+  {
+    word: 'collection',
+    hint: 'A group of related NFTs released by a creator',
   },
   {
-    word: 'privacy',
-    hint: 'protection of user information',
+    word: 'trait',
+    hint: 'A specific characteristic or property of an NFT',
   },
   {
-    word: 'reward',
-    hint: 'given for mining or staking',
+    word: 'rarity',
+    hint: 'A measure of how unique an NFT is within a collection',
+  },
+  {
+    word: 'burning',
+    hint: 'Permanently removing an NFT from circulation',
+  },
+  {
+    word: 'snapshot',
+    hint: 'A record taken of NFT holders at a specific moment',
+  },
+  {
+    word: 'mintpass',
+    hint: 'A token granting access to mint new NFTs',
+  },
+
+  {
+    word: 'whitelist',
+    hint: 'A list of approved users given early NFT minting access',
+  },
+  {
+    word: 'bridging',
+    hint: 'Transferring NFTs between different blockchains',
+  },
+  {
+    word: 'auction',
+    hint: 'A bidding process where NFTs are sold to the highest offer',
   },
 ]

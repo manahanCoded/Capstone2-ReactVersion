@@ -6,15 +6,28 @@
   margin-bottom: 40px;
   border-bottom: 3px solid #000;
 }
+.category-btn {
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: none;
+  transition: all 0.5s;
+}
 
 .word-display .letter.guessed {
   border-color: transparent;
-  margin: -40px 0 35px;
+  margin: -50px 0 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .game-box h4 {
   text-align: center;
-  font-size: 1.1rem;
+
   font-weight: 500;
   margin-bottom: 15px;
 }
@@ -28,7 +41,7 @@
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
-  background: #5e63ba;
+  background: #ba5e5e;
   cursor: pointer;
   outline: none;
   border: none;
@@ -44,10 +57,14 @@
   pointer-events: none;
 }
 
-:where(.game-modal, .keyboard) button:hover {
-  background: #8286c9;
+.game-modal {
+  background-image: url('../../../public/Game_images/dont-fall2.png');
+  border: 10px solid white;
 }
 
+.picking-bg {
+  background-color: black;
+}
 .game-modal p {
   font-size: 1.15rem;
   margin: 15px 0 30px;

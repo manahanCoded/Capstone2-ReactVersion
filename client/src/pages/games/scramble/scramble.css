@@ -1,5 +1,11 @@
-.container h2 {
-  border-bottom: 1px solid #ccc;
+.category-btn {
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s;
 }
 
 .container .content {
@@ -20,9 +26,18 @@
   border: none;
   outline: none;
   padding: 15px 0;
-  font-size: 17px;
+
   border-radius: 5px;
   cursor: pointer;
   width: calc(100% / 2 - 8px);
   color: #fff;
+}
+
+.game-modal {
+  background-image: url('../../../public/Game_images/blockhain-bg.png');
+  border: 10px solid white;
+}
+
+.picking-bg {
+  background-color: black;
 }

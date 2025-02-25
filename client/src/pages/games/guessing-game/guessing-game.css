@@ -2,25 +2,20 @@
   margin: 25px 25px 35px;
 }
 
-body {
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  padding: 0 10px;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #5e63ba;
-  overflow-x: hidden;
+.category-btn {
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s;
 }
-
-
 .inputs input {
-  height: 57px;
-  width: 56px;
+  /* height: 80px;
+  width: 80px; */
   margin: 4px;
-  font-size: 24px;
-  font-weight: 500;
+
   text-align: center;
   color: #1bb295;
   border-radius: 5px;
@@ -33,12 +28,15 @@ body {
   margin-left: 0px;
 }
 
-.content-mayn .details {
+.content .details {
   margin: 20px 0 25px;
 }
 
-.details p {
-  font-size: 19px;
+.game-modal {
+  background-image: url('../../../public/Game_images/guessing-word.png');
+  border: 10px solid white;
+}
 
-  margin-bottom: 10px;
+.picking-bg {
+  background-color: black;
 }

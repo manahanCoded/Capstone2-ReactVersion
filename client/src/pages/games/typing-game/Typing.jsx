@@ -1,185 +1,240 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './typing-game.css';
-import { paragraphs } from './paragraphs';
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import './typing-game.css'
+import {
+  blockchainParagraphs,
+  cryptocurrencyParagraphs,
+  nftParagraphs,
+} from './paragraphs'
 
 export default function TypingGame() {
-  const [typingText, setTypingText] = useState([]);
-  const [userInput, setUserInput] = useState('');
-  const [charIndex, setCharIndex] = useState(0);
-  const [mistakes, setMistakes] = useState(0);
-  const [cpyUserInput, setCpyUserInput] = useState('');
-  const [time, setTime] = useState(60);
-  const [isTyping, setIsTyping] = useState(false);
-  const [cpm, setCPM] = useState(0);
-  const [wpm, setWPM] = useState(0);
-  const timerRef = useRef(null);
-  const inputRef = useRef(null);
+  const maxTime = 60
+  const [timeLeft, setTimeLeft] = useState(maxTime)
+  const [mistakes, setMistakes] = useState(0)
+  const [pIndex, setPIndex] = useState(0)
+  const [category, setCategory] = useState('blockchain')
+  const [paragraph, setParagraph] = useState(blockchainParagraphs)
+  const [charIndex, setCharIndex] = useState(0)
+  const [isTyping, setIsTyping] = useState(false)
+  const [WPM, setWPM] = useState(0)
+  const [CPM, setCPM] = useState(0)
+  const [isPickingCategory, setIsPickingCategory] = useState(true)
+  const inputRef = useRef()
+  const charRefs = useRef([])
+  const [correctWrong, setCorrectWrong] = useState([])
 
-  const randomParagraph = () => {
-    const randIndex = Math.floor(Math.random() * paragraphs.length);
-    const cpyTypingText = paragraphs[randIndex].split('').map((char, index) => (
-      <span key={index}>{char}</span>
-    ));
-    setTypingText(cpyTypingText);
-  };
+  useEffect(() => {
+    inputRef.current.focus()
+    setCorrectWrong(Array(charRefs.current.length).fill(''))
+  }, [])
 
-  const initTyping = () => {
-    const cpyTypingText = [...typingText];
-    const charactersLetters = typingText.map((char) => char.props.children);
-    const typedChar = userInput[charIndex];
-
-    if (charIndex < charactersLetters.length && time > 0) {
-      if (!isTyping && userInput) {
-        setIsTyping(true);
-        if (!timerRef.current) {
-          timerRef.current = setInterval(() => {
-            setTime((prevTime) => {
-              if (prevTime <= 1) {
-                clearInterval(timerRef.current);
-                timerRef.current = null;
-                setIsTyping(false);
-                return 0;
-              }
-              return prevTime - 1;
-            });
-          }, 1000);
-        }
+  useEffect(() => {
+    const handleKeyDown = () => {
+      if (inputRef.current) {
+        inputRef.current.focus()
       }
-
-      if (typedChar == null) {
-        if (
-          charactersLetters[charIndex - 1] !== cpyUserInput[charIndex - 1] &&
-          userInput
-        ) {
-          setMistakes((prevMistakes) => prevMistakes - 1);
-        }
-        if (
-          charactersLetters[charIndex - 1] === cpyUserInput[charIndex - 1]
-        ) {
-          setCPM(charIndex - 1 - mistakes);
-        }
-        setCharIndex((prevCharIndex) => prevCharIndex - 1);
-        cpyTypingText[charIndex] = (
-          <span key={charIndex}>{charactersLetters[charIndex]}</span>
-        );
-
-        cpyTypingText[charIndex - 1] = (
-          <span key={charIndex - 1} className="active">
-            {charactersLetters[charIndex - 1]}
-          </span>
-        );
-        setTypingText(cpyTypingText);
-        return;
-      } else {
-        if (charactersLetters[charIndex] === typedChar) {
-          cpyTypingText[charIndex] = (
-            <span key={charIndex} className="correct">
-              {charactersLetters[charIndex]}
-            </span>
-          );
-          setCPM(charIndex + 1 - mistakes);
-        } else if (charactersLetters[charIndex] !== typedChar && userInput) {
-          setMistakes((prevMistakes) => prevMistakes + 1);
-          cpyTypingText[charIndex] = (
-            <span key={charIndex} className="incorrect">
-              {charactersLetters[charIndex]}
-            </span>
-          );
-        }
-      }
-
-      setCharIndex((prevCharIndex) => prevCharIndex + 1);
-      cpyTypingText[charIndex + 1] = (
-        <span key={charIndex + 1} className="active">
-          {charactersLetters[charIndex + 1]}
-        </span>
-      );
-      const cpyWPM = Math.round(((charIndex - mistakes) / 5 / (60 - time)) * 60);
-      setTypingText(cpyTypingText);
-      setCpyUserInput(userInput);
-      setWPM(cpyWPM < 0 || !cpyWPM || cpyWPM === Infinity ? 0 : cpyWPM);
-    } else {
-      setUserInput('');
     }
-  };
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    let interval
+    if (isTyping && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(timeLeft - 1)
+        let correctChars = charIndex - mistakes
+        let totalTime = maxTime - timeLeft
+
+        let cpm = correctChars * (60 / totalTime)
+        cpm = cpm < 0 || !cpm || cpm === Infinity ? 0 : cpm
+        setCPM(parseInt(cpm, 10))
+
+        let wpm = Math.round((correctChars / 5 / totalTime) * 60)
+        wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm
+        setWPM(wpm)
+      }, 1000)
+    } else if (timeLeft === 0) {
+      clearInterval(interval)
+      setIsTyping(false)
+    }
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isTyping, timeLeft])
+
+  useEffect(() => {
+    let currentCategory
+
+    if (category === 'blockchain') setParagraph(blockchainParagraphs)
+    if (category === 'cryptocurrency') setParagraph(cryptocurrencyParagraphs)
+    if (category === 'nft') setParagraph(nftParagraphs)
+
+    console.log('This is the current category', currentCategory)
+
+    resetGame()
+  }, [category])
 
   const resetGame = () => {
-    randomParagraph();
-    setTime(60);
-    setUserInput('');
-    setCharIndex(0);
-    setMistakes(0);
-    setCPM(0);
-    setWPM(0);
-    setIsTyping(false);
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-  };
+    setIsTyping(false)
+    setTimeLeft(maxTime)
+    setCharIndex(0)
+    setMistakes(0)
+    setCPM(0)
+    setWPM(0)
+    setCorrectWrong(Array(charRefs.current.length).fill(''))
+    inputRef.current.focus()
+    setPIndex(Math.floor(Math.random() * blockchainParagraphs.length))
+  }
 
-  useEffect(() => {
-    randomParagraph();
-    const handleKeyDown = () => {
-      inputRef.current?.focus();
-    };
+  const handleChange = (e) => {
+    const characters = charRefs.current
+    let currentChar = charRefs.current[charIndex]
+    let typedChar = e.target.value.slice(-1)
+    console.log(typedChar)
+    if (charIndex < characters.length && timeLeft > 0) {
+      if (!isTyping) {
+        setIsTyping(true)
+      }
 
-    document.addEventListener('keydown', handleKeyDown);
+      if (typedChar === currentChar.textContent) {
+        setCharIndex(charIndex + 1)
+        correctWrong[charIndex] = ' correct '
+      } else {
+        setCharIndex(charIndex + 1)
+        setMistakes(mistakes + 1)
+        correctWrong[charIndex] = ' wrong '
+      }
+      if (charIndex === characters.length - 1) {
+        setIsTyping(false)
+      }
+    } else {
+      setIsTyping(false)
+    }
+  }
 
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      clearInterval(timerRef.current);
-    };
-  }, []);
+  const paragraphLength = paragraph[pIndex].split('').length
+  if (charIndex === paragraphLength) {
+    alert(
+      `Congrats, in ${timeLeft} seconds you have a record of WPM: ${WPM} CPM: ${CPM}`
+    )
+    resetGame()
+  }
 
-  useEffect(() => {
-    initTyping();
-  }, [userInput]);
-
+  console.log('This is the length of the paragraph', paragraphLength)
+  console.log('P index: ', pIndex)
   return (
-    <div className="flex items-center justify-center mt-20">
-      <div className="wrapper w-[770px] p-9 bg-white rounded-xl">
-        <input
-          type="text"
-          className="input-field absolute -z-10 opacity-0"
-          ref={inputRef}
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-        />
-        <div className="content-box rounded-xl">
-          <div className="typing-text max-h-[255px] overflow-y-auto">
-            <p className="text-xl text-justify" key={1}>
-              {typingText}
-            </p>
+    <div
+      className={`${category === 'blockchain' ? 'bg-blue-900' : ''} ${
+        category === 'nft' ? 'bg-purple-900' : ''
+      } ${
+        category === 'cryptocurrency' ? 'bg-yellow-900' : ''
+      }  flex items-center justify-center min-h-screen h-screen w-screen`}
+    >
+      {isPickingCategory ? (
+        <div className="picking-bg fixed bg-opacity-60 bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
+          <div className="game-modal content bg-white max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
+            <h4 className="text-5xl font-bold text-white">Choose category: </h4>
+            <div className="title-buttons flex flex-col justify-around items-center">
+              <div className="flex flex-col justify-between items-center gap-4 h-[250px] mt-10">
+                <button
+                  className="category-btn bg-blue-900 text-white w-[180%] text-4xl h-16 hover:bg-blue-300 hover:text-blue-900"
+                  onClick={() => {
+                    setCategory('blockchain')
+                    setIsPickingCategory(false)
+                    if (category === 'blockchain') {
+                      resetGame()
+                    }
+                  }}
+                >
+                  Blockchain
+                </button>
+                <button
+                  className="category-btn bg-purple-700 text-white w-[180%] text-4xl h-16 hover:bg-purple-300 hover:text-purple-900"
+                  onClick={() => {
+                    setCategory('nft')
+                    setIsPickingCategory(false)
+                    if (category === 'nft') {
+                      resetGame()
+                    }
+                  }}
+                >
+                  NFT
+                </button>
+                <button
+                  className="category-btn bg-yellow-700 text-white w-[180%] text-4xl h-16 hover:bg-yellow-300 hover:text-yellow-900"
+                  onClick={() => {
+                    setCategory('cryptocurrency')
+                    setIsPickingCategory(false)
+                    if (category === 'cryptocurrency') {
+                      resetGame()
+                    }
+                  }}
+                >
+                  Cryptocurrency
+                </button>
+                <button className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black">
+                  <a href="https://cryptowarriors.netlify.app">Go back</a>
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="content flex justify-between py-3 px-0 items-center">
-            <ul className="result-details flex justify-between">
-              <li className="time">
-                <p>Time Left:</p>
-                <span>
-                  <b className="font-medium">{time}</b>s
-                </span>
-              </li>
-              <li className="mistake">
-                <p>Mistakes:</p>
-                <span>{mistakes}</span>
-              </li>
-              <li className="wpm">
-                <p>WPM:</p>
-                <span>{wpm}</span>
-              </li>
-              <li className="cpm">
-                <p>CPM:</p>
-                <span>{cpm}</span>
-              </li>
-            </ul>
-            <button
-              className="border-none outline-none w-[105px] bg-sky-500 py-2 px-0 cursor-pointer text-base rounded-md text-white"
-              onClick={resetGame}
+        </div>
+      ) : (
+        ''
+      )}
+
+      <div className="container max-w-[950px] w-full m-1 p-8 rounded-xl background-white">
+        <div className="test ">
+          <input
+            type="text"
+            className="opacity-0 -z-50 absolute"
+            ref={inputRef}
+            onChange={handleChange}
+            disabled={charIndex === paragraphLength ? true : false}
+          />
+          {paragraph[pIndex].split('').map((char, index) => (
+            <span
+              className={`char ${index === charIndex ? ' active' : ''} ${
+                correctWrong[index]
+              } text-2xl `}
+              ref={(e) => (charRefs.current[index] = e)}
+              key={index}
             >
-              Try Again
-            </button>
-          </div>
+              {char}
+            </span>
+          ))}
+        </div>
+        <div className="result">
+          <p>
+            Time Left: <strong>{timeLeft}</strong>
+          </p>
+          <p>
+            Mistakes: <strong>{mistakes}</strong>
+          </p>
+          <p>
+            WPM: <strong>{WPM}</strong>
+          </p>
+          <p>
+            CPM: <strong>{CPM}</strong>
+          </p>
+          <button
+            className="btn w-[140px] h-12"
+            onClick={() => {
+              setIsPickingCategory(true)
+              resetGame()
+            }}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

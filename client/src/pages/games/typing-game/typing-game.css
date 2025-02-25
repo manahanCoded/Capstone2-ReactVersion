@@ -1,92 +1,83 @@
-.wrapper .content-box {
-  padding: 13px 20px 0;
-  border: 1px solid #ccc;
+.container {
+  /* max-width: 650px;
+  margin: 5px;
+
+  padding: 30px;
+  border-radius: 10px;
+  box-sizing: border-box; */
+  border: 1px solid #ced4da;
+  /* background: #fff; */
+
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  background-color: white;
 }
 
-.typing-text p {
-  letter-spacing: 1px;
-  word-break: break-all;
+.category-btn {
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.typing-text .correct {
-  color: #56964f;
+.test {
+  user-select: none;
 }
 
-.typing-text .active {
-  color: #17a2b8;
+span {
+  user-select: none;
+  cursor: text;
 }
 
-.typing-text p span.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  opacity: 0;
-  background: #17a2b8;
-  animation: blink 1s ease-in-out infinite;
+span.active {
+  border-bottom: 3px solid blue;
 }
 
-@keyframes blink {
-  50% {
-    opacity: 1;
-  }
+span.correct {
+  background-color: rgb(22, 178, 22);
 }
 
-.typing-text p span {
-  position: relative;
+span.wrong {
+  color: darkred;
+  background-color: pink;
 }
 
-.typing-text .incorrect {
-  color: #cb3439;
-  background: #ffc0cb;
-  outline: 1px solid #fff;
-  border-radius: 4px;
-}
-
-.typing-text::-webkit-scrollbar {
-  width: 0;
-}
-
-.result-details li {
-  list-style: none;
+.result {
   display: flex;
-  height: 22px;
+  justify-content: space-between;
   align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 2px solid rgb(106, 106, 104);
 }
 
-.content .result-details {
-  width: calc(100% - 140px);
-}
-
-.content-box .content {
-  border-top: 1px solid #ccc;
-}
-
-.content button {
-  transition: transform 0.3s ease;
-}
-
-.content button:active {
-  transform: scale(0.97);
-}
-
-.result-details li:not(:first-child) {
-  padding-left: 22px;
-  border-left: 1px solid #ccc;
-}
-
-.result-details li p {
-  font-size: 19px;
-}
-
-.result-details li span {
-  display: block;
+.result p {
   font-size: 20px;
-  margin-left: 10px;
 }
 
-.result-details li:not(:first-child) span {
-  font-weight: 500;
+button.btn {
+  padding: 5px;
+  outline: none;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #049c13;
+  color: #fff;
+  font-size: 20px;
+  transition: all 0.5s;
+  font-weight: bold;
+}
+
+button.btn:hover {
+  background-color: #02500b;
+}
+
+.game-modal {
+  background-image: url('../../../public/Game_images/typing-game.png');
+  border: 10px solid white;
+}
+
+.picking-bg {
+  background-color: black;
 }

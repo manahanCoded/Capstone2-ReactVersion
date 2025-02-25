@@ -1,29 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import MaxWidthWrapper from "./MaxWidthWrapper";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from "axios";
-import "react-quill-new/dist/quill.snow.css"
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
+import MaxWidthWrapper from './MaxWidthWrapper'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import NotificationsIcon from '@mui/icons-material/Notifications'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import axios from 'axios'
+import 'react-quill-new/dist/quill.snow.css'
 
-
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(false);
-  const location = useLocation();
+  const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(false)
+  const location = useLocation()
 
-  const [displayAnnouncement, setDisplayAnnouncement] = useState([]);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [displayAnnouncement, setDisplayAnnouncement] = useState([])
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null)
   const [notification, setNotification] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const navigate = useNavigate()
 
@@ -31,78 +28,78 @@ const Navbar = () => {
     async function checkUser() {
       try {
         const res = await fetch(`${API_URL}/api/user/profile`, {
-          method: "GET",
-          credentials: "include",
-        });
+          method: 'GET',
+          credentials: 'include',
+        })
         if (res.ok) {
-          const data = await res.json();
-          setUser(data);
+          const data = await res.json()
+          setUser(data)
         } else {
-          setUser(null);
+          setUser(null)
         }
       } catch (error) {
-        setUser(null);
+        setUser(null)
       }
     }
-    checkUser();
-  }, [navigate]);
+    checkUser()
+  }, [navigate])
 
   function openProfile() {
-    setProfile(!profile);
+    setProfile(!profile)
     setNotification(false)
   }
 
   function openNotification() {
     setNotification(!notification)
-    setProfile(false);
+    setProfile(false)
   }
 
   async function Logout_User() {
     try {
       const response = await fetch(`${API_URL}/api/user/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+        method: 'POST',
+        credentials: 'include',
+      })
 
       if (!response.ok) {
-        throw new Error(`Logout failed: ${response.statusText}`);
+        throw new Error(`Logout failed: ${response.statusText}`)
       }
 
-      window.location.reload();
+      window.location.reload()
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error('Error during logout:', error)
     }
   }
-
 
   useEffect(() => {
     const fetchAllAnnouncement = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/announcement/allAnnouncements`);
+        const res = await axios.get(
+          `${API_URL}/api/announcement/allAnnouncements`
+        )
 
         if (res.status === 200) {
-          setDisplayAnnouncement(res.data);
+          setDisplayAnnouncement(res.data)
         } else {
-          console.error("Failed to fetch all announcements");
+          console.error('Failed to fetch all announcements')
         }
       } catch (error) {
-        console.error("Error fetching all announcements:", error);
+        console.error('Error fetching all announcements:', error)
       }
-    };
+    }
 
-    fetchAllAnnouncement();
-  }, []);
-
+    fetchAllAnnouncement()
+  }, [])
 
   const handleAnnouncementClick = (announcement) => {
-    setSelectedAnnouncement(announcement);
-    setIsModalOpen(true);
-  };
+    setSelectedAnnouncement(announcement)
+    setIsModalOpen(true)
+  }
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedAnnouncement(null);
-  };
+    setIsModalOpen(false)
+    setSelectedAnnouncement(null)
+  }
 
   return (
     <nav className="fixed inset-0 h-14 z-50">
@@ -121,9 +118,9 @@ const Navbar = () => {
           <Link
             to="/modules"
             className={
-              location.pathname === "/modules"
-                ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
-                : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
+              location.pathname === '/modules'
+                ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
+                : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
           >
             Modules
@@ -131,23 +128,26 @@ const Navbar = () => {
           <Link
             to="/games"
             className={
-              location.pathname === "/games"
-                ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
-                : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
+              location.pathname === '/games'
+                ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
+                : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
           >
             Games
           </Link>
-          <a href="https://cryptowarriorsdemo.netlify.app/"
-            className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900">
+          <a
+            href="https://cryptowarriorsdemo.netlify.app/"
+            className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
+          >
             Demo
           </a>
           <Link
             to="/jobs-home"
             className={
-              location.pathname === "/jobs" || location.pathname === "/jobs-home"
-                ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
-                : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
+              location.pathname === '/jobs' ||
+              location.pathname === '/jobs-home'
+                ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
+                : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
           >
             Jobs
@@ -155,9 +155,9 @@ const Navbar = () => {
           <Link
             to="/forum"
             className={
-              location.pathname === "/forum"
-                ? "px-2 h-full md:block hidden border-b-[3px] border-red-900"
-                : "px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
+              location.pathname === '/forum'
+                ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
+                : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
           >
             Forum
@@ -169,49 +169,48 @@ const Navbar = () => {
               className="h-10 w-10 rounded-full bg-gray-200"
               onClick={openNotification}
             >
-              {notification ?
-                <NotificationsIcon />
-                :
-                <NotificationsNoneIcon />
-              }
+              {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
             </button>
             <div>
               <button
                 className="relative h-14 hover:text-red-900"
                 onClick={openProfile}
               >
-                {
-                  user.image ?
-                    <img
-                      src={`data:${user.file_mime_type};base64,${user.image}`
-                      }
-                      className="h-10 w-10 object-cover rounded-full"
-                      alt="Profile Picture"
-                    /> :
-                    <AccountCircleIcon style={{ width: "2.5rem", height: "2.5rem", color: "rgb(69 10 10 / var(--tw-text-opacity, 1))" }} />
-                }
+                {user.image ? (
+                  <img
+                    src={`data:${user.file_mime_type};base64,${user.image}`}
+                    className="h-10 w-10 object-cover rounded-full"
+                    alt="Profile Picture"
+                  />
+                ) : (
+                  <AccountCircleIcon
+                    style={{
+                      width: '2.5rem',
+                      height: '2.5rem',
+                      color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                    }}
+                  />
+                )}
               </button>
               <ExpandMoreIcon className="absolute p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100" />
             </div>
             <section
               className={
-                profile ? "absolute top-14 md:right-7 right-2" : "hidden"
+                profile ? 'absolute top-14 md:right-7 right-2' : 'hidden'
               }
             >
               <div className="flex w-60 py-2 flex-col items-center bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-                {user.role === "admin" ? (
+                {user.role === 'admin' ? (
                   <Link
                     to={`/modules/create-module`}
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >
-                    <p className=" group-hover:text-white">
-                      Create Module
-                    </p>
+                    <p className=" group-hover:text-white">Create Module</p>
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
                 ) : null}
-                {user.role === "admin" ? (
+                {user.role === 'admin' ? (
                   <Link
                     to={`/jobs/create-job`}
                     onClick={openProfile}
@@ -223,7 +222,7 @@ const Navbar = () => {
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
                 ) : null}
-                {user.role === "admin" ? (
+                {user.role === 'admin' ? (
                   <Link
                     to={`/user/accounts-dashboard`}
                     onClick={openProfile}
@@ -235,7 +234,7 @@ const Navbar = () => {
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
                 ) : null}
-                {user.role === "admin" ? 
+                {user.role === 'admin' ? (
                   <Link
                     to={`/admin-email`}
                     onClick={openProfile}
@@ -244,7 +243,7 @@ const Navbar = () => {
                     <p className=" group-hover:text-white">Email</p>
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
-                  :
+                ) : (
                   <Link
                     to={`/user-email`}
                     onClick={openProfile}
@@ -253,7 +252,7 @@ const Navbar = () => {
                     <p className=" group-hover:text-white">Email</p>
                     <ExitToAppIcon className="group-hover:text-white" />
                   </Link>
-                }
+                )}
                 <Link
                   to={`/profile`}
                   onClick={openProfile}
@@ -281,7 +280,7 @@ const Navbar = () => {
           </Link>
         )}
       </MaxWidthWrapper>
-      {notification ?
+      {notification ? (
         <div className="absolute top-14 md:right-7 right-2 text-xs h-40 overflow-y-auto border-gray-300 border-[1px]">
           {displayAnnouncement.map((announcement) => (
             <div
@@ -294,15 +293,20 @@ const Navbar = () => {
             </div>
           ))}
         </div>
-        :
-        null
-      }
+      ) : null}
 
       {isModalOpen && (
         <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="h-[60vh] bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">{selectedAnnouncement?.title}</h2>
-            <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: selectedAnnouncement.description }}></p>
+            <h2 className="text-xl font-bold mb-4">
+              {selectedAnnouncement?.title}
+            </h2>
+            <p
+              className="text-gray-700 mb-4"
+              dangerouslySetInnerHTML={{
+                __html: selectedAnnouncement.description,
+              }}
+            ></p>
             <button
               onClick={closeModal}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -312,9 +316,8 @@ const Navbar = () => {
           </div>
         </section>
       )}
-
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
