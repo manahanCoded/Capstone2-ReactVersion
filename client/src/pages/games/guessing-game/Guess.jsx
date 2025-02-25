@@ -188,7 +188,7 @@ export default function GuessingGame() {
         ''
       )}
       {tries === 0 ? (
-        <div className="picking-bg fixed bg-opacity-60 bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto">
+        <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto">
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-4xl font-bold text-white">
               Total Score: {score}{' '}
