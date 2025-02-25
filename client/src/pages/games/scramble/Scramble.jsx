@@ -13,7 +13,7 @@ export default function Scramble() {
   const [time, setTime] = useState(5)
   const [isPickingCategory, setIsPickingCategory] = useState(true)
   const [isTimesUp, setIsTimesUp] = useState(false)
-  const [tries, setTries] = useState(6)
+  const [tries, setTries] = useState(3)
   const [score, setScore] = useState(0)
   const [showGameOverModal, setShowGameOverModal] = useState(false)
   const [isIncorrect, setIsIncorrect] = useState(false)
@@ -178,7 +178,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('blockchain')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'blockchain') {
                       setTime(5)
                     }
@@ -191,7 +191,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('nft')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'nft') {
                       setTime(5)
                     }
@@ -204,7 +204,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('cryptocurrency')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'cryptocurrency') {
                       setTime(5)
                     }
@@ -239,7 +239,7 @@ export default function Scramble() {
             <button
               className="category-btn bg-black  text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
               onClick={() => {
-                setTries(6)
+                setTries(3)
                 setScore(0)
                 setIsPickingCategory(true)
                 setShowGameOverModal(false)
@@ -283,7 +283,7 @@ export default function Scramble() {
           <h2 className="text-4xl font-medium py-4 px-6 ">Web3 Mix n' Match</h2>
           <div className="flex justify-around gap-5 mr-4 items-center">
             <img
-              src={`/Game_images/lives${tries / 2}.png`}
+              src={`/Game_images/lives${tries}.png`}
               alt="lives-img"
               className=" w-40 max-h-32 h-16"
             />
