@@ -338,8 +338,9 @@ export default function Forum() {
 
 
     return (
-        <div className="h-screen">
-            <MaxWidthWrapper className=" mt-14 xl:mx-80 lg:mx-40 m-2">
+        <div className="h-screen ">
+        <div className="flex flex-col items-center ">
+            <MaxWidthWrapper className=" xl:mx-80 lg:mx-40">
                 <section className="mt-20 h-12 w-full flex flex-row justify-between items-center">
                     <section className="flex flex-row justify-start gap-8 items-center  text-xs">
                         {["all", "Modules", "Jobs", "Announcements"].map((type) => (
@@ -757,6 +758,7 @@ export default function Forum() {
 
                 </section>
             </MaxWidthWrapper>
+            </div>
             <Footer />
         </div>
     );
