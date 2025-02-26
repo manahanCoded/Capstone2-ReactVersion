@@ -2,6 +2,10 @@
   margin: 25px 25px 35px;
 }
 
+body {
+  overflow-y: hidden;
+}
+
 .category-btn {
   padding: 8px;
   border: none;
