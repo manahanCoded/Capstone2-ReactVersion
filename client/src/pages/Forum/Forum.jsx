@@ -15,6 +15,21 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import {
+    ForumOutlined,
+    DashboardOutlined,
+    Dashboard,
+    WorkOutline,
+    Work,
+    CampaignOutlined,
+    Campaign,
+} from "@mui/icons-material"
+import ForumIcon from '@mui/icons-material/Forum';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
+
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -39,6 +54,11 @@ export default function Forum() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
+
+    const [openPostId, setOpenPostId] = useState(null);
+    const openPostOption = (postId) => {
+        setOpenPostId(openPostId === postId ? null : postId)
+    }
 
     const toggleForm = () => {
         setIsOpen(!isOpen);
@@ -95,8 +115,7 @@ export default function Forum() {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-
+        e.preventDefault()
         if (!checkUser?.id) {
             alert("Log in first");
             navigate("/user/login");
@@ -142,17 +161,12 @@ export default function Forum() {
                         },
                     ],
                 }));
-
-                setQuestionText("");
-                setTopic("");
-                setTopicType("");
-                setImageFile(null);
+                window.location.reload()
             } else {
                 alert("Error submitting question: " + (data.error || "Unknown error"));
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("An error occurred");
         }
     };
 
@@ -173,8 +187,8 @@ export default function Forum() {
     const handleAnswerSubmit = async (e, questionId, parentAnswerId = null) => {
         e.preventDefault();
 
-        const answerKey = parentAnswerId || questionId; 
-        const answerText = answers[answerKey]; 
+        const answerKey = parentAnswerId || questionId;
+        const answerText = answers[answerKey];
 
         if (!checkUser?.id) {
             alert("Log in first");
@@ -191,7 +205,7 @@ export default function Forum() {
             question_id: questionId,
             user_id: checkUser.id,
             answer_text: answerText,
-            parent_answer_id: parentAnswerId, 
+            parent_answer_id: parentAnswerId,
         };
 
         try {
@@ -208,7 +222,7 @@ export default function Forum() {
                     ...prevData,
                     answers: [...prevData.answers, data.answer],
                 }));
-                setAnswers((prevAnswers) => ({ ...prevAnswers, [answerKey]: "" })); 
+                setAnswers((prevAnswers) => ({ ...prevAnswers, [answerKey]: "" }));
             } else {
                 alert("Error submitting answer: " + data.error);
             }
@@ -336,124 +350,148 @@ export default function Forum() {
 
     );
 
+    const types = [
+        { name: "all", outlined: <ForumOutlined />, filled: <ForumIcon /> },
+        { name: "Modules", outlined: <DashboardOutlined />, filled: <Dashboard /> },
+        { name: "Jobs", outlined: <WorkOutline />, filled: <Work /> },
+        { name: "Announcements", outlined: <CampaignOutlined />, filled: <Campaign /> },
+    ];
 
     return (
         <div className="h-screen ">
-        <div className="flex flex-col items-center ">
-            <MaxWidthWrapper className=" xl:mx-80 lg:mx-40">
-                <section className="mt-20 h-12 w-full flex flex-row justify-between items-center">
-                    <section className="flex flex-row justify-start gap-8 items-center  text-xs">
-                        {["all", "Modules", "Jobs", "Announcements"].map((type) => (
-                            <button
-                                key={type}
-                                onClick={() => setSpecifyQuestion(type)}
-                                className={`px-3 py-1 rounded-2xl  ${specifyQuestion === type ? "bg-gray-200 border-[1px]" : "bg-transparent"
-                                    }`}
-                            >
-                                {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </button>
-                        ))}
-
-                    </section>
-                    <div className="lg:w-1/3 w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
+            <div className="w-full flex md:flex-row flex-col justify-between md:gap-14 px-3.5 md:px-8">
+                <section className="md:sticky top-0 md:h-screen md:w-[28rem] md:pt-24 pt-16 md:pr-8 flex flex-col gap-1 items-center md:border-r border-gray-400">
+                    <div className=" w-full flex flex-row pl-4 px-2 py-1 mb-4 justify-between items-center border-[1px] rounded-xl text-xs">
                         <input
-                            placeholder="Search for related questions"
+                            placeholder="Search related questions"
                             type="text"
-                            className="h-9 text-xs w-full py-2 pl-4 outline-none bg-slate-100"
+                            className="h-10 w-full outline-none"
                             value={searchTerm}
                             onChange={handleSearch}
                         />
-                        <SearchOutlinedIcon className="mr-2" />
+                        <SearchOutlinedIcon className="" />
                     </div>
+                    <section className="w-full flex md:flex-col flex-wrap gap-1 text-sm">
+                        {types.map((type) => (
+                            <p
+                                key={type.name}
+                                onClick={() => setSpecifyQuestion(type.name)}
+                                className={`h-12 px-3 py-1 flex items-center gap-2 hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.name ? "bg-gray-200 " : "bg-transparent"
+                                    }`}
+                            >
+                                {specifyQuestion === type.name ? type.filled : type.outlined}
+                                {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
+                            </p>
+                        ))}
+                    </section>
                 </section>
-                <section className="mb-8 flex lg:flex-row flex-col-reverse gap-8 mt-2">
+                <MaxWidthWrapper className="w-full mb-8 flex lg:flex-row flex-col-reverse md:pt-24 pt-4 gap-8 px-0 md:px-0">
                     <section className="w-full ">
-                        <button
-                            className="py-2 px-4 mb-2 text-xs rounded-md border text-white bg-red-900 hover:bg-red-700 transition-all"
-                            onClick={toggleForm}
-                        >
-                            {isOpen ? "Close Form" : "Ask a Question"}
-                        </button>
-                        <div
-                            className={`overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-                                }`}
-                        >
-                            <form className="flex flex-col gap-2 pb-4 border-b-[1px]">
-                                <h3 className="text-lg italic font-medium mb-2">Ask Question:</h3>
-                                <input
-                                    type="text"
-                                    className="w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
-                                    placeholder="About"
-                                    value={topic}
-                                    onChange={(e) => setTopic(e.target.value)}
-                                />
-                                <EditorToolbar toolbarId="t3" />
-                                <ReactQuill
-                                    theme="snow"
-                                    value={questionText}
-                                    required
-                                    onChange={setQuestionText}
-                                    placeholder="Write something awesome..."
-                                    modules={modules("t3")}
-                                    formats={formats}
-                                    className="bg-white border rounded  h-[55vh] overflow-y-auto"
-                                />
+                        {checkUser?.email &&
+                            <div className="flex flex-col gap-4 rounded-xl pt-2 px-6 mb-4 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
+                                <section className="w-full flex flex-row items-center gap-4">
+                                    {checkUser?.image ? (
+                                        <img
+                                            src={`data:${checkUser?.file_mime_type};base64,${checkUser?.image}`}
+                                            className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                            alt="Profile Picture"
+                                        />
+                                    ) : (
+                                        <AccountCircleIcon
+                                            style={{
+                                                width: '2.5rem',
+                                                height: '2.5rem',
+                                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                            }}
+                                        />
+                                    )}
 
-                                <div className="flex flex-row justify-between items-center">
-                                    <select
-                                        className="w-fit border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3 pr-10"
-                                        value={topicType}
-                                        onChange={handleTopicType}
-                                    >
-                                        <option value="General">General</option>
-                                        <option value="Modules">Module</option>
-                                        <option value="Jobs">Job</option>
-                                        <option value="Announcements">Announcement</option>
-                                    </select>
-                                    <div className="flex flex-col items-center space-y-4">
-                                        <label className="flex items-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 shadow-sm hover:bg-gray-100">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-6 w-6 text-red-600"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M3 16l4 4m0 0l4-4m-4 4V4m13 16V4m0 0l-4 4m4-4l4 4"
-                                                />
-                                            </svg>
-                                            <div className="flex flex-col gap-1">
-                                                <span className="ml-2 text-sm font-medium text-gray-700">
+                                    <div className="w-full flex flex-col gap-3 px-1">
+                                        <p className="w-full text-gray-500">Have a problem {checkUser?.name ? checkUser.name : checkUser.email}?</p>
 
-                                                    Choose Background Image
-                                                </span>
-                                            </div>
-                                            <input
-                                                type="file"
-                                                onChange={handleImageFileChange}
-                                                className="hidden"
-                                                accept="image/*"
-                                            />
-                                        </label>
-                                        <span className="text-sm text-gray-500">{imageFile?.name}</span>
+                                        {/* Add border here */}
+                                        <div className="w-full border-t border-gray-300"></div>
+
+                                        <button
+                                            className={`w-fit py-3 px-4 text-sm rounded-md border transition-all ${isOpen ? "bg-red-700 text-white" : "text-red-900 hover:bg-red-800 hover:text-white"}`}
+                                            onClick={toggleForm}
+                                        >
+                                            <SchoolRoundedIcon className="mr-2" />
+                                            {isOpen ? "Close Form" : "Ask a Question"}
+                                        </button>
                                     </div>
-                                </div>
+                                </section>
 
-                                <div className="w-full flex justify-end items-center">
-                                    <button
-                                        className="py-2 px-4 rounded-md border-[1px] text-sm text-white bg-red-900 hover:bg-red-700"
-                                        onClick={handleSubmit}
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                <section
+                                    className={`overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                                        }`}
+                                >
+                                    <form className="flex flex-col gap-2 pb-4">
+                                        <input
+                                            type="text"
+                                            className="w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
+                                            placeholder="Question about"
+                                            value={topic}
+                                            onChange={(e) => setTopic(e.target.value)}
+                                        />
+                                        <div className="flex flex-col space-y-2">
+                                            <label className="w-fit">
+                                                <div className=" mt-3 flex justify-between gap-2 items-center flex-col p-4 rounded-xl border-2 border-dashed border-gray-500 bg-gray-200 cursor-pointer">
+                                                    <img
+                                                        src={imageFile instanceof File ? URL.createObjectURL(imageFile) : "/Icons/AddPic.png"}
+                                                        className="h-12"
+                                                        alt="Profile Preview"
+                                                    />
+                                                    <p className="text-center text-xs">Post Image</p>
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={handleImageFileChange}
+                                                    />
+                                                </div>
+                                            </label>
+                                            <p className="w-fit py-1 px-2 text-sm cursor-pointer text-gray-500 hover:text-red-400"
+                                                onClick={() => setImageFile(null)}
+                                            >{imageFile?.name && "Remove Image"}</p>
+                                        </div>
+                                        <EditorToolbar toolbarId="t3" />
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={questionText}
+                                            required
+                                            onChange={setQuestionText}
+                                            placeholder="Elaborate question..."
+                                            modules={modules("t3")}
+                                            formats={formats}
+                                            className="bg-white border rounded  h-[55vh] overflow-y-auto"
+                                        />
 
+                                        <div className="flex flex-row justify-between items-center">
+                                            <select
+                                                className="w-fit border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3 pr-10"
+                                                value={topicType}
+                                                onChange={handleTopicType}
+                                            >
+                                                <option value="General">General</option>
+                                                <option value="Modules">Module</option>
+                                                <option value="Jobs">Job</option>
+                                                <option value="Announcements">Announcement</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="w-full flex justify-end items-center">
+                                            <button
+                                                className="py-2 px-4 rounded-md border-[1px] text-sm text-white bg-red-900 hover:bg-red-700"
+                                                onClick={handleSubmit}
+                                            >
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </form>
+                                </section>
+                            </div>
+                        }
                         <section className="flex flex-col">
                             {/* Question List */}
                             <section>
@@ -464,288 +502,343 @@ export default function Forum() {
                                             const relatedAnswers = all_QA.answers.filter(
                                                 (answer) => answer.question_id === question.question_id
                                             );
-
-                                            // Fallback for missing answer_id
+                                            // Date tracker
+                                            function timeAgo(timestamp) {
+                                                const seconds = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 1000);
+                                                const intervals = {
+                                                    year: 31536000,
+                                                    month: 2592000,
+                                                    day: 86400,
+                                                    hour: 3600,
+                                                    minute: 60,
+                                                };
+                                                for (const [unit, value] of Object.entries(intervals)) {
+                                                    const count = Math.floor(seconds / value);
+                                                    if (count >= 1) return `${count} ${unit}${count > 1 ? "s" : ""} ago`;
+                                                }
+                                                return "Just now";
+                                            }
 
                                             const questionVotes = all_QA.votes.filter(
                                                 (vote) => vote.target_id === question.question_id && vote.target_type === "question"
                                             );
 
                                             return (
-                                                <div key={question.question_id} className="p-4 border-b hover:bg-gray-100 rounded-xl">
-
-                                                    <div className="w-full flex justify-between items-center mb-2">
-                                                        <p className="text-sm text-gray-600">Topic: {question.topic_type}</p>
-                                                        <p className="text-sm text-gray-500 mt-2">{new Date(question.created_at).toLocaleDateString()}</p>
-                                                    </div>
-
-                                                    <h3 className="text-base font-semibold">{question.topic}</h3>
-                                                    {isExpanded ?
-                                                        <p className="ql-editor text-base font-medium h-fit " dangerouslySetInnerHTML={{ __html: question.question_text ?? "No description available" }}></p>
-                                                        :
-                                                        null
-                                                    }
-                                                    <button
-                                                        className="mb-2 text-gray-600 hover:text-blue-800 text-sm mt-2"
-                                                        onClick={toggleExpansion}
-                                                    >
-                                                        {isExpanded ? 'Show Less' : 'More Information...'}
-                                                    </button>
-
-                                                    {question.image && (
-                                                        <div
-                                                            className="relative rounded-2xl bg-cover bg-center"
-                                                            style={{ backgroundImage: `url(${question.image})` }}
+                                                <section key={question.question_id} className="py-1 border-b border-gray-300 mb-1">
+                                                    <div className="p-2 hover:bg-gray-100 rounded-xl">
+                                                        <section className="flex flex-row gap-2 items-center">
+                                                            <div className="w-full flex flex-row items-center ">
+                                                                {question?.user_image ? (
+                                                                    <img
+                                                                        src={question.user_image}
+                                                                        className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                                        alt="Profile Picture"
+                                                                    />
+                                                                ) : (
+                                                                    <AccountCircleIcon
+                                                                        style={{
+                                                                            width: '2.5rem',
+                                                                            height: '2.5rem',
+                                                                            marginRight: '0.5rem',
+                                                                            color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                                <div className="flex flex-wrap gap-1 items-center text-xs">
+                                                                    <p className=" text-gray-600">{question.name ? question.name : question.email}</p>
+                                                                    <p>•</p>
+                                                                    <p className=" text-gray-500">{timeAgo(question.created_at)}</p>
+                                                                    <p>•</p>
+                                                                    <p className=" text-gray-600">{question.topic_type}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="relative p-1 rounded-full hover:bg-gray-300">
+                                                                <MoreHorizIcon className="cursor-pointer"
+                                                                    onClick={() => openPostOption(question.question_id)} />
+                                                                {openPostId === question.question_id &&
+                                                                    <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                                        {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
+                                                                            <div
+                                                                                onClick={() => handleDelete(question.question_id)}
+                                                                                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                            >
+                                                                                <EditOutlinedIcon />
+                                                                                <p>Edit</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
+                                                                            <div
+                                                                                onClick={() => handleDelete(question.question_id)}
+                                                                                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                            >
+                                                                                <DeleteOutlineIcon />
+                                                                                <p>Delete</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </section>
+                                                        <h3 className="text-base font-semibold">{question.topic}</h3>
+                                                        {isExpanded ?
+                                                            <p className="ql-editor h-fit " dangerouslySetInnerHTML={{ __html: question.question_text ?? "No description available" }}></p>
+                                                            :
+                                                            null
+                                                        }
+                                                        <button
+                                                            className="mb-2 text-gray-600 hover:text-blue-800 text-sm mt-2"
+                                                            onClick={toggleExpansion}
                                                         >
-                                                            <div className="absolute inset-0 bg-[#333333] opacity-50 rounded-2xl"></div>
-                                                            <img
-                                                                className="w-full h-96 object-contain  backdrop-blur-sm rounded-2xl"
-                                                                src={question.image}
-                                                                alt="Uploaded"
-                                                            />
+                                                            {isExpanded ? 'Show Less' : 'More Information...'}
+                                                        </button>
+
+                                                        {question.image && (
+                                                            <div
+                                                                className="relative rounded-2xl bg-cover bg-center"
+                                                                style={{ backgroundImage: `url(${question.image})` }}
+                                                            >
+                                                                <div className="absolute inset-0 bg-[#333333] opacity-50 rounded-2xl"></div>
+                                                                <img
+                                                                    className="w-full h-96 object-contain  backdrop-blur-sm rounded-2xl"
+                                                                    src={question.image}
+                                                                    alt="Uploaded"
+                                                                />
+                                                            </div>
+
+                                                        )}
+                                                        <div>
+                                                            {(() => {
+                                                                const userVote =
+                                                                    all_QA?.votes?.find(
+                                                                        (vote) =>
+                                                                            vote?.target_id === question.question_id &&
+                                                                            vote?.target_type === "question" &&
+                                                                            vote?.user_id === checkUser?.id
+                                                                    ) || null;
+
+                                                                const isUpvoted = userVote?.vote_type === "up";
+                                                                return (
+                                                                    <section className="my-2 px-3 flex flex-row items-center justify-between gap-2">
+                                                                        <div className=" flex flex-row items-center gap-2">
+                                                                            <div className="flex flex-row items-center ">
+                                                                                <button
+                                                                                    className={`mr-2 ${isUpvoted ? "text-red-500" : "text-black"}`}
+                                                                                    onClick={() =>
+                                                                                        handleVote(
+                                                                                            question.question_id,
+                                                                                            "question",
+                                                                                            isUpvoted ? "down" : "up"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    {isUpvoted ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                                                                                </button>
+                                                                                {questionVotes.filter((vote) => vote.vote_type === "up").length > 0 ? (
+                                                                                    <h4 className="list-disc text-sm text-gray-600">
+                                                                                        {questionVotes.filter((vote) => vote.vote_type === "up").length}
+                                                                                    </h4>
+                                                                                ) : (
+                                                                                    null
+                                                                                )}
+                                                                            </div>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => toggleDropdown(question.question_id)}
+                                                                                className="text-gray-500"
+                                                                            >
+                                                                                {openQuestion === question.question_id ? (
+                                                                                    <ChatBubbleRoundedIcon />
+                                                                                ) : (
+                                                                                    <ChatBubbleOutlineRoundedIcon />
+                                                                                )}
+                                                                                <span className="ml-2 text-gray-500 text-sm">
+                                                                                    {(() => {
+                                                                                        const commentCount = all_QA.answers.filter(
+                                                                                            (answer) => answer.question_id === question.question_id
+                                                                                        ).length;
+
+
+                                                                                        return commentCount > 0 ? commentCount : null;
+                                                                                    })()}
+                                                                                </span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </section>
+                                                                );
+                                                            })()}
                                                         </div>
 
-                                                    )}
-                                                    <div>
-                                                        {(() => {
-                                                            const userVote =
-                                                                all_QA?.votes?.find(
-                                                                    (vote) =>
-                                                                        vote?.target_id === question.question_id &&
-                                                                        vote?.target_type === "question" &&
-                                                                        vote?.user_id === checkUser?.id
-                                                                ) || null;
+                                                        <div
+                                                            className={`mt-4 overflow-y-auto transition-all duration-500 ease-in-out ${openQuestion === question.question_id ? "max-h-screen" : "max-h-0"
+                                                                }`}
+                                                        >
+                                                            <div className="h-72 overflow-y-auto space-y-2">
+                                                                {relatedAnswers.length > 0 ? (
+                                                                    relatedAnswers
+                                                                        .filter((answer) => !answer.parent_answer_id)
+                                                                        .map((answer) => {
+                                                                            if (!answer.answer_id) {
+                                                                                console.error("Missing answer_id for answer:", answer);
+                                                                                return null;
+                                                                            }
 
-                                                            const isUpvoted = userVote?.vote_type === "up";
-                                                            return (
-                                                                <section className="my-2 px-3 flex flex-row items-center justify-between gap-2">
-                                                                    <div className=" flex flex-row items-center gap-2">
-                                                                        <div className="flex flex-row items-center ">
-                                                                            <button
-                                                                                className={`mr-2 ${isUpvoted ? "text-red-500" : "text-black"}`}
-                                                                                onClick={() =>
-                                                                                    handleVote(
-                                                                                        question.question_id,
-                                                                                        "question",
-                                                                                        isUpvoted ? "down" : "up"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {isUpvoted ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                                                                            </button>
-                                                                            {questionVotes.filter((vote) => vote.vote_type === "up").length > 0 ? (
-                                                                                <h4 className="list-disc text-sm text-gray-600">
-                                                                                    {questionVotes.filter((vote) => vote.vote_type === "up").length}
-                                                                                </h4>
-                                                                            ) : (
-                                                                                null
-                                                                            )}
-                                                                        </div>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => toggleDropdown(question.question_id)}
-                                                                            className="text-gray-500"
-                                                                        >
-                                                                            {openQuestion === question.question_id ? (
-                                                                                <ChatBubbleRoundedIcon />
-                                                                            ) : (
-                                                                                <ChatBubbleOutlineRoundedIcon />
-                                                                            )}
-                                                                            <span className="ml-2 text-gray-500 text-sm">
-                                                                                {(() => {
-                                                                                    const commentCount = all_QA.answers.filter(
-                                                                                        (answer) => answer.question_id === question.question_id
-                                                                                    ).length;
+                                                                            const answerVotes = all_QA.votes.filter(
+                                                                                (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
+                                                                            );
+                                                                            const userVote = answerVotes.find((vote) => vote.user_id === checkUser?.id); // Find the user's vote (if any)
 
+                                                                            const isLiked = userVote?.vote_type === "up";
+                                                                            const isDisliked = userVote?.vote_type === "down";
 
-                                                                                    return commentCount > 0 ? commentCount : null;
-                                                                                })()}
-                                                                            </span>
-                                                                        </button>
-                                                                    </div>
-                                                                    {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
-                                                                        <button
-                                                                            onClick={() => handleDelete(question.question_id)}
-                                                                            className="text-red-700"
-                                                                        >
-                                                                            <DeleteOutlineIcon />
-                                                                        </button>
-                                                                    )}
-                                                                </section>
-                                                            );
-                                                        })()}
-                                                    </div>
+                                                                            return (
+                                                                                <div key={answer.answer_id} className=" p-2 bg-gray-50 rounded-md">
 
-                                                    <div
-                                                        className={`mt-4 overflow-y-auto transition-all duration-500 ease-in-out ${openQuestion === question.question_id ? "max-h-screen" : "max-h-0"
-                                                            }`}
-                                                    >
-                                                        <div className="h-72 overflow-y-auto space-y-2">
-                                                            {relatedAnswers.length > 0 ? (
-                                                                relatedAnswers
-                                                                    .filter((answer) => !answer.parent_answer_id)
-                                                                    .map((answer) => {
-                                                                        if (!answer.answer_id) {
-                                                                            console.error("Missing answer_id for answer:", answer);
-                                                                            return null;
-                                                                        }
+                                                                                    <div className="flex flex-row justify-between items-center">
+                                                                                        <p className="text-gray-700">
+                                                                                            {answer.answer_text}
+                                                                                        </p>
 
-                                                                        const answerVotes = all_QA.votes.filter(
-                                                                            (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
-                                                                        );
-                                                                        const userVote = answerVotes.find((vote) => vote.user_id === checkUser?.id); // Find the user's vote (if any)
+                                                                                        {checkUser?.role === "admin" && (
+                                                                                            <button
+                                                                                                onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
+                                                                                                className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
+                                                                                            >
+                                                                                                {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
+                                                                                            </button>
+                                                                                        )}
+                                                                                    </div>
 
-                                                                        const isLiked = userVote?.vote_type === "up";
-                                                                        const isDisliked = userVote?.vote_type === "down";
-
-                                                                        return (
-                                                                            <div key={answer.answer_id} className=" p-2 bg-gray-50 rounded-md">
-
-                                                                                <div className="flex flex-row justify-between items-center">
-                                                                                    <p className="text-gray-700">
-                                                                                        {answer.answer_text}
+                                                                                    <p className="text-sm text-gray-500">
+                                                                                        {answerVotes.length} votes
+                                                                                        {answer.is_accepted && <span className="ml-2 text-green-500">(Accepted)</span>}
                                                                                     </p>
 
-                                                                                    {checkUser?.role === "admin" && (
+                                                                                    <div className="mt-2">
                                                                                         <button
-                                                                                            onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
-                                                                                            className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
+                                                                                            className={`mr-2 ${isLiked ? "text-blue-500" : "text-gray-500"}`}
+                                                                                            onClick={() => handleVote(answer.answer_id, "answer", "up")}
                                                                                         >
-                                                                                            {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
+                                                                                            {isLiked ? (
+                                                                                                <ThumbUpAltIcon />
+                                                                                            ) : (
+                                                                                                <ThumbUpOffAltIcon />
+                                                                                            )}
+
                                                                                         </button>
+                                                                                        <button
+                                                                                            className={`text-red-500 ${isDisliked ? "text-red-700" : "text-gray-500"}`}
+                                                                                            onClick={() => handleVote(answer.answer_id, "answer", "down")}
+                                                                                        >
+                                                                                            {isDisliked ? (
+                                                                                                <ThumbDownAltIcon />
+                                                                                            ) : (
+                                                                                                <ThumbDownOffAltIcon />
+                                                                                            )}
+
+                                                                                        </button>
+                                                                                    </div>
+
+
+                                                                                    <button
+                                                                                        className="text-blue-500 mt-2"
+                                                                                        onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
+                                                                                    >
+                                                                                        {replyingTo === answer.answer_id ? "Cancel Reply" : "Reply"}
+                                                                                    </button>
+
+
+                                                                                    {replyingTo === answer.answer_id && (
+                                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="mt-2">
+                                                                                            <textarea
+                                                                                                className="w-full p-2 border rounded"
+                                                                                                placeholder="Write a reply..."
+                                                                                                value={answers[answer.answer_id] || ""}
+                                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
+                                                                                            />
+                                                                                            <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
+                                                                                                Submit Reply
+                                                                                            </button>
+                                                                                        </form>
                                                                                     )}
-                                                                                </div>
 
-                                                                                <p className="text-sm text-gray-500">
-                                                                                    {answerVotes.length} votes
-                                                                                    {answer.is_accepted && <span className="ml-2 text-green-500">(Accepted)</span>}
-                                                                                </p>
+                                                                                    {/* Nested Replies */}
+                                                                                    <div className="ml-6 border-l pl-4 mt-2">
+                                                                                        {all_QA.answers
+                                                                                            .filter((reply) => reply.parent_answer_id === answer.answer_id) // Replies to the current answer
+                                                                                            .map((reply) => (
+                                                                                                <div key={reply.answer_id} className="p-2 bg-gray-100 rounded-md">
+                                                                                                    {/* Nested Reply Text */}
+                                                                                                    <p className="text-gray-700">{reply.answer_text}</p>
+                                                                                                    <p className="text-sm text-gray-500">By User {reply.user_id}</p>
 
-                                                                                <div className="mt-2">
-                                                                                    <button
-                                                                                        className={`mr-2 ${isLiked ? "text-blue-500" : "text-gray-500"}`}
-                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "up")}
-                                                                                    >
-                                                                                        {isLiked ? (
-                                                                                            <ThumbUpAltIcon />
-                                                                                        ) : (
-                                                                                            <ThumbUpOffAltIcon />
-                                                                                        )}
-                                                                                       
-                                                                                    </button>
-                                                                                    <button
-                                                                                        className={`text-red-500 ${isDisliked ? "text-red-700" : "text-gray-500"}`}
-                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "down")}
-                                                                                    >
-                                                                                        {isDisliked ? (
-                                                                                            <ThumbDownAltIcon />
-                                                                                        ) : (
-                                                                                            <ThumbDownOffAltIcon />
-                                                                                        )}
-                                                                                        
-                                                                                    </button>
-                                                                                </div>
+                                                                                                    {/* Reply Button for Nested Reply */}
+                                                                                                    <button
+                                                                                                        className="text-blue-500 mt-2"
+                                                                                                        onClick={() => setReplyingTo(replyingTo === reply.answer_id ? null : reply.answer_id)}
+                                                                                                    >
+                                                                                                        {replyingTo === reply.answer_id ? "Cancel Reply" : "Reply"}
+                                                                                                    </button>
 
+                                                                                                    {/* Reply Form for Nested Reply */}
+                                                                                                    {replyingTo === reply.answer_id && (
+                                                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="mt-2">
+                                                                                                            <textarea
+                                                                                                                className="w-full p-2 border rounded"
+                                                                                                                placeholder="Write a reply..."
+                                                                                                                value={answers[reply.answer_id] || ""}
+                                                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: e.target.value }))}
+                                                                                                            />
+                                                                                                            <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
+                                                                                                                Submit Reply
+                                                                                                            </button>
+                                                                                                        </form>
+                                                                                                    )}
 
-                                                                                <button
-                                                                                    className="text-blue-500 mt-2"
-                                                                                    onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
-                                                                                >
-                                                                                    {replyingTo === answer.answer_id ? "Cancel Reply" : "Reply"}
-                                                                                </button>
-
-
-                                                                                {replyingTo === answer.answer_id && (
-                                                                                    <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="mt-2">
-                                                                                        <textarea
-                                                                                            className="w-full p-2 border rounded"
-                                                                                            placeholder="Write a reply..."
-                                                                                            value={answers[answer.answer_id] || ""}
-                                                                                            onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
-                                                                                        />
-                                                                                        <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
-                                                                                            Submit Reply
-                                                                                        </button>
-                                                                                    </form>
-                                                                                )}
-
-                                                                                {/* Nested Replies */}
-                                                                                <div className="ml-6 border-l pl-4 mt-2">
-                                                                                    {all_QA.answers
-                                                                                        .filter((reply) => reply.parent_answer_id === answer.answer_id) // Replies to the current answer
-                                                                                        .map((reply) => (
-                                                                                            <div key={reply.answer_id} className="p-2 bg-gray-100 rounded-md">
-                                                                                                {/* Nested Reply Text */}
-                                                                                                <p className="text-gray-700">{reply.answer_text}</p>
-                                                                                                <p className="text-sm text-gray-500">By User {reply.user_id}</p>
-
-                                                                                                {/* Reply Button for Nested Reply */}
-                                                                                                <button
-                                                                                                    className="text-blue-500 mt-2"
-                                                                                                    onClick={() => setReplyingTo(replyingTo === reply.answer_id ? null : reply.answer_id)}
-                                                                                                >
-                                                                                                    {replyingTo === reply.answer_id ? "Cancel Reply" : "Reply"}
-                                                                                                </button>
-
-                                                                                                {/* Reply Form for Nested Reply */}
-                                                                                                {replyingTo === reply.answer_id && (
-                                                                                                    <form onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="mt-2">
-                                                                                                        <textarea
-                                                                                                            className="w-full p-2 border rounded"
-                                                                                                            placeholder="Write a reply..."
-                                                                                                            value={answers[reply.answer_id] || ""}
-                                                                                                            onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: e.target.value }))}
-                                                                                                        />
-                                                                                                        <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
-                                                                                                            Submit Reply
-                                                                                                        </button>
-                                                                                                    </form>
-                                                                                                )}
-
-                                                                                                {/* Nested Replies to a Nested Reply */}
-                                                                                                <div className="ml-6 border-l pl-4 mt-2">
-                                                                                                    {all_QA.answers
-                                                                                                        .filter((nestedReply) => nestedReply.parent_answer_id === reply.answer_id) // Replies to the nested reply
-                                                                                                        .map((nestedReply) => (
-                                                                                                            <div key={nestedReply.answer_id} className="p-2 mb-2 bg-gray-200 rounded-md">
-                                                                                                                <p className="text-gray-700">{nestedReply.answer_text}</p>
-                                                                                                                <p className="text-sm text-gray-500">By User {nestedReply.user_id}</p>
-                                                                                                            </div>
-                                                                                                        ))}
+                                                                                                    {/* Nested Replies to a Nested Reply */}
+                                                                                                    <div className="ml-6 border-l pl-4 mt-2">
+                                                                                                        {all_QA.answers
+                                                                                                            .filter((nestedReply) => nestedReply.parent_answer_id === reply.answer_id) // Replies to the nested reply
+                                                                                                            .map((nestedReply) => (
+                                                                                                                <div key={nestedReply.answer_id} className="p-2 mb-2 bg-gray-200 rounded-md">
+                                                                                                                    <p className="text-gray-700">{nestedReply.answer_text}</p>
+                                                                                                                    <p className="text-sm text-gray-500">By User {nestedReply.user_id}</p>
+                                                                                                                </div>
+                                                                                                            ))}
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        ))}
+                                                                                            ))}
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        );
-                                                                    })
-                                                            ) : (
-                                                                <p className="text-gray-500">No answers yet</p>
-                                                            )}
+                                                                            );
+                                                                        })
+                                                                ) : (
+                                                                    <p className="text-gray-500">No answers yet</p>
+                                                                )}
 
+                                                            </div>
                                                         </div>
+                                                        {/* Answer Form */}
+                                                        <form onSubmit={(e) => handleAnswerSubmit(e, question.question_id)} className="">
+                                                            <textarea
+                                                                className="flex items-center min-h-14 w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
+                                                                placeholder="Comment or Answer here."
+                                                                value={answers[question.question_id] || ""}
+                                                                onChange={(e) =>
+                                                                    handleAnswerChange(question.question_id, e.target.value)
+                                                                }
+                                                            ></textarea>
+
+                                                            <div className="mt-2 w-full flex justify-end items-center gap-x-4 ">
+                                                                <button
+                                                                    type="submit"
+                                                                    className="text-xs py-2 px-4 rounded-sm text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                                >
+                                                                    Reply
+                                                                </button>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    {/* Answer Form */}
-                                                    <form onSubmit={(e) => handleAnswerSubmit(e, question.question_id)} className="">
-                                                        <textarea
-                                                            className="flex items-center min-h-14 w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
-                                                            placeholder="Comment or Answer here."
-                                                            value={answers[question.question_id] || ""}
-                                                            onChange={(e) =>
-                                                                handleAnswerChange(question.question_id, e.target.value)
-                                                            }
-                                                        ></textarea>
-
-                                                        <div className="mt-2 w-full flex justify-end items-center gap-x-4 ">
-                                                            <button
-                                                                type="submit"
-                                                                className="text-xs py-2 px-4 rounded-sm text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
-                                                            >
-                                                                Reply
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                </section>
                                             );
                                         })
                                 ) : (
@@ -756,8 +849,10 @@ export default function Forum() {
 
                     </section>
 
+                </MaxWidthWrapper>
+                <section className="md:block  lg:w-[40rem] hidden ">
+
                 </section>
-            </MaxWidthWrapper>
             </div>
             <Footer />
         </div>

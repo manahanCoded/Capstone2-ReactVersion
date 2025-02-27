@@ -92,7 +92,7 @@ export default function ModulesPage() {
                 placeholder="Search modules..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full   outline-none"
+                className="w-full outline-none"
               />
               <SearchOutlinedIcon />
             </section>

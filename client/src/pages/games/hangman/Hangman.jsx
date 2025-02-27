@@ -1,4 +1,4 @@
-'use client'
+
 import './hangman.css'
 import { useState, FormEvent, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
