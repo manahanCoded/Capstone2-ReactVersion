@@ -141,7 +141,7 @@ export default function Home() {
                 Partners
               </h3>
               <section className="top-3  bg-white rounded-2xl  flex w-screen ">
-                <div className="flex flex-row justify-between items-center py-4 rounded-2xl pl-8 animate-slide">
+                <div className="flex flex-row justify-between items-center py-4 rounded-2xl animate-slide">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
@@ -168,8 +168,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
-
-                <div className="flex flex-row justify-between items-center py-4 rounded-2xl  pl-4 animate-slide">
+                <div className="flex flex-row justify-between items-center py-4 rounded-2xl  animate-slide">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
@@ -181,7 +180,7 @@ export default function Home() {
 
                   <PartnerCard
                     name="DICT CAR"
-                    imgSrc="/IMG_Dashboard/Partners/dict2.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/dict6.png"
                   />
                   <PartnerCard
                     name="PC Express"
@@ -210,9 +209,9 @@ export default function Home() {
 
 function PartnerCard({ name, imgSrc }) {
   return (
-    <div className="flex flex-row items-center gap-2 md:px-12 px-4 border-r-2 mx-10">
+    <div className="flex flex-row items-center gap-2 md:px-12 px-4  mx-8">
       <img
-        className="lg:h-20 w-full h-full object-cover rounded-lg"
+        className="lg:h-20 w-full h-full object-cover rounded-full"
         src={imgSrc}
         alt=""
       />

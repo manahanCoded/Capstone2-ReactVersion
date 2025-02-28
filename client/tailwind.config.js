@@ -61,7 +61,7 @@ export default {
       animation: {
         move: 'move 5s linear infinite',
         moveInverse: 'moveInverse 5s linear infinite',
-        slide: 'slide 5s linear infinite',
+        slide: 'slide 10s linear infinite',
       },
       keyframes: {
         move: {
