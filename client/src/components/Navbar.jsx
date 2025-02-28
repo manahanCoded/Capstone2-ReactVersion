@@ -103,7 +103,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed inset-0 h-14 z-50">
-      <MaxWidthWrapper className="h-14 flex justify-between items-center bg-white border-b-[1px] border-gray-400">
+      <div className="h-14 px-3.5 md:px-8 flex justify-between items-center bg-white border-b-[1px] border-gray-400">
         <Link
           to="/"
           className="flex flex-row items-center justify-center text-xl font-semibold text-red-900"
@@ -279,8 +279,8 @@ const Navbar = () => {
             Login
           </Link>
         )}
-      </MaxWidthWrapper>
-      {notification ? (
+      </div>
+      {notification ?
         <div className="absolute top-14 md:right-7 right-2 text-xs h-40 overflow-y-auto border-gray-300 border-[1px]">
           {displayAnnouncement.map((announcement) => (
             <div
@@ -293,7 +293,7 @@ const Navbar = () => {
             </div>
           ))}
         </div>
-      ) : null}
+       : null}
 
       {isModalOpen && (
         <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

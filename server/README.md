@@ -160,7 +160,7 @@ CREATE TABLE mail (
 CREATE TABLE QA_questions (
     question_id SERIAL PRIMARY KEY, 
     user_id INT NOT NULL,           
-    question_text TEXT NOT NULL,    
+    question_text TEXT,    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     topic VARCHAR(100) NOT NULL,
 	topic_type varchar(50) NOT NULL,         

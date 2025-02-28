@@ -3,7 +3,27 @@ import db from "../../Database/DB_Connect.mjs"
 const qa_all = async (req, res) => {
     try {
         const [questions, answers, votes] = await Promise.all([
-            db.query("SELECT * FROM qa_questions ORDER BY created_at DESC"),
+            db.query(`SELECT question_id,
+                    q.user_id, 
+                    q.question_text, 
+                    q.created_at, 
+                    q.topic, 
+                    q.topic_type, 
+                    q.is_resolved, 
+                    q.image, 
+                    q.file_mime_type,
+                    u.id AS user_id,
+                    u.email,
+                    u.type,
+                    u.name,
+                    u.lastname,
+                    u.role,
+                    u.image AS user_image,
+                    u.file_mime_type AS user_file_mime_type
+                    FROM qa_questions q 
+                    INNER JOIN users u
+                    ON q.user_id = u.id
+                    ORDER BY created_at DESC`),
             db.query("SELECT * FROM qa_answers ORDER BY answer_id"),
             db.query("SELECT * FROM qa_votes")
         ]);
@@ -12,7 +32,10 @@ const qa_all = async (req, res) => {
             ...question,
             image: question.image
                 ? `data:${question.file_mime_type};base64,${question.image.toString("base64")}`
-                : null
+                : null,
+            user_image: question.user_image
+                ? `data:${question.user_file_mime_type};base64,${question.user_image.toString("base64")}`
+                : null,
         }));
 
         res.status(200).json({
@@ -32,7 +55,6 @@ const question = async (req, res) => {
     const { user_id, question_text, topic, topic_type } = req.body;
     const image = req.file ? req.file.buffer : null;
     const file_mime_type = req.file ? req.file.mimetype : null;
-
     if (!user_id || !question_text || !topic || !topic_type) {
         return res.status(400).json({ error: "All fields are required" });
     }
@@ -161,20 +183,20 @@ const delete_item = async (req, res) => {
 };
 
 
-const isAccepted = async (req,res)=>{
-    const {id} = req.params
-    try{
-        const result =  await db.query("SELECT is_accepted FROM qa_answers WHERE answer_id = $1 ", [id])
+const isAccepted = async (req, res) => {
+    const { id } = req.params
+    try {
+        const result = await db.query("SELECT is_accepted FROM qa_answers WHERE answer_id = $1 ", [id])
 
-        if(result.rows[0].is_accepted == false){
+        if (result.rows[0].is_accepted == false) {
             await db.query("UPDATE qa_answers SET is_accepted = true WHERE answer_id = $1 RETURNING *", [id])
             return res.status(200).json({ message: "Successfully accepted", result: result.rows[0].is_accepted });
-        }else{
+        } else {
             await db.query("UPDATE qa_answers SET is_accepted = false WHERE answer_id = $1 RETURNING *", [id])
             return res.status(200).json({ message: "Successfully removed accepted", result: result.rows[0].is_accepted });
         }
 
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ error: 'An error occurred while accepting the question' });
     }
 }
@@ -183,4 +205,4 @@ const isAccepted = async (req,res)=>{
 
 
 
-export { qa_all, question, answer, vote, delete_item, isAccepted}
+export { qa_all, question, answer, vote, delete_item, isAccepted }
