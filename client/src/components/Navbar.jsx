@@ -136,7 +136,7 @@ const Navbar = () => {
             Games
           </Link>
           <a
-            href="https://cryptowarriorsdemo.netlify.app/"
+            href="https://cryptowarriorssimulation.netlify.app/"
             className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
           >
             Demo
@@ -280,7 +280,7 @@ const Navbar = () => {
           </Link>
         )}
       </div>
-      {notification ?
+      {notification ? (
         <div className="absolute top-14 md:right-7 right-2 text-xs h-40 overflow-y-auto border-gray-300 border-[1px]">
           {displayAnnouncement.map((announcement) => (
             <div
@@ -293,7 +293,7 @@ const Navbar = () => {
             </div>
           ))}
         </div>
-       : null}
+      ) : null}
 
       {isModalOpen && (
         <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
