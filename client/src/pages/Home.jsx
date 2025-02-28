@@ -141,7 +141,7 @@ export default function Home() {
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
               <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen gap-0 ">
-                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide">
+                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide mx-0">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
@@ -168,7 +168,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
-                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide">
+                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
@@ -209,7 +209,7 @@ export default function Home() {
 
 function PartnerCard({ name, imgSrc }) {
   return (
-    <div className="flex flex-row items-center md:px-28 px-4 ">
+    <div className="flex flex-row items-center md:px-28 px-4 mx-0">
       <img
         className="lg:h-20 w-full h-full object-cover rounded-full"
         src={imgSrc}
