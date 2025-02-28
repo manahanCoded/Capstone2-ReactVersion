@@ -48,3 +48,30 @@
 /* @media only screen and (min-width: 1200px) {
 
 } */
+.partners-container::before,
+.partners-container::after {
+  position: absolute;
+  top: -15px;
+  width: 250px;
+  height: 140%;
+  content: '';
+  z-index: 2;
+}
+
+.partners-container::before {
+  left: 0;
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0),
+    rgb(255, 255, 255)
+  );
+}
+
+.partners-container::after {
+  right: -30px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgb(255, 255, 255)
+  );
+}

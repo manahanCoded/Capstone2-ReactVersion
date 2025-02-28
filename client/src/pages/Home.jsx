@@ -134,13 +134,13 @@ export default function Home() {
         </section>
 
         {/* Partners Section */}
-        <section className="relative -top-12 pt-14 inline-block">
+        <section className="relative -top-12 pt-14 inline-block w-screen">
           <MaxWidthWrapper>
             <div className="flex flex-col justify-center items-center">
-              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-white bg-[#333333] ">
-                Partners
+              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
+                Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
-              <section className="top-3  bg-white rounded-2xl  flex w-screen gap-0">
+              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen gap-0 ">
                 <div className="flex flex-row justify-between items-center rounded-2xl animate-slide">
                   <PartnerCard
                     name="Coins PH"
