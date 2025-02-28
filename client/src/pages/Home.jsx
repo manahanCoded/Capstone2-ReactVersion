@@ -209,7 +209,7 @@ export default function Home() {
 
 function PartnerCard({ name, imgSrc }) {
   return (
-    <div className="flex flex-row items-center gap-2 md:px-12 px-4  mx-10">
+    <div className="flex flex-row items-center gap-2 md:px-28 px-4 ">
       <img
         className="lg:h-20 w-full h-full object-cover rounded-full"
         src={imgSrc}
