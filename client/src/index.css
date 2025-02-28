@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'CryptoHunter';
+  src: url('/public/assets/crypto-hunter/CryptoHunter-E44Rj.ttf')
+    format('truetype');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,7 +68,6 @@ body {
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -89,52 +94,51 @@ body {
   background: #555; /* Hover effect for scrollbar thumb */
 }
 
-
 /* Set content for font-families */
 .ql-font-arial,
-.ql-font span[data-value="arial"]::before {
+.ql-font span[data-value='arial']::before {
   font-family: Arial, sans-serif;
 }
 .ql-font-comic-sans,
-.ql-font span[data-value="comic-sans"]::before {
-  font-family: "Comic Sans MS", cursive, sans-serif;
+.ql-font span[data-value='comic-sans']::before {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 .ql-font-courier-new,
-.ql-font span[data-value="courier-new"]::before {
-  font-family: "Courier New";
+.ql-font span[data-value='courier-new']::before {
+  font-family: 'Courier New';
 }
 .ql-font-georgia,
-.ql-font span[data-value="georgia"]::before {
+.ql-font span[data-value='georgia']::before {
   font-family: Georgia, serif;
 }
 .ql-font-helvetica,
-.ql-font span[data-value="helvetica"]::before {
+.ql-font span[data-value='helvetica']::before {
   font-family: Helvetica, sans-serif;
 }
 .ql-font-Inter,
-.ql-font span[data-value="Inter"]::before {
+.ql-font span[data-value='Inter']::before {
   font-family: 'Inter', sans-serif;
 }
 .ql-font-lucida,
-.ql-font span[data-value="lucida"]::before {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+.ql-font span[data-value='lucida']::before {
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
 }
 
 /* Set content for sizes */
 .ql-size-extra-small,
-.ql-size span[data-value="extra-small"]::before {
+.ql-size span[data-value='extra-small']::before {
   font-size: 13px !important;
 }
 .ql-size-small,
-.ql-size span[data-value="small"]::before {
+.ql-size span[data-value='small']::before {
   font-size: 14px !important;
 }
 .ql-size-medium,
-.ql-size span[data-value="medium"]::before {
+.ql-size span[data-value='medium']::before {
   font-size: 18px !important;
 }
 .ql-size-large,
-.ql-size span[data-value="large"]::before {
+.ql-size span[data-value='large']::before {
   font-size: 20px !important;
 }
 
@@ -143,11 +147,11 @@ body {
 }
 .App .ql-snow .ql-tooltip.ql-flip {
   width: auto;
-  left: 17px!important;
+  left: 17px !important;
   white-space: normal;
 }
 
- @page {
+@page {
   margin: 1in;
 }
 
@@ -166,8 +170,7 @@ body {
   .container .ql-toolbar.ql-snow {
     display: none;
   }
-} 
-
+}
 
 /* Sliding effect of quiz */
 

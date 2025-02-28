@@ -1,39 +1,101 @@
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Footer from "@/components/Footer";
-
-
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import Footer from '@/components/Footer'
+import './home.css'
 export default function Home() {
   return (
     <>
-
       <div className="mt-14">
-        <MaxWidthWrapper className="mb-14 w-full flex lg:flex-row flex-col justify-between items-center">
-          <section className="w-full px-8 mt-8 mb-14">
-            <h2 className="md:text-5xl text-4xl mb-4 font-semibold text-[#333333]">
-              Unlock the power of Blockchain
+        <MaxWidthWrapper className=" w-full flex lg:flex-row sm:flex-col md:flex-row justify-between items-center max-h-screen ">
+          <section className="w-2/4 px-8 mt-12 mb-14">
+            <h2 className="md:text-4xl lg:text-6xl sm:text-3xl mb-4 font-semibold text-[#333333]">
+              Unlock the power of{' '}
+              <span className="font-custom text-yellow-600">Blockchain</span>
             </h2>
-            <h3 className="md:text-2xl text-xl font-semibold py-2 px-6 mb-8 rounded-3xl shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              Become a <span className="text-red-900">Crypto Warrior</span> Today
+            <h3 className="md:text-xl lg:text-3xl sm:text-xl font-semibold py-2  mb-8 rounded-3xl ">
+              Become a{' '}
+              <span className="text-red-900 font-custom ">Crypto Warrior</span>{' '}
+              Today
             </h3>
-            <p className="mb-12">
-              Explore blockchain. Whether you’re a beginner or expert, we
-              provide the tools and community to help you thrive. Start your
-              web3 journey here!
+            <p className="mb-12 lg:text-base md:text-sm">
+              Explore blockchain with us! Whether you're a beginner or an
+              expert, we provide the tools, resources, and a vibrant community
+              to help you thrive. Dive into interactive learning modules,
+              hands-on demos, and real-world applications. Stay ahead with the
+              latest trends, connect with like-minded learners, and unlock new
+              opportunities in Web3. Join us today and take your Web3 journey to
+              the next level!
             </p>
+
             <Link
               to="/modules"
-              className="md:text-xl text-lg py-3 px-6 rounded-3xl bg-red-900 hover:bg-red-950 text-white"
+              className="md:text-xl text-lg py-3 px-6 rounded-tl-[50px] rounded-tr-[30px] rounded-br-[30px] rounded-bl-[0] bg-red-900 hover:bg-red-950 text-white"
             >
               Get Started
             </Link>
           </section>
-          <section className="w-full mt-6 flex md:justify-center justify-start">
-            <img
+          <section className="banner w-2/4 lg:-mr-12 ">
+            {/* <img
               src="/IMG_Dashboard/main.png"
               alt=""
               className="relative lg:left-0 -left-10 rounded md:w-[90%] w-full"
-            />
+            /> */}
+            <div className="gallery w-full h-auto lg:p-[100px] md:p-[50px] grid grid-cols-3  gap-y-4  mb-20">
+              <div className="item row-start-1 row-end-4 animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/NFT-Dragon-spitting-fire.jpg"
+                  alt="NFT-Dragon-spitting-fire"
+                />
+              </div>
+              <div className="item animate-moveInverse">
+                <img
+                  src="/IMG_Dashboard/Banner/BLOCKCHAIN-blockchain-technology.jpg"
+                  alt="BLOCKCHAIN-blockchain-technology"
+                />
+              </div>
+              <div className="item animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/LEARNING-teacher-teaching.jpg"
+                  alt="LEARNING-teacher-teaching"
+                />
+              </div>
+              <div className="item animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/LEARNING-Book.jpg"
+                  alt="LEARNING-Book"
+                />
+              </div>
+              <div className="item row-start-2 row-end-5 animate-moveInverse">
+                <img
+                  src="/IMG_Dashboard/Banner/CRYPTOCURRENCY-CryptocurrencyWallet-bitcoin-background.jpg"
+                  alt="CRYPTOCURRENCY-CryptocurrencyWallet-bitcoin-background"
+                />
+              </div>
+              <div className="item animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/NFT-People-smiling-falling-money.jpg"
+                  alt="NFT-People-smiling-falling-money"
+                />
+              </div>
+              <div className="item animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/NFT-Cat-knight-nature-background.jpg"
+                  alt="NFT-Cat-knight-nature-background"
+                />
+              </div>
+              <div className="item row-start-3 row-end-6 animate-move">
+                <img
+                  src="/IMG_Dashboard/Banner/LEARNING-Person-enlightened-library-background.jpg"
+                  alt="LEARNING-Person-enlightened-library-background"
+                />
+              </div>
+              <div className="item animate-moveInverse">
+                <img
+                  src="/IMG_Dashboard/Banner/BLOCKCHAIN-Decentralization.jpg"
+                  alt="BLOCKCHAIN-Decentralization"
+                />
+              </div>
+            </div>
           </section>
         </MaxWidthWrapper>
 
@@ -102,7 +164,7 @@ export default function Home() {
         <Footer />
       </div>
     </>
-  );
+  )
 }
 
 function FeatureCard({ title, description, link, imgSrc }) {
@@ -130,20 +192,14 @@ function FeatureCard({ title, description, link, imgSrc }) {
         </Link>
       </section>
     </div>
-  );
+  )
 }
 
 function PartnerCard({ name, imgSrc }) {
   return (
     <div className="flex flex-row items-center gap-2 md:py-4 md:px-12 px-4 py-2 border-r-2">
-      <img
-        className="md:h-12 h-10 rounded-full"
-        src={imgSrc}
-        alt=""
-      />
+      <img className="md:h-12 h-10 rounded-full" src={imgSrc} alt="" />
       <p className="lg:text-xl md:text-lg text-sm">{name}</p>
     </div>
-  );
+  )
 }
-
-
