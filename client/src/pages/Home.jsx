@@ -141,7 +141,7 @@ export default function Home() {
                 Partners
               </h3>
               <section className="top-3  bg-white rounded-2xl  flex w-screen ">
-                <div className="flex flex-row justify-between items-center py-4 rounded-2xl animate-slide">
+                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
@@ -168,7 +168,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
-                <div className="flex flex-row justify-between items-center py-4 rounded-2xl  animate-slide">
+                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
