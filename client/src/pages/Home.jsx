@@ -134,25 +134,66 @@ export default function Home() {
         </section>
 
         {/* Partners Section */}
-        <section className="relative -top-36 pt-14">
+        <section className="relative -top-12 pt-14 inline-block">
           <MaxWidthWrapper>
             <div className="flex flex-col justify-center items-center">
-              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-white bg-[#333333]">
+              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-white bg-[#333333] ">
                 Partners
               </h3>
-              <section className="relative -top-4 bg-white rounded-2xl">
-                <div className="flex flex-row justify-center items-center py-4 lg:px-8 rounded-2xl shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+              <section className="top-3  bg-white rounded-2xl  flex w-screen ">
+                <div className="flex flex-row justify-between items-center py-4 rounded-2xl pl-8 animate-slide">
                   <PartnerCard
-                    name="Crypto Warriors"
-                    imgSrc="/IMG_Dashboard/Partners/cryptoWarriors.jpg"
+                    name="Coins PH"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
                   />
                   <PartnerCard
                     name="University of Cordilleras"
                     imgSrc="/IMG_Dashboard/Partners/UC.jpg"
                   />
+
                   <PartnerCard
-                    name="Chain Academy"
+                    name="DICT CAR"
+                    imgSrc="/IMG_Dashboard/Partners/dict2.jpg"
+                  />
+                  <PartnerCard
+                    name="PC Express"
+                    imgSrc="/IMG_Dashboard/Partners/pc-express.png"
+                  />
+                  <PartnerCard
+                    name="UC InTTO"
+                    imgSrc="/IMG_Dashboard/Partners/uc-intto.jpg"
+                  />
+                  <PartnerCard
+                    name="Zodiacs gaming"
+                    imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
+                  />
+                </div>
+
+                <div className="flex flex-row justify-between items-center py-4 rounded-2xl  pl-4 animate-slide">
+                  <PartnerCard
+                    name="Coins PH"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
+                  />
+                  <PartnerCard
+                    name="University of Cordilleras"
                     imgSrc="/IMG_Dashboard/Partners/UC.jpg"
+                  />
+
+                  <PartnerCard
+                    name="DICT CAR"
+                    imgSrc="/IMG_Dashboard/Partners/dict2.jpg"
+                  />
+                  <PartnerCard
+                    name="PC Express"
+                    imgSrc="/IMG_Dashboard/Partners/pc-express.png"
+                  />
+                  <PartnerCard
+                    name="UC InTTO"
+                    imgSrc="/IMG_Dashboard/Partners/uc-intto.jpg"
+                  />
+                  <PartnerCard
+                    name="Zodiacs gaming"
+                    imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
               </section>
@@ -167,6 +208,18 @@ export default function Home() {
   )
 }
 
+function PartnerCard({ name, imgSrc }) {
+  return (
+    <div className="flex flex-row items-center gap-2 md:px-12 px-4 border-r-2 mx-10">
+      <img
+        className="lg:h-20 w-full h-full object-cover rounded-lg"
+        src={imgSrc}
+        alt=""
+      />
+      <p className="lg:text-xl md:text-lg text-sm text-center">{name}</p>
+    </div>
+  )
+}
 function FeatureCard({ title, description, link, imgSrc }) {
   return (
     <div className="group w-96 flex flex-col items-center">
@@ -191,15 +244,6 @@ function FeatureCard({ title, description, link, imgSrc }) {
           Visit
         </Link>
       </section>
-    </div>
-  )
-}
-
-function PartnerCard({ name, imgSrc }) {
-  return (
-    <div className="flex flex-row items-center gap-2 md:py-4 md:px-12 px-4 py-2 border-r-2">
-      <img className="md:h-12 h-10 rounded-full" src={imgSrc} alt="" />
-      <p className="lg:text-xl md:text-lg text-sm">{name}</p>
     </div>
   )
 }

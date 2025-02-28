@@ -61,6 +61,7 @@ export default {
       animation: {
         move: 'move 5s linear infinite',
         moveInverse: 'moveInverse 5s linear infinite',
+        slide: 'slide 5s linear infinite',
       },
       keyframes: {
         move: {
@@ -77,6 +78,14 @@ export default {
           },
           '50%': {
             transform: 'translateY(-50px)',
+          },
+        },
+        slide: {
+          from: {
+            transform: 'translateX(0)',
+          },
+          to: {
+            transform: 'translateX(-100%)',
           },
         },
       },
