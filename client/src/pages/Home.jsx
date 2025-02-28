@@ -174,7 +174,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
                   />
                   <PartnerCard
-                    name="University of Cordilleras"
+                    name="University of the Cordilleras"
                     imgSrc="/IMG_Dashboard/Partners/UC.jpg"
                   />
 
@@ -209,7 +209,7 @@ export default function Home() {
 
 function PartnerCard({ name, imgSrc }) {
   return (
-    <div className="flex flex-row items-center gap-2 md:px-28 px-4 ">
+    <div className="flex flex-row items-center md:px-28 px-4 ">
       <img
         className="lg:h-20 w-full h-full object-cover rounded-full"
         src={imgSrc}
