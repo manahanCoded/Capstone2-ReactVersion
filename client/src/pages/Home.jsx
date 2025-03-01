@@ -144,16 +144,16 @@ export default function Home() {
                 <div className="flex flex-row justify-between items-center rounded-2xl animate-slide mx-0">
                   <PartnerCard
                     name="Coins PH"
-                    imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
                   />
                   <PartnerCard
-                    name="University of Cordilleras"
+                    name="University of the Cordilleras"
                     imgSrc="/IMG_Dashboard/Partners/UC.jpg"
                   />
 
                   <PartnerCard
                     name="DICT CAR"
-                    imgSrc="/IMG_Dashboard/Partners/dict2.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/dict8.png"
                   />
                   <PartnerCard
                     name="PC Express"
@@ -161,7 +161,7 @@ export default function Home() {
                   />
                   <PartnerCard
                     name="UC InTTO"
-                    imgSrc="/IMG_Dashboard/Partners/uc-intto.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/uc-intto2.png"
                   />
                   <PartnerCard
                     name="Zodiacs gaming"
@@ -171,7 +171,7 @@ export default function Home() {
                 <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0">
                   <PartnerCard
                     name="Coins PH"
-                    imgSrc="/IMG_Dashboard/Partners/coinsph2.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
                   />
                   <PartnerCard
                     name="University of the Cordilleras"
@@ -180,7 +180,7 @@ export default function Home() {
 
                   <PartnerCard
                     name="DICT CAR"
-                    imgSrc="/IMG_Dashboard/Partners/dict6.png"
+                    imgSrc="/IMG_Dashboard/Partners/dict8.png"
                   />
                   <PartnerCard
                     name="PC Express"
@@ -188,7 +188,7 @@ export default function Home() {
                   />
                   <PartnerCard
                     name="UC InTTO"
-                    imgSrc="/IMG_Dashboard/Partners/uc-intto.jpg"
+                    imgSrc="/IMG_Dashboard/Partners/uc-intto2.png"
                   />
                   <PartnerCard
                     name="Zodiacs gaming"

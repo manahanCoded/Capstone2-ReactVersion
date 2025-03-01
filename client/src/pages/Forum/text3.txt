@@ -36,10 +36,8 @@ import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
-import Reply from "@/components/Reply";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 
 export default function Forum() {
     const navigate = useNavigate()
@@ -265,13 +263,13 @@ export default function Forum() {
             navigate("/user/login");
             return;
         }
-
+    
         const existingVote = all_QA.votes.find(
             (vote) => vote.target_id === targetId && vote.target_type === targetType && vote.user_id === checkUser.id
         );
-
+    
         const newVoteType = existingVote?.vote_type === voteType ? "remove" : voteType;
-
+    
         try {
             const response = await fetch(`${API_URL}/api/question-answer/vote`, {
                 method: "POST",
@@ -283,13 +281,13 @@ export default function Forum() {
                     vote_type: newVoteType,
                 }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(await response.text());
             }
-
+    
             const data = await response.json();
-
+    
             setAll_QA((prevData) => ({
                 ...prevData,
                 votes: newVoteType === "remove"
@@ -301,8 +299,8 @@ export default function Forum() {
             alert(error.message || "An error occurred while processing your vote.");
         }
     };
-
-
+    
+    
 
     const handleDelete = async (questionId) => {
         if (!checkUser?.id) {
@@ -338,21 +336,21 @@ export default function Forum() {
         }
     };
 
-    // Handle input changes for replies
-    const handleInputChange = (id, value) => {
-        setInputValues((prev) => ({ ...prev, [id]: value }));
-    };
+      // Handle input changes for replies
+  const handleInputChange = (id, value) => {
+    setInputValues((prev) => ({ ...prev, [id]: value }));
+  };
 
-    // Handle likes/dislikes
-    const toggleLike = (id) => {
-        setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
-        setDislikes((prev) => ({ ...prev, [id]: false })); // Remove dislike if liked
-    };
+  // Handle likes/dislikes
+  const toggleLike = (id) => {
+    setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
+    setDislikes((prev) => ({ ...prev, [id]: false })); // Remove dislike if liked
+  };
 
-    const toggleDislike = (id) => {
-        setDislikes((prev) => ({ ...prev, [id]: !prev[id] }));
-        setLikes((prev) => ({ ...prev, [id]: false })); // Remove like if disliked
-    };
+  const toggleDislike = (id) => {
+    setDislikes((prev) => ({ ...prev, [id]: !prev[id] }));
+    setLikes((prev) => ({ ...prev, [id]: false })); // Remove like if disliked
+  };
 
 
 
@@ -786,136 +784,143 @@ export default function Forum() {
                                                             );
                                                             const userVote = answerVotes.find((vote) => vote.user_id === checkUser?.id);
 
-                                                            const isLiked = userVote?.vote_type === "up";
+                                                              const isLiked = userVote?.vote_type === "up";
                                                             const isDisliked = userVote?.vote_type === "down";
 
                                                             return (
-                                                                <div id="comment" className="mt-4 transition-all duration-500 ease-in-out">
-                                                                    <div className="space-y-2">
-                                                                        {(() => {
-                                                                            const relatedAnswers = all_QA.answers.filter(
-                                                                                (answer) => answer.question_id === checkQuestion?.question_id
-                                                                            );
-
-                                                                            return relatedAnswers.length > 0 ? (
-                                                                                relatedAnswers
-                                                                                    .filter((answer) => !answer.parent_answer_id) // Top-level answers only
-                                                                                    .map((answer) => {
-                                                                                        const answerVotes = all_QA.votes.filter(
-                                                                                            (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
-                                                                                        );
-                                                                                        const userVote = answerVotes.find((vote) => vote.user_id === checkUser?.id);
-
-                                                                                        const isLiked = userVote?.vote_type === "up";
-                                                                                        const isDisliked = userVote?.vote_type === "down";
-
-                                                                                        return (
-                                                                                            <section key={answer.answer_id} className="flex flex-col gap-2 text-xs p-2">
-                                                                                                {/* Answer Header */}
-                                                                                                <div className="flex flex-row justify-between items-center">
-                                                                                                    <div className="w-full flex flex-row items-center">
-                                                                                                        {answer?.image ? (
-                                                                                                            <img
-                                                                                                                src={answer.image}
-                                                                                                                className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                                                                                                                alt="Profile Picture"
-                                                                                                            />
-                                                                                                        ) : (
-                                                                                                            <AccountCircleIcon
-                                                                                                                style={{
-                                                                                                                    width: '2.5rem',
-                                                                                                                    height: '2.5rem',
-                                                                                                                    marginRight: '0.5rem',
-                                                                                                                    color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                                                                                                                }}
-                                                                                                            />
-                                                                                                        )}
-                                                                                                        <p className="text-gray-600">{answer.name ? answer.name : answer.email}</p>
-                                                                                                    </div>
-                                                                                                    {checkUser?.role === "admin" && (
-                                                                                                        <button
-                                                                                                            onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
-                                                                                                            className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
-                                                                                                        >
-                                                                                                            {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
-                                                                                                        </button>
-                                                                                                    )}
-                                                                                                </div>
-
-                                                                                                {/* Answer Text */}
-                                                                                                <div className="flex flex-row items-start">
-                                                                                                    {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
-                                                                                                    <p className="mt-1 ml-1">{answer.answer_text}</p>
-                                                                                                </div>
-
-                                                                                                {/* Like, Dislike, and Vote Count */}
-                                                                                                <div className="flex flex-row gap-1">
-                                                                                                    <button
-                                                                                                        className={`mr-2 ${isLiked ? "text-blue-500" : "text-gray-500"}`}
-                                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "up")}
-                                                                                                    >
-                                                                                                        {isLiked ? <ThumbUpAltIcon /> : <ThumbUpOffAltIcon />}
-                                                                                                    </button>
-                                                                                                    <button
-                                                                                                        className={`mr-2 ${isDisliked ? "text-red-700" : "text-gray-500"}`}
-                                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "down")}
-                                                                                                    >
-                                                                                                        {isDisliked ? <ThumbDownAltIcon /> : <ThumbDownOffAltIcon />}
-                                                                                                    </button>
-                                                                                                    <p className="text-sm text-gray-500">{answerVotes.length}</p>
-                                                                                                </div>
-
-                                                                                                {/* Reply Button */}
-                                                                                                <button
-                                                                                                    className="text-blue-500 mt-2"
-                                                                                                    onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
-                                                                                                >
-                                                                                                    {replyingTo === answer.answer_id ? "Cancel Reply" : "Reply"}
-                                                                                                </button>
-
-                                                                                                {/* Reply Form */}
-                                                                                                {replyingTo === answer.answer_id && (
-                                                                                                    <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="mt-2">
-                                                                                                        <textarea
-                                                                                                            className="w-full p-2 border rounded"
-                                                                                                            placeholder="Write a reply..."
-                                                                                                            value={answers[answer.answer_id] || ""}
-                                                                                                            onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
-                                                                                                        />
-                                                                                                        <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
-                                                                                                            Submit Reply
-                                                                                                        </button>
-                                                                                                    </form>
-                                                                                                )}
-
-                                                                                                {/* Nested Replies */}
-                                                                                                <div className="ml-6 border-l pl-4 mt-2">
-                                                                                                    {all_QA.answers
-                                                                                                        .filter((reply) => reply.parent_answer_id === answer.answer_id) // Filter replies to this answer
-                                                                                                        .map((reply) => (
-                                                                                                            <Reply
-                                                                                                                key={reply.answer_id}
-                                                                                                                reply={reply}
-                                                                                                                all_QA={all_QA}
-                                                                                                                checkUser={checkUser}
-                                                                                                                handleVote={handleVote}
-                                                                                                                handleAnswerSubmit={handleAnswerSubmit}
-                                                                                                                answers={answers}
-                                                                                                                setAnswers={setAnswers}
-                                                                                                                replyingTo={replyingTo}
-                                                                                                                setReplyingTo={setReplyingTo}
-                                                                                                            />
-                                                                                                        ))}
-                                                                                                </div>
-                                                                                            </section>
-                                                                                        );
-                                                                                    })
+                                                                <section key={answer.answer_id} className="flex flex-col gap-2 text-xs p-2">
+                                                                    <div className="flex flex-row justify-between items-center">
+                                                                        <div className="w-full flex flex-row items-center ">
+                                                                            {answer?.image ? (
+                                                                                <img
+                                                                                    src={answer.image}
+                                                                                    className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                                                    alt="Profile Picture"
+                                                                                />
                                                                             ) : (
-                                                                                <p className="text-gray-500">No answers yet</p>
-                                                                            );
-                                                                        })()}
+                                                                                <AccountCircleIcon
+                                                                                    style={{
+                                                                                        width: '2.5rem',
+                                                                                        height: '2.5rem',
+                                                                                        marginRight: '0.5rem',
+                                                                                        color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                                                                    }}
+                                                                                />
+                                                                            )}
+                                                                             <p className=" text-gray-600">{answer.name ? answer.name : answer.email}</p>
+                                                                        </div>
+                                                                        {checkUser?.role === "admin" && (
+                                                                            <button
+                                                                                onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
+                                                                                className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
+                                                                            >
+                                                                                {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
+                                                                            </button>
+                                                                        )}
                                                                     </div>
-                                                                </div>
+                                                                    <div className="flex flex-row items-start">
+                                                                    {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon/>
+                                                                    </span>}
+                                                                        <p className="mt-1 ml-1">{answer.answer_text}</p>
+                                                                    </div>
+                                                                    <div className="flex flex-row gap-1">
+                                                                        <button
+                                                                            className={`mr-2 ${isLiked ? "text-blue-500" : "text-gray-500"}`}
+                                                                            onClick={() => handleVote(answer.answer_id, "answer", "up")}
+                                                                        >
+                                                                            {isLiked ? (
+                                                                                <ThumbUpAltIcon />
+                                                                            ) : (
+                                                                                <ThumbUpOffAltIcon />
+                                                                            )}
+
+                                                                        </button>
+                                                                        <button
+                                                                            className={`mr-2 text-red-500 ${isDisliked ? "text-red-700" : "text-gray-500"}`}
+                                                                            onClick={() => handleVote(answer.answer_id, "answer", "down")}
+                                                                        >
+                                                                            {isDisliked ? (
+                                                                                <ThumbDownAltIcon />
+                                                                            ) : (
+                                                                                <ThumbDownOffAltIcon />
+                                                                            )}
+                                                                        </button>
+                                                                        <p className="text-sm text-gray-500">
+                                                                        {answerVotes.length}
+                                                                        </p>
+                                                                    </div>
+
+
+                                                                    <button
+                                                                        className="text-blue-500 mt-2"
+                                                                        onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
+                                                                    >
+                                                                        {replyingTo === answer.answer_id ? "Cancel Reply" : "Reply"}
+                                                                    </button>
+
+
+                                                                    {replyingTo === answer.answer_id && (
+                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="mt-2">
+                                                                            <textarea
+                                                                                className="w-full p-2 border rounded"
+                                                                                placeholder="Write a reply..."
+                                                                                value={answers[answer.answer_id] || ""}
+                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
+                                                                            />
+                                                                            <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
+                                                                                Submit Reply
+                                                                            </button>
+                                                                        </form>
+                                                                    )}
+
+                                                                    {/* Nested Replies */}
+                                                                    <div className="ml-6 border-l pl-4 mt-2">
+                                                                        {all_QA.answers
+                                                                            .filter((reply) => reply.parent_answer_id === answer.answer_id) // Replies to the current answer
+                                                                            .map((reply) => (
+                                                                                <div key={reply.answer_id} className="p-2 bg-gray-100 rounded-md">
+                                                                                    {/* Nested Reply Text */}
+                                                                                    <p className="text-gray-700">{reply.answer_text}</p>
+                                                                                    <p className="text-sm text-gray-500">By User {reply.user_id}</p>
+
+                                                                                    {/* Reply Button for Nested Reply */}
+                                                                                    <button
+                                                                                        className="text-blue-500 mt-2"
+                                                                                        onClick={() => setReplyingTo(replyingTo === reply.answer_id ? null : reply.answer_id)}
+                                                                                    >
+                                                                                        {replyingTo === reply.answer_id ? "Cancel Reply" : "Reply"}
+                                                                                    </button>
+
+                                                                                    {/* Reply Form for Nested Reply */}
+                                                                                    {replyingTo === reply.answer_id && (
+                                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="mt-2">
+                                                                                            <textarea
+                                                                                                className="w-full p-2 border rounded"
+                                                                                                placeholder="Write a reply..."
+                                                                                                value={answers[reply.answer_id] || ""}
+                                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: e.target.value }))}
+                                                                                            />
+                                                                                            <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
+                                                                                                Submit Reply
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    )}
+
+                                                                                    {/* Nested Replies to a Nested Reply */}
+                                                                                    <div className="ml-6 border-l pl-4 mt-2">
+                                                                                        {all_QA.answers
+                                                                                            .filter((nestedReply) => nestedReply.parent_answer_id === reply.answer_id) // Replies to the nested reply
+                                                                                            .map((nestedReply) => (
+                                                                                                <div key={nestedReply.answer_id} className="p-2 mb-2 bg-gray-200 rounded-md">
+                                                                                                    <p className="text-gray-700">{nestedReply.answer_text}</p>
+                                                                                                    <p className="text-sm text-gray-500">By User {nestedReply.user_id}</p>
+                                                                                                </div>
+                                                                                            ))}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                    </div>
+                                                                </section>
                                                             );
                                                         })
                                                 ) : (

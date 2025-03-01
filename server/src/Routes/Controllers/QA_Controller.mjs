@@ -24,7 +24,25 @@ const qa_all = async (req, res) => {
                     INNER JOIN users u
                     ON q.user_id = u.id
                     ORDER BY created_at DESC`),
-            db.query("SELECT * FROM qa_answers ORDER BY answer_id"),
+                    
+            db.query(`SELECT 
+                    QA_answers.answer_id,
+                    QA_answers.question_id,
+                    QA_answers.answer_text,
+                    QA_answers.created_at,
+                    QA_answers.is_accepted,
+                    QA_answers.user_id,
+                    QA_answers.parent_answer_id,
+                    users.id,
+                    users.email,
+                    users.name,
+                    users.lastname,
+                    users.role,
+                    users.image,
+                    users.file_mime_type
+                    FROM QA_answers
+                    INNER JOIN users ON QA_answers.user_id = users.id;
+                    `),
             db.query("SELECT * FROM qa_votes")
         ]);
 
@@ -38,9 +56,16 @@ const qa_all = async (req, res) => {
                 : null,
         }));
 
+        const formattedAnswers = answers.rows.map((answers) => ({
+            ...answers,
+            image: answers.image
+                ? `data:${answers.file_mime_type};base64,${answers.image.toString("base64")}`
+                : null,
+        }));
+
         res.status(200).json({
             questions: formattedQuestions,
-            answers: answers.rows,
+            answers: formattedAnswers,
             votes: votes.rows
         });
     } catch (err) {
@@ -71,7 +96,7 @@ const question = async (req, res) => {
         res.status(201).json({ question: result.rows[0] });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Failed to insert question into database" });
+        res.status(500).json({ error: "Failed to save qeustion." });
     }
 };
 
@@ -110,10 +135,6 @@ const answer = async (req, res) => {
 const vote = async (req, res) => {
     const { target_id, target_type, user_id, vote_type } = req.body;
 
-    if (!user_id) {
-        return res.status(401);
-    }
-
     if (!target_id || !target_type || !user_id || !vote_type) {
         return res.status(400).json({ error: "All fields are required." });
     }
@@ -144,12 +165,14 @@ const vote = async (req, res) => {
             "INSERT INTO qa_votes (target_id, target_type, user_id, vote_type) VALUES ($1, $2, $3, $4) RETURNING *",
             [target_id, target_type, user_id, vote_type]
         );
+
         res.status(201).json({ vote: newVote.rows[0] });
     } catch (error) {
         console.error("Error processing vote:", error);
         res.status(500).json({ error: "An error occurred while processing your vote." });
     }
-}
+};
+
 
 
 
