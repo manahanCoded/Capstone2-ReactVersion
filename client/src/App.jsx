@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"; 
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/users/Login";
@@ -28,6 +28,7 @@ import AnnouncementsDashboard from "./pages/users/accounts-dashboard/Announcemen
 import Forum from "./pages/Forum/Forum";
 import UserEmail from "./pages/email/user-email/UserEmail";
 import AdminEmail from "./pages/email/admin-email/AdminEmail";
+import ScrollToTop from "./components/ScrollToTop";
 
 
 
@@ -35,6 +36,7 @@ function App() {
   return (
     <div className="w-screen font-poppins">
       <Navbar />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/user/login" element={<Login />} />
@@ -43,7 +45,7 @@ function App() {
         <Route path="/user/accounts-dashboard" element={<AccountsDashboard />} />
         <Route path="/user/modules-dashboard" element={<ModulesDashboard />} />
         <Route path="/user/jobs-dashboard" element={<JobDashboard />} />
-        <Route path="/user/announcements-dashboard" element={<AnnouncementsDashboard />} />        
+        <Route path="/user/announcements-dashboard" element={<AnnouncementsDashboard />} />
 
         <Route path="/modules" element={<ModulesPage />} />
         <Route path="/modules/units/:id" element={<Unit />} />
@@ -69,7 +71,7 @@ function App() {
 
         <Route path="/user-email" element={<UserEmail />} />
         <Route path="/admin-email" element={<AdminEmail />} />
-        
+
         <Route path="/profile" element={<Profile />} />
 
       </Routes>

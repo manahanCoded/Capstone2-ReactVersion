@@ -162,7 +162,7 @@ CREATE TABLE QA_questions (
     user_id INT NOT NULL,           
     question_text TEXT,    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    topic VARCHAR(100) NOT NULL,
+    topic VARCHAR(300) NOT NULL,
 	topic_type varchar(50) NOT NULL,         
     is_resolved BOOLEAN DEFAULT FALSE,
     image BYTEA,
@@ -176,7 +176,8 @@ CREATE TABLE QA_answers (
     user_id INT NOT NULL,          
     answer_text TEXT NOT NULL,      
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    is_accepted BOOLEAN DEFAULT FALSE 
+    is_accepted BOOLEAN DEFAULT FALSE,
+    parent_answer_id INT
 );
 
 <!-- DATABASE FOR Question&Answer  votes-->
