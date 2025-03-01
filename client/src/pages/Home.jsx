@@ -6,13 +6,13 @@ export default function Home() {
   return (
     <>
       <div className="mt-14">
-        <MaxWidthWrapper className=" w-full flex lg:flex-row sm:flex-col md:flex-row justify-between items-center max-h-screen ">
-          <section className="w-2/4 px-8 mt-12 mb-14">
-            <h2 className="md:text-4xl lg:text-6xl sm:text-3xl mb-4 font-semibold text-[#333333]">
+        <MaxWidthWrapper className=" w-full flex lg:flex-row sm:flex-col md:flex-row justify-between items-center max-h-screen max-sm:items-center max-sm:justify-center sm:text-center">
+          <section className="w-2/4 px-8 mt-12 mb-14 max-sm:text-center max-sm:w-[100%] sm:w-[100%] md:w-2/4 ">
+            <h2 className="md:text-4xl lg:text-6xl sm:text-3xl mb-4 font-semibold text-[#333333] max-sm:text-3xl">
               Unlock the power of{' '}
               <span className="font-custom text-yellow-600">Blockchain</span>
             </h2>
-            <h3 className="md:text-xl lg:text-3xl sm:text-xl font-semibold py-2  mb-8 rounded-3xl ">
+            <h3 className="md:text-xl lg:text-3xl sm:text-xl font-semibold py-2  mb-8 rounded-3xl max-sm:text-2xl">
               Become a{' '}
               <span className="text-red-900 font-custom ">Crypto Warrior</span>{' '}
               Today
