@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState, useRef } from 'react'
 import './scramble.css'
 import { blockchainWords, cryptoWords, nftWords } from './scrambleWords'
@@ -47,6 +45,10 @@ export default function Scramble() {
           if (tries - 1 <= 0 || showGameOverModal) {
             clearInterval(timerRef.current) // Ensure timer is stopped when tries reach 0
             return 0
+          }
+
+          if (prevTime === time) {
+            return
           }
 
           console.log(
@@ -116,6 +118,8 @@ export default function Scramble() {
     if (userWord === correctWord) {
       // alert(`Congrats! ${userWord.toUpperCase()} is the correct word`)
       setIsCorrect(true)
+      setTime(time)
+      initTimer()
       setTimeout(() => {
         setIsCorrect(false)
         setScore(score + 10)
@@ -139,10 +143,19 @@ export default function Scramble() {
   useEffect(() => {
     if (tries <= 0) {
       setTimeout(() => {
+        clearInterval(timerRef.current)
         setShowGameOverModal(true)
       }, 2000) // 1000ms = 1 second delay
     }
   }, [tries])
+
+  useEffect(() => {
+    if (isPickingCategory) {
+      clearInterval(timerRef.current)
+    } else {
+      initTimer()
+    }
+  }, [isPickingCategory])
 
   console.log('Tries: ', tries)
   const progress = (5 - time) / 5
@@ -287,7 +300,7 @@ export default function Scramble() {
           <h2 className="text-4xl font-medium py-4 px-6 ">Web3 Mix n' Match</h2>
           <div className="flex justify-around gap-5 mr-4 items-center">
             <img
-              src={`/Game_images/lives${tries}.png`}
+              src={`/Game_images/lives${tries / 2}.png`}
               alt="lives-img"
               className=" w-40 max-h-32 h-16"
             />
