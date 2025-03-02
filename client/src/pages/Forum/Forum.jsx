@@ -83,6 +83,15 @@ export default function Forum() {
         }
     };
 
+      const [editReply, setEditReply] = useState({})
+    const [showEdit, setShowEdit] = useState(false)
+
+    const handleEdit = (editID, editText) => {
+        setEditReply({
+            anser_id: editID,
+            answer_text: editText
+        })
+    }
 
     const toggleForm = () => {
         setIsOpen(!isOpen);
@@ -241,10 +250,7 @@ export default function Forum() {
             const data = await response.json();
 
             if (response.ok) {
-                setAll_QA((prevData) => ({
-                    ...prevData,
-                    answers: [...prevData.answers, data.answer],
-                }));
+                fetchAllQA()
                 setAnswers((prevAnswers) => ({ ...prevAnswers, [answerKey]: "" }));
             } else {
                 alert("Error submitting answer: " + data.error);
@@ -255,8 +261,42 @@ export default function Forum() {
         }
     };
 
+    const handleEditAnswer = async (e, answerId) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch(`${API_URL}/api/question-answer/update/${answerId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({answer_text: editReply.answer_text}),
+                credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                fetchAllQA()
+            } else {
+                alert("Error submitting answer: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred");
+        }
+    };
 
 
+    const fetchAllQA = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/question-answer/all`);
+            const data = await response.json();
+            if (response.ok) {
+                setAll_QA(data);
+            }
+        } catch (error) {
+            console.error("Error fetching QA data:", error);
+        }
+    };
 
 
     const handleVote = async (targetId, targetType, voteType) => {
@@ -304,7 +344,7 @@ export default function Forum() {
 
 
 
-    const handleDelete = async (questionId) => {
+    const handleDeleteQuestion = async (questionId) => {
         if (!checkUser?.id) {
             alert("You need to log in first.");
             navigate("/user/login");
@@ -315,7 +355,7 @@ export default function Forum() {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`${API_URL}/api/question-answer/delete/${questionId}`, {
+            const response = await fetch(`${API_URL}/api/question-answer/delete-question/${questionId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -325,9 +365,8 @@ export default function Forum() {
             if (response.ok) {
                 setAll_QA((prevData) => ({
                     ...prevData,
-                    questions: prevData.questions.filter(
-                        (question) => question.question_id !== questionId
-                    ),
+                    questions: prevData.questions.filter(q => q.question_id !== questionId),
+                    answers: prevData.answers.filter(a => a.question_id !== questionId),
                 }));
             } else {
                 alert(`Error deleting question: ${data.error || "Unknown error"}`);
@@ -380,6 +419,35 @@ export default function Forum() {
         }
     };
 
+
+    const handleDeleteAnswer = async (answerID) => {
+        if (!checkUser?.id) {
+            alert("You need to log in first.");
+            navigate("/user/login");
+            return;
+        }
+
+        const confirmDelete = window.confirm("Are you sure you want to delete this question?");
+        if (!confirmDelete) return;
+
+        try {
+            const response = await fetch(`${API_URL}/api/question-answer/delete-answer/${answerID}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                fetchAllQA()
+            } else {
+                alert(`Error deleting answer: ${data.error || "Unknown error"}`);
+            }
+
+        } catch (error) {
+            console.error("Error deleting answer:", error);
+            alert("An error occurred while deleting the question. Please try again.");
+        }
+    };
 
 
     const handleSearch = (e) => {
@@ -650,7 +718,10 @@ export default function Forum() {
                                                 <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
                                                     {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                         <div
-                                                            onClick={() => handleDelete(checkQuestion.question_id)}
+                                                            onClick={() => {
+                                                                setCheckQuestion(null)
+                                                                handleDeleteQuestion(checkQuestion.question_id)
+                                                            }}
                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                                         >
                                                             <EditOutlinedIcon />
@@ -659,7 +730,10 @@ export default function Forum() {
                                                     )}
                                                     {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                         <div
-                                                            onClick={() => handleDelete(checkQuestion.question_id)}
+                                                            onClick={() => {
+                                                                setCheckQuestion(null)
+                                                                handleDeleteQuestion(checkQuestion.question_id)
+                                                            }}
                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                                         >
                                                             <DeleteOutlineIcon />
@@ -770,8 +844,9 @@ export default function Forum() {
                                         </div>
                                     </form>
 
-                                    <div id="comment" className="mt-4  transition-all duration-500 ease-in-out" >
-                                        <div className=" space-y-2">
+
+                                    <div id="comment" className="mt-4 transition-all duration-500 ease-in-out">
+                                        <div className="space-y-2">
                                             {(() => {
                                                 const relatedAnswers = all_QA.answers.filter(
                                                     (answer) => answer.question_id === checkQuestion?.question_id
@@ -779,7 +854,7 @@ export default function Forum() {
 
                                                 return relatedAnswers.length > 0 ? (
                                                     relatedAnswers
-                                                        .filter((answer) => !answer.parent_answer_id)
+                                                        .filter((answer) => !answer.parent_answer_id) // Top-level answers only
                                                         .map((answer) => {
                                                             const answerVotes = all_QA.votes.filter(
                                                                 (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
@@ -790,142 +865,150 @@ export default function Forum() {
                                                             const isDisliked = userVote?.vote_type === "down";
 
                                                             return (
-                                                                <div id="comment" className="mt-4 transition-all duration-500 ease-in-out">
-                                                                    <div className="space-y-2">
-                                                                        {(() => {
-                                                                            const relatedAnswers = all_QA.answers.filter(
-                                                                                (answer) => answer.question_id === checkQuestion?.question_id
-                                                                            );
-
-                                                                            return relatedAnswers.length > 0 ? (
-                                                                                relatedAnswers
-                                                                                    .filter((answer) => !answer.parent_answer_id) // Top-level answers only
-                                                                                    .map((answer) => {
-                                                                                        const answerVotes = all_QA.votes.filter(
-                                                                                            (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
-                                                                                        );
-                                                                                        const userVote = answerVotes.find((vote) => vote.user_id === checkUser?.id);
-
-                                                                                        const isLiked = userVote?.vote_type === "up";
-                                                                                        const isDisliked = userVote?.vote_type === "down";
-
-                                                                                        return (
-                                                                                            <section key={answer.answer_id} className="flex flex-col gap-2 text-xs p-2">
-                                                                                                {/* Answer Header */}
-                                                                                                <div className="flex flex-row justify-between items-center">
-                                                                                                    <div className="w-full flex flex-row items-center">
-                                                                                                        {answer?.image ? (
-                                                                                                            <img
-                                                                                                                src={answer.image}
-                                                                                                                className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                                                                                                                alt="Profile Picture"
-                                                                                                            />
-                                                                                                        ) : (
-                                                                                                            <AccountCircleIcon
-                                                                                                                style={{
-                                                                                                                    width: '2.5rem',
-                                                                                                                    height: '2.5rem',
-                                                                                                                    marginRight: '0.5rem',
-                                                                                                                    color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                                                                                                                }}
-                                                                                                            />
-                                                                                                        )}
-                                                                                                        <p className="text-gray-600">{answer.name ? answer.name : answer.email}</p>
-                                                                                                    </div>
-                                                                                                    {checkUser?.role === "admin" && (
-                                                                                                        <button
-                                                                                                            onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
-                                                                                                            className="px-2 py-2 rounded text-xs bg-[#333333] text-white"
-                                                                                                        >
-                                                                                                            {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
-                                                                                                        </button>
-                                                                                                    )}
-                                                                                                </div>
-
-                                                                                                {/* Answer Text */}
-                                                                                                <div className="flex flex-row items-start">
-                                                                                                    {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
-                                                                                                    <p className="mt-1 ml-1">{answer.answer_text}</p>
-                                                                                                </div>
-
-                                                                                                {/* Like, Dislike, and Vote Count */}
-                                                                                                <div className="flex flex-row gap-1">
-                                                                                                    <button
-                                                                                                        className={`mr-2 ${isLiked ? "text-blue-500" : "text-gray-500"}`}
-                                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "up")}
-                                                                                                    >
-                                                                                                        {isLiked ? <ThumbUpAltIcon /> : <ThumbUpOffAltIcon />}
-                                                                                                    </button>
-                                                                                                    <button
-                                                                                                        className={`mr-2 ${isDisliked ? "text-red-700" : "text-gray-500"}`}
-                                                                                                        onClick={() => handleVote(answer.answer_id, "answer", "down")}
-                                                                                                    >
-                                                                                                        {isDisliked ? <ThumbDownAltIcon /> : <ThumbDownOffAltIcon />}
-                                                                                                    </button>
-                                                                                                    <p className="text-sm text-gray-500">{answerVotes.length}</p>
-                                                                                                </div>
-
-                                                                                                {/* Reply Button */}
-                                                                                                <button
-                                                                                                    className="text-blue-500 mt-2"
-                                                                                                    onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
-                                                                                                >
-                                                                                                    {replyingTo === answer.answer_id ? "Cancel Reply" : "Reply"}
-                                                                                                </button>
-
-                                                                                                {/* Reply Form */}
-                                                                                                {replyingTo === answer.answer_id && (
-                                                                                                    <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="mt-2">
-                                                                                                        <textarea
-                                                                                                            className="w-full p-2 border rounded"
-                                                                                                            placeholder="Write a reply..."
-                                                                                                            value={answers[answer.answer_id] || ""}
-                                                                                                            onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
-                                                                                                        />
-                                                                                                        <button type="submit" className="mt-2 px-3 py-1 bg-blue-600 text-white rounded">
-                                                                                                            Submit Reply
-                                                                                                        </button>
-                                                                                                    </form>
-                                                                                                )}
-
-                                                                                                {/* Nested Replies */}
-                                                                                                <div className="ml-6 border-l pl-4 mt-2">
-                                                                                                    {all_QA.answers
-                                                                                                        .filter((reply) => reply.parent_answer_id === answer.answer_id) // Filter replies to this answer
-                                                                                                        .map((reply) => (
-                                                                                                            <Reply
-                                                                                                                key={reply.answer_id}
-                                                                                                                reply={reply}
-                                                                                                                all_QA={all_QA}
-                                                                                                                checkUser={checkUser}
-                                                                                                                handleVote={handleVote}
-                                                                                                                handleAnswerSubmit={handleAnswerSubmit}
-                                                                                                                answers={answers}
-                                                                                                                setAnswers={setAnswers}
-                                                                                                                replyingTo={replyingTo}
-                                                                                                                setReplyingTo={setReplyingTo}
-                                                                                                            />
-                                                                                                        ))}
-                                                                                                </div>
-                                                                                            </section>
-                                                                                        );
-                                                                                    })
+                                                                <section key={answer.answer_id} className="flex flex-col gap-2 text-xs p-2">
+                                                                    {/* Answer Header */}
+                                                                    <div className="flex flex-row justify-between items-center">
+                                                                        <div className="w-full flex flex-row items-center">
+                                                                            {answer?.image ? (
+                                                                                <img
+                                                                                    src={answer.image}
+                                                                                    className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                                                    alt="Profile Picture"
+                                                                                />
                                                                             ) : (
-                                                                                <p className="text-gray-500">No answers yet</p>
-                                                                            );
-                                                                        })()}
+                                                                                <AccountCircleIcon
+                                                                                    style={{
+                                                                                        width: '2.5rem',
+                                                                                        height: '2.5rem',
+                                                                                        marginRight: '0.5rem',
+                                                                                        color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                                                                    }}
+                                                                                />
+                                                                            )}
+                                                                            <p className="text-gray-600">{answer.name ? answer.name : answer.email}</p>
+                                                                        </div>
+                                                                        <div className={`${checkUser.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}>
+                                                                            <MoreHorizIcon className="cursor-pointer"
+                                                                                onClick={() => openPostOption(answer.answer_id)} />
+                                                                            {openPostId === answer.answer_id &&
+                                                                                <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-xs bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                                                    {(checkUser?.id === answer.user_id || checkUser?.role === "admin") && (
+                                                                                        <div
+                                                                                            onClick={() => handleDeleteAnswer(answer.answer_id)}
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            <EditOutlinedIcon style={{ fontSize: "20px" }} />
+                                                                                            <p>Edit</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {(checkUser?.id === answer.user_id || checkUser?.role === "admin") && (
+                                                                                        <div
+                                                                                            onClick={() => handleDeleteAnswer(answer.answer_id)}
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            <DeleteOutlineIcon style={{ fontSize: "20px" }} />
+                                                                                            <p>Delete</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {checkUser?.role === "admin" && (
+                                                                                        <div
+                                                                                            onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            <DeleteOutlineIcon style={{ fontSize: "20px" }} />
+                                                                                            {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            }
+                                                                        </div>
                                                                     </div>
-                                                                </div>
+
+                                                                    <div className="flex flex-row items-start">
+                                                                        {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
+                                                                        <p className="mt-1 ml-1">{answer.answer_text}</p>
+                                                                    </div>
+
+
+                                                                    <div className="flex flex-row items-center gap-4">
+                                                                        <div className="flex flex-row items-center gap-2">
+                                                                            <button
+                                                                                className={` ${isLiked ? "text-blue-500" : "text-gray-600"}`}
+                                                                                onClick={() => handleVote(answer.answer_id, "answer", "up")}
+                                                                            >
+                                                                                {isLiked ? <ThumbUpAltIcon style={{ fontSize: "20px" }} /> : <ThumbUpOffAltIcon style={{ fontSize: "20px" }} />}
+                                                                            </button>
+                                                                            <p className="w-4 text-center text-sm text-gray-500">{answerVotes.length}</p>
+                                                                            <button
+                                                                                className={`${isDisliked ? "text-red-700" : "text-gray-600"}`}
+                                                                                onClick={() => handleVote(answer.answer_id, "answer", "down")}
+                                                                            >
+                                                                                {isDisliked ? <ThumbDownAltIcon style={{ fontSize: "20px" }} /> : <ThumbDownOffAltIcon style={{ fontSize: "20px" }} />}
+                                                                            </button>
+                                                                        </div>
+                                                                        <button
+                                                                            className="text-gray-600 hover:text-black"
+                                                                            onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
+                                                                        >
+                                                                            <ChatBubbleOutlineRoundedIcon style={{ fontSize: "20px" }} /> Reply
+                                                                        </button>
+                                                                    </div>
+                                                                    {replyingTo === answer.answer_id && (
+                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                                                                            <textarea
+                                                                                ref={textareaRef}
+                                                                                className="w-full px-4 outline-none"
+                                                                                onInput={handleInput}
+                                                                                rows={1}
+                                                                                placeholder="Write a reply..."
+                                                                                value={answers[answer.answer_id] || ""}
+                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
+                                                                            />
+                                                                            <div className=" w-full flex justify-end items-center px-2 ">
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                                                >
+                                                                                    Reply
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+
+                                                                    )}
+
+                                                                    {/* Nested Replies */}
+                                                                    <div className="ml-6 border-l border-b border-gray-300 pl-4 mt-2 rounded-bl-3xl">
+
+                                                                        {all_QA.answers
+                                                                            .filter((reply) => reply.parent_answer_id === answer.answer_id)
+                                                                            .map((reply) => (
+                                                                                <Reply
+                                                                                    key={reply.answer_id}
+                                                                                    reply={reply}
+                                                                                    all_QA={all_QA}
+                                                                                    checkUser={checkUser}
+                                                                                    handleVote={handleVote}
+                                                                                    handleAnswerSubmit={handleAnswerSubmit}
+                                                                                    answers={answers}
+                                                                                    setAnswers={setAnswers}
+                                                                                    replyingTo={replyingTo}
+                                                                                    setReplyingTo={setReplyingTo}
+                                                                                    updateReply={fetchAllQA}
+                                                                                    editReply={editReply}
+                                                                                    setEditReply={setEditReply}
+                                                                                    handleEditAnswer={handleEditAnswer}
+                                                                                />
+                                                                            ))}
+                                                                    </div>
+                                                                </section>
                                                             );
                                                         })
                                                 ) : (
                                                     <p className="text-gray-500">No answers yet</p>
-                                                )
+                                                );
                                             })()}
-
                                         </div>
                                     </div>
-
                                 </section>
                                 :
                                 <section>
@@ -988,7 +1071,7 @@ export default function Forum() {
                                                                             {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                                 <div
                                                                                     onClick={(e) => {
-                                                                                        handleDelete(question.question_id)
+                                                                                        handleDeleteQuestion(question.question_id)
                                                                                         e.stopPropagation()
                                                                                     }
                                                                                     }
@@ -1001,7 +1084,7 @@ export default function Forum() {
                                                                             {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                                 <div
                                                                                     onClick={(e) => {
-                                                                                        handleDelete(question.question_id)
+                                                                                        handleDeleteQuestion(question.question_id)
                                                                                         e.stopPropagation()
                                                                                     }
                                                                                     }
