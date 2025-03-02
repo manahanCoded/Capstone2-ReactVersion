@@ -15,6 +15,7 @@ export default {
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
         custom: ['CustomFont', 'CryptoHunter'],
+        pxltd: ['AeogoPxltd', 'AeogoPxltd'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -62,6 +63,7 @@ export default {
         move: 'move 5s linear infinite',
         moveInverse: 'moveInverse 5s linear infinite',
         slide: 'slide 10s linear infinite',
+        shake: 'shake 1s',
       },
       keyframes: {
         move: {
@@ -86,6 +88,26 @@ export default {
           },
           to: {
             transform: 'translateX(-100%)',
+          },
+        },
+        shake: {
+          '0%': {
+            transform: 'rotate(0deg)',
+          },
+          '10%': {
+            transform: 'rotate(10deg)',
+          },
+          '30%': {
+            transform: 'rotate(-10deg)',
+          },
+          '45%': {
+            transform: 'rotate(5deg)',
+          },
+          '55%': {
+            transform: 'rotate(-5deg)',
+          },
+          '60%': {
+            transform: 'rotate(0deg)',
           },
         },
       },

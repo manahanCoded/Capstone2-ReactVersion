@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState, useRef } from 'react'
 import './guessing-game.css'
 import { blockchainGuess, cryptoGuess, nftGuess } from './wordGuess'
@@ -16,7 +14,7 @@ export default function GuessingGame() {
   const [isPickingCategory, setIsPickingCategory] = useState(true)
   const [tries, setTries] = useState(3)
   const [score, setScore] = useState(0)
-
+  const [isWrong, setIsWrong] = useState(false)
   const location = useLocation()
   const inputRef = useRef(null)
 
@@ -44,6 +42,7 @@ export default function GuessingGame() {
   }
 
   function initGame(e) {
+    setIsWrong(false)
     let key = e.target.value
     if (
       key.match(/^[A-Za-z]+$/) &&
@@ -70,6 +69,7 @@ export default function GuessingGame() {
         let cpyIncorrectLetters = [...incorrectLetters]
         cpyIncorrectLetters.push(`${key}, `)
         setIncorrectLetters(cpyIncorrectLetters)
+        setIsWrong(true)
         setGuessCount((prevCount) => {
           return prevCount - 1
         })
@@ -93,7 +93,7 @@ export default function GuessingGame() {
       setScore(score + 10)
       randomWord()
     }
-  }, 1000)
+  }, 3000)
 
   useEffect(() => {
     randomWord()
@@ -108,14 +108,6 @@ export default function GuessingGame() {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [category])
-
-  useEffect(() => {
-    document.body.classList.add('overflow-hidden')
-
-    return () => {
-      document.body.classList.remove('overflow-hidden') // Cleanup when leaving the page
-    }
-  }, [location.pathname])
 
   return (
     <div
@@ -145,7 +137,7 @@ export default function GuessingGame() {
       flex items-center justify-center min-h-screen h-screen w-screen`}
     >
       {isPickingCategory ? (
-        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
+        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto font-pxltd">
           <div className="game-modal content bg-[url('/Game_images/guessing-word.png')]  max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">
@@ -190,13 +182,17 @@ export default function GuessingGame() {
         ''
       )}
       {tries === 0 ? (
-        <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto">
+        <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto font-pxltd">
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
-            <h4 className="text-4xl font-bold text-white">
-              Total Score: {score}{' '}
+            <h4 className="text-3xl font-bold text-white">
+              Total Score:
+              <span className="font-sans text-3xl font-bold">: </span>
+              {score}
             </h4>
             <h4 className="text-4xl font-bold text-white">
-              Number of guessed words: {score / 10 < 0 ? 0 : score / 10}
+              Number of guessed words
+              <span className="text-3xl font-sans font-bold"> : </span>
+              {score / 10 < 0 ? 0 : score / 10}
             </h4>
             <button
               className="category-btn bg-black  text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
@@ -222,7 +218,7 @@ export default function GuessingGame() {
       {(guessWord && correctLetters.length === uniqueArray.length) ||
       guessCount < 1 ? (
         <div
-          className={`fixed left-50 top-0  flex  justify-center mt-20 z-50 pointer-events-auto p-1`}
+          className={`fixed left-50 top-0  flex  justify-center mt-20 z-50 pointer-events-auto p-1 font-pxltd`}
         >
           <div
             className={`content ${guessCount < 1 ? 'bg-red-600' : ''} ${
@@ -243,7 +239,7 @@ export default function GuessingGame() {
         ''
       )}
 
-      <div className="wrapper w-[1000px] h-[450px] bg-white rounded-xl fixed z-0">
+      <div className="wrapper w-[1200px] h-[450px] bg-white rounded-xl fixed z-0 font-pxltd pb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-medium py-5 px-6">Guessing Quest</h1>
           <div className="flex justify-between items-center gap-5 mr-7">
@@ -252,11 +248,15 @@ export default function GuessingGame() {
               alt="lives-img"
               className=" w-40 max-h-32 h-16"
             />
-            <h2 className="text-3xl">score: {score}</h2>
+            <h2 className="text-3xl ">
+              score
+              <span className="font-sans text-4xl font-bold">: </span>
+              {score}
+            </h2>
           </div>
         </div>
 
-        <div className="content">
+        <div className={`content `}>
           <input
             ref={inputRef}
             type="text"
@@ -270,7 +270,11 @@ export default function GuessingGame() {
                 : false
             }
           />
-          <div className="inputs flex justify-center items-center mt-12 text-3xl font-bold">
+          <div
+            className={`inputs flex justify-center items-center mt-12 text-3xl font-bold ${
+              isWrong ? 'animate-shake' : ''
+            }`}
+          >
             {guessWordLength.map((_, index) => (
               <input
                 className="max-w-20 max-h-20 w-full h-full"
@@ -284,14 +288,36 @@ export default function GuessingGame() {
             ))}
           </div>
           <div className="details">
-            <p className="hint text-2xl mt-16 mb-4">
-              Hint: <span>{hint}</span>
+            <p className="hint mt-16 mb-4">
+              <span className="text-3xl">Hint</span>
+              <span className="font-sans text-4xl font-bold">: </span>
+              <span className="text-2xl">{hint}</span>
             </p>
             <p className="guess-left text-2xl mb-4">
-              Remaining Guess: <span>{guessCount}</span>
+              <span className="text-3xl">Remaining Guesses</span>
+              <span className="font-sans text-4xl font-bold">: </span>
+              <span
+                className={`text-3xl font-bold ${
+                  guessCount > 5 ? 'text-green-900' : ''
+                } 
+                ${guessCount > 3 && guessCount <= 5 ? 'text-yellow-900' : ''}
+                ${
+                  guessCount > 0 && guessCount <= 3
+                    ? 'text-red-900 animate-pulse'
+                    : ''
+                }
+                `}
+              >
+                {guessCount}
+              </span>
             </p>
             <p className="wrong-letter text-2xl mb-4">
-              Wrong letters: <span>{incorrectLetters}</span>
+              <span className="text-3xl">Wrong letters:</span>
+              <span className="font-sans text-2xl font-bold">:</span>
+              <span className="text-red-900 font-bold text-2xl">
+                {' '}
+                {incorrectLetters}
+              </span>
             </p>
           </div>
           {/* <button

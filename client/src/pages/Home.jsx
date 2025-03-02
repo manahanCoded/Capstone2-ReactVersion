@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <div className="mt-14">
         <MaxWidthWrapper className=" w-full flex lg:flex-row sm:flex-col md:flex-row justify-between items-center max-h-screen max-sm:items-center max-sm:justify-center sm:text-center">
-          <section className="w-2/4 px-8 mt-12 mb-14 max-sm:text-center max-sm:w-[100%] sm:w-[100%] md:w-2/4 ">
+          <section className="w-2/4 px-8 mt-12 mb-14 max-sm:text-center max-sm:w-[100%] sm:w-[100%] md:w-2/4 md:text-start ">
             <h2 className="md:text-4xl lg:text-6xl sm:text-3xl mb-4 font-semibold text-[#333333] max-sm:text-3xl">
               Unlock the power of{' '}
               <span className="font-custom text-yellow-600">Blockchain</span>

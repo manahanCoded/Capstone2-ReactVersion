@@ -3,6 +3,11 @@
   src: url('/public/assets/crypto-hunter/CryptoHunter-E44Rj.ttf')
     format('truetype');
 }
+@font-face {
+  font-family: 'AeogoPxltd';
+  src: url('/public/assets/aeogo-pxltd/AeogoPxltdNext-5y27B.ttf')
+    format('truetype');
+}
 
 @tailwind base;
 @tailwind components;
@@ -182,8 +187,3 @@ body {
   flex-shrink: 0;
   width: 100%;
 }
-
-
-
-
-
