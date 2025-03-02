@@ -136,12 +136,12 @@ export default function Home() {
         {/* Partners Section */}
         <section className="relative -top-12 pt-14 inline-block w-screen">
           <MaxWidthWrapper>
-            <div className="flex flex-col justify-center items-center">
+            <div className="flex flex-col justify-center items-center max-w-screen w-[97vw] overflow-hidden max-sm:h-40">
               <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
-              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen gap-0 ">
-                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide mx-0">
+              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen gap-2 ">
+                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide gap-2 mx-0">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
@@ -168,7 +168,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
-                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0">
+                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0 gap-2">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
@@ -211,11 +211,13 @@ function PartnerCard({ name, imgSrc }) {
   return (
     <div className="flex flex-row items-center md:px-28 px-4 mx-0">
       <img
-        className="lg:h-20 w-full h-full object-cover rounded-full"
+        className="lg:h-20 w-full h-full object-cover rounded-full max-sm:w-[70%]"
         src={imgSrc}
         alt=""
       />
-      <p className="lg:text-xl md:text-lg text-sm text-center">{name}</p>
+      <p className="lg:text-xl md:text-lg text-sm text-center max-sm:text-xs">
+        {name}
+      </p>
     </div>
   )
 }
