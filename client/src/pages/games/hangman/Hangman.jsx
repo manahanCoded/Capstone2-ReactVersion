@@ -1,4 +1,3 @@
-
 import './hangman.css'
 import { useState, FormEvent, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -194,7 +193,7 @@ export default function Home() {
 
       {tries === 0 ? (
         <div className="picking-bg fixed  bg-black left-0 top-44 w-[100%] h-[110%]  flex items-center justify-center -mt-44 z-10 pointer-events-auto">
-          <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1150px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
+          <div className="game-modal content bg-[url('/Game_images/dont-fall2.png')] max-w-[1150px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-4xl font-bold text-white">
               Total Score: {score}{' '}
             </h4>

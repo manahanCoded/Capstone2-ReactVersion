@@ -14,7 +14,7 @@ export default function GuessingGame() {
   const [isPickingCategory, setIsPickingCategory] = useState(true)
   const [tries, setTries] = useState(3)
   const [score, setScore] = useState(0)
-  const [isWrong, setIsWrong] = useState(false)
+
   const location = useLocation()
   const inputRef = useRef(null)
 
@@ -42,7 +42,6 @@ export default function GuessingGame() {
   }
 
   function initGame(e) {
-    setIsWrong(false)
     let key = e.target.value
     if (
       key.match(/^[A-Za-z]+$/) &&
@@ -69,7 +68,7 @@ export default function GuessingGame() {
         let cpyIncorrectLetters = [...incorrectLetters]
         cpyIncorrectLetters.push(`${key}, `)
         setIncorrectLetters(cpyIncorrectLetters)
-        setIsWrong(true)
+
         setGuessCount((prevCount) => {
           return prevCount - 1
         })
@@ -183,13 +182,13 @@ export default function GuessingGame() {
       )}
       {tries === 0 ? (
         <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto font-pxltd">
-          <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
+          <div className="game-modal content bg-[url('/Game_images/guessing-word.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-3xl font-bold text-white">
               Total Score:
               <span className="font-sans text-3xl font-bold">: </span>
               {score}
             </h4>
-            <h4 className="text-4xl font-bold text-white">
+            <h4 className="text-4xl font-bold text-white ">
               Number of guessed words
               <span className="text-3xl font-sans font-bold"> : </span>
               {score / 10 < 0 ? 0 : score / 10}
@@ -218,22 +217,46 @@ export default function GuessingGame() {
       {(guessWord && correctLetters.length === uniqueArray.length) ||
       guessCount < 1 ? (
         <div
-          className={`fixed left-50 top-0  flex  justify-center mt-20 z-50 pointer-events-auto p-1 font-pxltd`}
+          className={`fixed left-50 top-0  flex flex-col  items-center justify-center mt-20 z-50 pointer-events-auto p-1 font-pxltd`}
         >
           <div
-            className={`content ${guessCount < 1 ? 'bg-red-600' : ''} ${
+            className={`content ${
+              guessCount < 1 ? 'bg-red-600 animate-shake ' : ''
+            } ${
               guessWord && correctLetters.length === uniqueArray.length
-                ? 'bg-green-600'
+                ? 'bg-green-600 motion-preset-confetti'
                 : ''
-            } max-w-[400px] w-full max-h-[100px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10`}
+            } max-w-[400px] w-full max-h-[120px] h-full text-center rounded-lg p-8 mb-24 flex justify-center items-center gap-10 z-10`}
           >
-            <h4 className="text-4xl font-bold text-white">
+            <h4
+              className={`text-4xl font-bold text-white ${
+                guessCount < 1 ? '' : 'motion-preset-confetti'
+              }`}
+            >
               {guessCount < 1 ? 'No more guesses' : ''}
               {guessWord && correctLetters.length === uniqueArray.length
                 ? 'Correct Word'
                 : ''}
             </h4>
           </div>
+          {guessCount < 1 ? (
+            <img
+              src={`/Game_images/full-heart.png`}
+              alt="lives-img"
+              className=" w-13 max-h-32 h-13 relative z-20 -mt-56 animate-fall"
+            />
+          ) : (
+            ''
+          )}
+          {guessWord && correctLetters.length === uniqueArray.length ? (
+            <img
+              src={`/Game_images/score.png`}
+              alt="lives-img"
+              className=" w-13 max-h-32 h-13 relative z-20 -mt-56 -mr-72 motion-preset-confetti"
+            />
+          ) : (
+            ''
+          )}
         </div>
       ) : (
         ''
@@ -241,12 +264,23 @@ export default function GuessingGame() {
 
       <div className="wrapper w-[1200px] h-[450px] bg-white rounded-xl fixed z-0 font-pxltd pb-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-medium py-5 px-6">Guessing Quest</h1>
+          <h1
+            className={`text-4xl font-medium py-5 px-6   ${
+              category === 'blockchain' ? 'text-blue-900' : ''
+            }
+                  ${category === 'nft' ? 'text-purple-900' : ''}
+                  ${category === 'cryptocurrency' ? 'text-yellow-900' : ''}
+                  `}
+          >
+            Guessing Quest
+          </h1>
           <div className="flex justify-between items-center gap-5 mr-7">
             <img
               src={`/Game_images/lives${tries}.png`}
               alt="lives-img"
-              className=" w-40 max-h-32 h-16"
+              className={`w-40 max-h-32 h-16 ${
+                tries <= 1 ? 'animate-pulse' : ''
+              }`}
             />
             <h2 className="text-3xl ">
               score
@@ -271,13 +305,16 @@ export default function GuessingGame() {
             }
           />
           <div
-            className={`inputs flex justify-center items-center mt-12 text-3xl font-bold ${
-              isWrong ? 'animate-shake' : ''
-            }`}
+            className={`inputs flex justify-center items-center mt-12 text-3xl font-bold`}
           >
             {guessWordLength.map((_, index) => (
               <input
-                className="max-w-20 max-h-20 w-full h-full"
+                className={`max-w-20 max-h-20 w-full h-full border-4 
+                  ${category === 'blockchain' ? 'border-blue-900' : ''}
+                  ${category === 'nft' ? 'border-purple-900' : ''}
+                  ${category === 'cryptocurrency' ? 'border-yellow-900' : ''}
+                  
+                  `}
                 key={index}
                 type="text"
                 value={

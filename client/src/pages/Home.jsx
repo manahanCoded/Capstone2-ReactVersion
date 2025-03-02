@@ -136,7 +136,7 @@ export default function Home() {
         {/* Partners Section */}
         <section className="relative -top-12 pt-14 inline-block w-screen">
           <MaxWidthWrapper>
-            <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[97vw] max-sm:overflow-hidden max-sm:h-40">
+            <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[96vw] max-sm:overflow-hidden max-sm:h-40">
               <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>

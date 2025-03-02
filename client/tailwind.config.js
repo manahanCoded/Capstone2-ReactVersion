@@ -63,7 +63,8 @@ export default {
         move: 'move 5s linear infinite',
         moveInverse: 'moveInverse 5s linear infinite',
         slide: 'slide 10s linear infinite',
-        shake: 'shake 1s',
+        shake: 'shake 2s',
+        fall: 'fall 3s',
       },
       keyframes: {
         move: {
@@ -110,8 +111,16 @@ export default {
             transform: 'rotate(0deg)',
           },
         },
+        fall: {
+          '0%': {
+            transform: 'translateY(0)',
+          },
+          '100%': {
+            transform: 'translateY(200px)',
+          },
+        },
       },
     },
-    plugins: [require('tailwindcss-animate')],
   },
+  plugins: [require('tailwindcss-motion'), require('tailwindcss-animate')],
 }
