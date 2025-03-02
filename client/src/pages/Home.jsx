@@ -136,12 +136,12 @@ export default function Home() {
         {/* Partners Section */}
         <section className="relative -top-12 pt-14 inline-block w-screen">
           <MaxWidthWrapper>
-            <div className="flex flex-col justify-center items-center max-w-screen w-[97vw] overflow-hidden max-sm:h-40">
+            <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[97vw] max-sm:overflow-hidden max-sm:h-40">
               <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
-              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen gap-2 ">
-                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide gap-2 mx-0">
+              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen max-sm:gap-2 ">
+                <div className="flex flex-row justify-between items-center rounded-2xl animate-slide max-sm:gap-2 mx-0">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
@@ -168,7 +168,7 @@ export default function Home() {
                     imgSrc="/IMG_Dashboard/Partners/zodiacs-gaming.jpg"
                   />
                 </div>
-                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0 gap-2">
+                <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0 max-sm:gap-2">
                   <PartnerCard
                     name="Coins PH"
                     imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
