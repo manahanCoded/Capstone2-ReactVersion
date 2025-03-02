@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { qa_all, question, answer, vote, delete_item, isAccepted} from "./Controllers/QA_Controller.mjs";
+import { qa_all, question, answer, vote, delete_question, delete_answer, isAccepted, update_answer} from "./Controllers/QA_Controller.mjs";
 import multer from "multer";
 
 const router =  Router()
@@ -18,8 +18,10 @@ router.get("/all", qa_all )
 router.post("/question", upload.single("image"), question )
 router.post("/answer", answer )
 router.post("/vote", vote )
-router.delete("/delete/:questionId", delete_item)
+router.delete("/delete-question/:questionId", delete_question)
+router.delete("/delete-answer/:answerId", delete_answer)
 router.patch("/accept/:id",isAuthenticated, isAccepted)
+router.patch("/update/:id",isAuthenticated, update_answer)
 
 
 

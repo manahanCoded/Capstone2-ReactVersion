@@ -24,7 +24,7 @@ const qa_all = async (req, res) => {
                     INNER JOIN users u
                     ON q.user_id = u.id
                     ORDER BY created_at DESC`),
-                    
+
             db.query(`SELECT 
                     QA_answers.answer_id,
                     QA_answers.question_id,
@@ -116,7 +116,7 @@ const answer = async (req, res) => {
             `INSERT INTO QA_answers (question_id, user_id, answer_text, created_at, parent_answer_id) 
              VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) 
              RETURNING *`,
-            [question_id, user_id, answer_text, parent_answer_id || null] // Allow null if it's a direct answer
+            [question_id, user_id, answer_text, parent_answer_id || null]
         );
 
         res.status(201).json({
@@ -129,6 +129,28 @@ const answer = async (req, res) => {
         res.status(500).json({ error: "Failed to submit answer" });
     }
 };
+
+
+const update_answer = async (req, res) => {
+    const {id} = req.params
+    const {answer_text} = req.body
+    try {
+        if (!id)  return res.status(401).json({ error: "Answer must be specified." });
+        if (!answer_text) return res.status(401).json({ error: "No update made." });
+        
+       const findAnswer = await db.query("SELECT * FROM qa_answers WHERE answer_id = $1", [id])
+       if (findAnswer.rowCount === 0) return res.status(401).json({ error: "No such answer found" });
+
+       const updateAnswer = await db.query("UPDATE qa_answers SET answer_text = $1 WHERE answer_id = $2", [answer_text, id])
+       if (updateAnswer.rowCount === 0) return res.status(401).json({ error: "Update failed." });
+       return res.status(200).json({ success: true, message: "Answer updated successfully" });
+
+    } catch (error) {
+        console.error("Error updating answer:", error);
+        res.status(500).json({ error: "An error occurred while updating your answer." });
+    } 
+
+}
 
 
 
@@ -176,7 +198,7 @@ const vote = async (req, res) => {
 
 
 
-const delete_item = async (req, res) => {
+const delete_question = async (req, res) => {
     const { questionId } = req.params;
 
     if (!req.user) {
@@ -197,6 +219,36 @@ const delete_item = async (req, res) => {
         }
 
         await db.query('DELETE FROM QA_questions WHERE question_id = $1', [questionId]);
+
+        res.status(200).json({ message: 'Question deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting question:', error);
+        res.status(500).json({ error: 'An error occurred while deleting the question' });
+    }
+};
+
+
+const delete_answer = async (req, res) => {
+    const { answerId } = req.params;
+
+    if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized: User not logged in' });
+    }
+
+    const { id: userId, role } = req.user;
+
+    try {
+        const question = await db.query('SELECT * FROM QA_answers WHERE answer_id = $1', [answerId]);
+
+        if (question.rows.length === 0) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+
+        if (question.rows[0].user_id !== userId && role !== 'admin') {
+            return res.status(403).json({ error: 'You do not have permission to delete this question' });
+        }
+
+        await db.query('DELETE FROM QA_answers WHERE answer_id = $1', [answerId]);
 
         res.status(200).json({ message: 'Question deleted successfully' });
     } catch (error) {
@@ -228,4 +280,4 @@ const isAccepted = async (req, res) => {
 
 
 
-export { qa_all, question, answer, vote, delete_item, isAccepted }
+export { qa_all, question, answer, vote, delete_question, delete_answer, isAccepted, update_answer }
