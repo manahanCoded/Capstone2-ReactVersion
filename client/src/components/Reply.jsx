@@ -10,21 +10,30 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import "react-quill-new/dist/quill.snow.css";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 
-const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answers, setAnswers, replyingTo, setReplyingTo, updateReply, handleEditAnswer,  setEditReply, editReply}) => {
+const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answers, setAnswers, replyingTo, setReplyingTo, updateReply, handleEditAnswer, setEditReply, editReply }) => {
     const [showReplies, setShowReplies] = useState(true);
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
     const [showEdit, setShowEdit] = useState(false)
 
     const handleEdit = (editID, editText) => {
-        setEditReply({
-            anser_id: editID,
-            answer_text: editText
-        })
+        if (editID === editReply.anser_id) {
+            setEditReply({
+                anser_id: null,
+                answer_text: null
+            })
+        } else {
+            setEditReply({
+                anser_id: editID,
+                answer_text: editText
+            })
+        }
     }
 
     const handleAccept = async (acceptID, isAccepted) => {
@@ -37,11 +46,8 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
             const data = await res.json();
 
             if (res.ok) {
-                alert(data.message);
-                setAcceptedAnswers((prev) => ({
-                    ...prev,
-                    [acceptID]: !isAccepted,
-                }));
+                updateReply()
+                setOpenPostId(null)
             } else {
                 alert(data.error || "An error occurred on the server.");
             }
@@ -99,6 +105,9 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
     };
+    const handleClick = () => {
+        textareaRef.current?.focus();
+    };
 
     const replyVotes = all_QA.votes.filter(
         (vote) => vote.target_id === reply.answer_id && vote.target_type === "answer"
@@ -138,11 +147,14 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                         <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-xs bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
                             {(checkUser?.id === reply.user_id || checkUser?.role === "admin") && (
                                 <div
-                                    onClick={() => handleEdit( reply.answer_id ,reply.answer_text)}
+                                    onClick={() => {
+                                        openPostOption()
+                                        handleEdit(reply.answer_id, reply.answer_text)
+                                    }}
                                     className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                 >
                                     <EditOutlinedIcon style={{ fontSize: "20px" }} />
-                                    <p>Edit</p> 
+                                    <p>Edit</p>
                                 </div>
                             )}
                             {(checkUser?.id === reply.user_id || checkUser?.role === "admin") && (
@@ -159,7 +171,7 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                                     onClick={() => handleAccept(reply.answer_id, acceptedAnswers[reply.answer_id])}
                                     className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                 >
-                                    <DeleteOutlineIcon style={{ fontSize: "20px" }} />
+                                    {acceptedAnswers[reply.answer_id] ?? reply.is_accepted ? <CloseIcon style={{ fontSize: "20px" }} /> : <CheckIcon style={{ fontSize: "20px" }} />}
                                     {acceptedAnswers[reply.answer_id] ?? reply.is_accepted ? "Unaccept" : "Accept"}
                                 </div>
                             )}
@@ -168,7 +180,11 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                 </div>
             </div>
             {editReply && editReply.anser_id == reply.answer_id ?
-                <form onSubmit={(e) => handleEditAnswer(e, reply.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                <form
+                    onSubmit={(e) => {
+                        handleEdit(null, null)
+                        handleEditAnswer(e, reply.answer_id)
+                    }} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
                     <textarea
                         ref={textareaRef}
                         className="w-full px-4 outline-none"
@@ -176,14 +192,20 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                         rows={1}
                         placeholder="Write a reply..."
                         value={editReply.answer_text}
-                        onChange={(e) => setEditReply((prev) => ({...prev, answer_text: e.target.value}))}
+                        onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: e.target.value }))}
                     />
-                    <div className=" w-full flex justify-end items-center px-2 ">
+                    <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
+                        <button
+                            onClick={() => handleEdit(reply.answer_id, reply.answer_text)}
+                            className=" py-2 px-4 rounded-3xl text-white border-[1px] border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
+                        >
+                            Cancel
+                        </button>
                         <button
                             type="submit"
                             className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
                         >
-                            Reply
+                            Edit
                         </button>
                     </div>
                 </form>
@@ -221,7 +243,9 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
 
 
             {replyingTo === reply.answer_id && (
-                <form onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                <form
+                    onClick={handleClick}
+                    onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                     <textarea
                         ref={textareaRef}
                         className="w-full px-4 outline-none"
@@ -231,7 +255,13 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                         value={answers[reply.answer_id] || ""}
                         onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: e.target.value }))}
                     />
-                    <div className=" w-full flex justify-end items-center px-2 ">
+                    <div className=" w-full flex justify-end items-center gap-2 text-[0.7rem] px-2 ">
+                        <button
+                            onClick={() => setReplyingTo(replyingTo === reply.answer_id ? null : reply.answer_id)}
+                            className=" py-2 px-4 rounded-3xl text-white border-[1px] border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
+                        >
+                            Cancel
+                        </button>
                         <button
                             type="submit"
                             className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"

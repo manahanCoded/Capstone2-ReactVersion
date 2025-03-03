@@ -37,6 +37,9 @@ import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Reply from "@/components/Reply";
+import CheckIcon from '@mui/icons-material/Check';
+
+
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -75,6 +78,17 @@ export default function Forum() {
 
     const [checkQuestion, setCheckQuestion] = useState()
 
+    const firstCommentRef = useRef(null);
+    const handleInputFirstCommentRef = () => {
+        if (firstCommentRef.current) {
+            firstCommentRef.current.style.height = "auto";
+            firstCommentRef.current.style.height = `${firstCommentRef.current.scrollHeight}px`;
+        }
+    };
+    const handleClickFirstCommentRef = () => {
+        firstCommentRef.current?.focus();
+    };
+
     const textareaRef = useRef(null);
     const handleInput = () => {
         if (textareaRef.current) {
@@ -82,15 +96,25 @@ export default function Forum() {
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
     };
+    const handleClick = () => {
+        textareaRef.current?.focus();
+    };
 
-      const [editReply, setEditReply] = useState({})
+    const [editReply, setEditReply] = useState({})
     const [showEdit, setShowEdit] = useState(false)
 
     const handleEdit = (editID, editText) => {
-        setEditReply({
-            anser_id: editID,
-            answer_text: editText
-        })
+        if (editID === editReply.anser_id) {
+            setEditReply({
+                anser_id: null,
+                answer_text: null
+            })
+        } else {
+            setEditReply({
+                anser_id: editID,
+                answer_text: editText
+            })
+        }
     }
 
     const toggleForm = () => {
@@ -268,7 +292,7 @@ export default function Forum() {
             const response = await fetch(`${API_URL}/api/question-answer/update/${answerId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({answer_text: editReply.answer_text}),
+                body: JSON.stringify({ answer_text: editReply.answer_text }),
                 credentials: "include"
             });
 
@@ -405,11 +429,8 @@ export default function Forum() {
             const data = await res.json();
 
             if (res.ok) {
-                alert(data.message);
-                setAcceptedAnswers((prev) => ({
-                    ...prev,
-                    [acceptID]: !isAccepted,
-                }));
+                fetchAllQA()
+                setOpenPostId(null)
             } else {
                 alert(data.error || "An error occurred on the server.");
             }
@@ -553,7 +574,7 @@ export default function Forum() {
                             <p
                                 key={type.name}
                                 onClick={() => setSpecifyQuestion(type.value)}
-                                className={`h-12 px-3 py-1 flex items-center gap-2 hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
+                                className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
                                     }`}
                             >
                                 {specifyQuestion === type.value ? type.filled : type.outlined}
@@ -821,12 +842,14 @@ export default function Forum() {
                                         })()}
                                     </div>
                                     {/* Answer Form */}
-                                    <form onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                                    <form
+                                        onClick={handleClickFirstCommentRef}
+                                        onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                         <textarea
-                                            ref={textareaRef}
+                                            ref={firstCommentRef}
                                             className="w-full px-4 outline-none"
                                             placeholder="Comment or Answer here."
-                                            onInput={handleInput}
+                                            onInput={handleInputFirstCommentRef}
                                             value={answers[checkQuestion.question_id] || ""}
                                             rows={1}
                                             onChange={(e) =>
@@ -834,7 +857,7 @@ export default function Forum() {
                                             }
                                         ></textarea>
 
-                                        <div className=" w-full flex justify-end items-center px-2 ">
+                                        <div className=" w-full flex justify-end items-center text-[0.7rem] px-2 ">
                                             <button
                                                 type="submit"
                                                 className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
@@ -894,7 +917,10 @@ export default function Forum() {
                                                                                 <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-xs bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
                                                                                     {(checkUser?.id === answer.user_id || checkUser?.role === "admin") && (
                                                                                         <div
-                                                                                            onClick={() => handleDeleteAnswer(answer.answer_id)}
+                                                                                            onClick={() => {
+                                                                                                openPostOption()
+                                                                                                handleEdit(answer.answer_id, answer.answer_text)
+                                                                                            }}
                                                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                                                                         >
                                                                                             <EditOutlinedIcon style={{ fontSize: "20px" }} />
@@ -915,7 +941,7 @@ export default function Forum() {
                                                                                             onClick={() => handleAccept(answer.answer_id, acceptedAnswers[answer.answer_id])}
                                                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                                                                         >
-                                                                                            <DeleteOutlineIcon style={{ fontSize: "20px" }} />
+                                                                                            {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? <CloseIcon style={{ fontSize: "20px" }} /> : <CheckIcon style={{ fontSize: "20px" }} />}
                                                                                             {acceptedAnswers[answer.answer_id] ?? answer.is_accepted ? "Unaccept" : "Accept"}
                                                                                         </div>
                                                                                     )}
@@ -923,12 +949,43 @@ export default function Forum() {
                                                                             }
                                                                         </div>
                                                                     </div>
+                                                                    {editReply && editReply.anser_id == answer.answer_id ?
+                                                                        <form
+                                                                            onSubmit={(e) => {
+                                                                                handleEdit(null, null)
+                                                                                handleEditAnswer(e, answer.answer_id)
+                                                                            }} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                                                                            <textarea
+                                                                                ref={textareaRef}
+                                                                                className="w-full px-4 outline-none"
+                                                                                onInput={handleInput}
+                                                                                rows={1}
+                                                                                placeholder="Write a reply..."
+                                                                                value={editReply.answer_text}
+                                                                                onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: e.target.value }))}
+                                                                            />
+                                                                            <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
+                                                                                <button
+                                                                                    onClick={() => handleEdit(answer.answer_id, answer.answer_text)}
+                                                                                    className=" py-2 px-4 rounded-3xl text-white border-[1px] border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                                                >
+                                                                                    Edit
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                        :
+                                                                        <div className="flex flex-row items-start">
+                                                                            { answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
+                                                                            <p className="mt-1 ml-1">{answer.answer_text}</p>
+                                                                        </div>
 
-                                                                    <div className="flex flex-row items-start">
-                                                                        {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
-                                                                        <p className="mt-1 ml-1">{answer.answer_text}</p>
-                                                                    </div>
-
+                                                                    }
 
                                                                     <div className="flex flex-row items-center gap-4">
                                                                         <div className="flex flex-row items-center gap-2">
@@ -954,7 +1011,9 @@ export default function Forum() {
                                                                         </button>
                                                                     </div>
                                                                     {replyingTo === answer.answer_id && (
-                                                                        <form onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs  border-[1px] border-gray-600 rounded-3xl">
+                                                                        <form
+                                                                            onClick={handleClick}
+                                                                            onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                                                             <textarea
                                                                                 ref={textareaRef}
                                                                                 className="w-full px-4 outline-none"
@@ -964,7 +1023,13 @@ export default function Forum() {
                                                                                 value={answers[answer.answer_id] || ""}
                                                                                 onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
                                                                             />
-                                                                            <div className=" w-full flex justify-end items-center px-2 ">
+                                                                            <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
+                                                                                <button
+                                                                                    onClick={() => setReplyingTo(replyingTo === answer.answer_id ? null : answer.answer_id)}
+                                                                                    className=" py-2 px-4 rounded-3xl text-white border-[1px] border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
                                                                                 <button
                                                                                     type="submit"
                                                                                     className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
