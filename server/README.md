@@ -176,7 +176,7 @@ CREATE TABLE QA_answers (
     user_id INT NOT NULL,          
     answer_text TEXT NOT NULL,      
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    is_accepted BOOLEAN DEFAULT FALSE,
+    is_accepted BOOLEAN DEFAULT FALSE,v
     parent_answer_id INT
 );
 

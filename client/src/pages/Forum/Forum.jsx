@@ -36,7 +36,7 @@ import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
-import Reply from "@/components/Reply";
+import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
 
 
@@ -65,6 +65,9 @@ export default function Forum() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
+
+    const [openEditQuestion, setOpenEditQuestion] = useState(false)
+    const [editQuestion, setEditQuestion] = useState()
 
     const [openPostId, setOpenPostId] = useState(null);
     const openPostOption = (postId) => {
@@ -367,6 +370,17 @@ export default function Forum() {
     };
 
 
+    const handleEditQuestion = (questionId) => {
+        const questionToEdit = filteredQuestions.find(q => q.question_id === questionId);
+
+        if (questionToEdit) {
+            setEditQuestion(questionToEdit);
+            console.log(questionToEdit);
+        }
+    };
+
+
+
 
     const handleDeleteQuestion = async (questionId) => {
         if (!checkUser?.id) {
@@ -536,7 +550,8 @@ export default function Forum() {
     const observerCallback = useCallback(
         (entries) => {
             const target = entries[0];
-            if (target.isIntersecting && !loading) {
+
+            if (target.isIntersecting && !loading && visibleQuestions.length < filteredQuestions.length) {
                 setLoading(true);
                 setTimeout(() => {
                     setPage((prevPage) => prevPage + 1);
@@ -544,7 +559,7 @@ export default function Forum() {
                 }, 1000);
             }
         },
-        [loading]
+        [loading, visibleQuestions.length, filteredQuestions.length]
     );
 
     useEffect(() => {
@@ -697,6 +712,110 @@ export default function Forum() {
                                 </div>
                             </section>
                         }
+                        {openEditQuestion &&
+                            <section className="fixed h-screen flex items-center justify-center inset-0 z-50 bg-black bg-opacity-50">
+                                <div className="h-[42rem] w-[60rem] mt-4 flex flex-col gap-4 rounded-xl py-4 px-6  mb-4 bg-white shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
+                                    <section className="w-full flex flex-row items-center gap-4">
+                                        {editQuestion?.image ? (
+                                            <img
+                                                src={editQuestion?.user_image}
+                                                className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                alt="Profile Picture"
+                                            />
+                                        ) : (
+                                            <AccountCircleIcon
+                                                style={{
+                                                    width: '2.5rem',
+                                                    height: '2.5rem',
+                                                    color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                                }}
+                                            />
+                                        )}
+                                        <p className="w-full"> {editQuestion?.name ? editQuestion.name : editQuestion.email}</p>
+                                        <div className="p-1 cursor-pointer  rounded-full hover:bg-gray-300"
+                                            onClick={() => setOpenEditQuestion(false)} >
+                                            <CloseIcon className="" />
+                                        </div>
+                                    </section>
+                                    <section
+                                        className={`overflow-y-scroll transition-all duration-500 `}
+                                    >
+                                        <form className="flex flex-col px-3 gap-1 pb-4">
+                                            <div className="flex flex-col gap-1">
+                                                <input
+                                                    type="text"
+                                                    className="w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
+                                                    placeholder="Question about"
+                                                    value={editQuestion?.topic}
+                                                    onChange={(e) => setEditQuestion({ ...editQuestion, topic: e.target.value })}
+                                                />
+                                                <p className="w-full flex justify-end  text-[0.7rem]">({editQuestion.topic.length}/300)</p>
+                                            </div>
+                                            <div className="flex flex-col space-y-2">
+                                                <label className="w-fit">
+                                                    <div className=" mt-3 flex justify-between gap-2 items-center flex-col p-4 rounded-xl border-2 border-dashed border-gray-500 bg-gray-200 cursor-pointer">
+                                                        <img
+                                                            src={editQuestion?.image || "/Icons/AddPic.png"}
+                                                            className="h-12"
+                                                            alt="Profile Preview"
+                                                        />
+                                                        <p className="text-center text-xs">Post Image</p>
+                                                        <input
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                if (file) {
+                                                                    const imageUrl = URL.createObjectURL(file);
+                                                                    setEditQuestion({ ...editQuestion, image: imageUrl });
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </label>
+                                                <p className="w-fit py-1 px-2 text-sm cursor-pointer text-gray-500 hover:text-red-400"
+                                                    onClick={() => setEditQuestion({ ...editQuestion, image: null })}
+                                                >{editQuestion?.name && "Remove Image"}</p>
+                                            </div>
+                                            <EditorToolbar toolbarId="t2" />
+                                            <ReactQuill
+                                                key={editQuestion.question_id}
+                                                theme="snow"
+                                                value={editQuestion.question_text}
+                                                onChange={(value) => setEditQuestion({ ...editQuestion, question_text: value })}
+                                                placeholder="Elaborate question..."
+                                                modules={modules("t2")}
+                                                formats={formats}
+                                                className="bg-white border rounded h-[55vh] overflow-y-auto"
+                                            />
+
+                                            <div className="flex flex-row justify-between items-center">
+                                                <select
+                                                    className="w-fit border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3 pr-10"
+                                                    value={editQuestion.topic_type}
+                                                    onChange={(e) => setEditQuestion({ ...editQuestion, topic_type: e.target.value })}
+                                                >
+                                                    <option value="General">General</option>
+                                                    <option value="Modules">Module</option>
+                                                    <option value="Jobs">Job</option>
+                                                    <option value="Announcements">Announcement</option>
+                                                </select>
+                                            </div>
+
+                                            <div className="w-full flex justify-end items-center">
+                                                <button
+                                                    className="py-2 px-4 rounded-md border-[1px] text-sm text-white bg-red-900 hover:bg-red-700"
+                                                    onClick={handleSubmit}
+                                                >
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </section>
+                                </div>
+                            </section>
+                        }
                         <section className="m-auto  max-w-[780px]">
                             {/* Question List and Clicked question*/}
                             {checkQuestion ?
@@ -739,9 +858,10 @@ export default function Forum() {
                                                 <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
                                                     {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                         <div
-                                                            onClick={() => {
-                                                                setCheckQuestion(null)
-                                                                handleDeleteQuestion(checkQuestion.question_id)
+                                                            onClick={(e) => {
+                                                                openPostOption()
+                                                                handleEditQuestion(checkQuestion.question_id)
+                                                                e.stopPropagation()
                                                             }}
                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
                                                         >
@@ -981,7 +1101,7 @@ export default function Forum() {
                                                                         </form>
                                                                         :
                                                                         <div className="flex flex-row items-start">
-                                                                            { answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
+                                                                            {answer.is_accepted && <span className="text-green-500"><CheckCircleSharpIcon /></span>}
                                                                             <p className="mt-1 ml-1">{answer.answer_text}</p>
                                                                         </div>
 
@@ -1077,13 +1197,17 @@ export default function Forum() {
                                 </section>
                                 :
                                 <section>
-                                    {visibleQuestions && visibleQuestions.length > 0 ? (
+                                    {visibleQuestions &&
+                                        visibleQuestions.filter((question) => specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion
+                                        ).length > 0 ? (
                                         visibleQuestions
-                                            .filter((question) => specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion)
+                                            .filter(
+                                                (question) =>
+                                                    specifyQuestion === "all" ||
+                                                    question.email === specifyQuestion ||
+                                                    question.topic_type === specifyQuestion
+                                            )
                                             .map((question) => {
-                                                const relatedAnswers = all_QA.answers.filter(
-                                                    (answer) => answer.question_id === question.question_id
-                                                );
 
                                                 const questionVotes = all_QA.votes.filter(
                                                     (vote) => vote.target_id === question.question_id && vote.target_type === "question"
@@ -1136,7 +1260,9 @@ export default function Forum() {
                                                                             {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                                 <div
                                                                                     onClick={(e) => {
-                                                                                        handleDeleteQuestion(question.question_id)
+                                                                                        openPostOption()
+                                                                                        handleEditQuestion(question.question_id)
+                                                                                        setOpenEditQuestion(true)
                                                                                         e.stopPropagation()
                                                                                     }
                                                                                     }
@@ -1237,7 +1363,6 @@ export default function Forum() {
                                                                     );
                                                                 })()}
                                                             </div>
-
                                                         </div>
                                                     </section>
                                                 );
@@ -1251,9 +1376,7 @@ export default function Forum() {
                                 </section>
                             }
                         </section>
-
                     </section>
-
                 </MaxWidthWrapper>
                 <section className="md:block  lg:w-[26rem] hidden ">
 

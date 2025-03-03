@@ -41,7 +41,8 @@ const qa_all = async (req, res) => {
                     users.image,
                     users.file_mime_type
                     FROM QA_answers
-                    INNER JOIN users ON QA_answers.user_id = users.id;
+                    INNER JOIN users ON QA_answers.user_id = users.id
+                    ORDER BY created_at
                     `),
             db.query("SELECT * FROM qa_votes")
         ]);
