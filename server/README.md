@@ -166,7 +166,10 @@ CREATE TABLE QA_questions (
 	topic_type varchar(50) NOT NULL,         
     is_resolved BOOLEAN DEFAULT FALSE,
     image BYTEA,
-    file_mime_type TEXT
+    file_mime_type TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isUpdated boolean DEFAULT false,
+    updated_by INTEGER
 );
 
 <!-- DATABASE FOR Question&Answer  answers-->

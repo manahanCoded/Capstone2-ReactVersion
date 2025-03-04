@@ -164,7 +164,6 @@ export default function Forum() {
         setTopicType(event.target.value);
     };
 
-
     const handleImageFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -230,6 +229,35 @@ export default function Forum() {
     };
 
 
+    const handleEditSubmitQuestion = async (e, questionID) => {
+        e.preventDefault()
+        const questionUpdateData = new FormData()
+        questionUpdateData.append("question_text", editQuestion.question_text)
+        questionUpdateData.append("topic", editQuestion.topic)
+        questionUpdateData.append("topic_type", editQuestion.topic_type)
+        questionUpdateData.append("image", editQuestion.image)
+        questionUpdateData.append("user_id", checkUser.id);
+
+        try {
+            const response = await fetch(`${API_URL}/api/question-answer/update-question/${questionID}`, {
+                method: "PATCH",
+                body: questionUpdateData,
+                credentials: "include"
+            })
+
+            if (response.ok) {
+                alert("Update Successful")
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert("Error submitting answer: " + (errorData.error || "Unknown error occurred"));
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred");
+        }
+
+    }
 
     const toggleDropdown = (questionId) => {
         setOpenQuestion((prev) => (prev === questionId ? null : questionId));
@@ -292,7 +320,7 @@ export default function Forum() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_URL}/api/question-answer/update/${answerId}`, {
+            const response = await fetch(`${API_URL}/api/question-answer/update-answer/${answerId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ answer_text: editReply.answer_text }),
@@ -372,10 +400,8 @@ export default function Forum() {
 
     const handleEditQuestion = (questionId) => {
         const questionToEdit = filteredQuestions.find(q => q.question_id === questionId);
-
         if (questionToEdit) {
             setEditQuestion(questionToEdit);
-            console.log(questionToEdit);
         }
     };
 
@@ -740,7 +766,9 @@ export default function Forum() {
                                     <section
                                         className={`overflow-y-scroll transition-all duration-500 `}
                                     >
-                                        <form className="flex flex-col px-3 gap-1 pb-4">
+                                        <form
+                                            onSubmit={(e) => handleEditSubmitQuestion(e, editQuestion.question_id)}
+                                            className="flex flex-col px-3 gap-1 pb-4">
                                             <div className="flex flex-col gap-1">
                                                 <input
                                                     type="text"
@@ -755,7 +783,7 @@ export default function Forum() {
                                                 <label className="w-fit">
                                                     <div className=" mt-3 flex justify-between gap-2 items-center flex-col p-4 rounded-xl border-2 border-dashed border-gray-500 bg-gray-200 cursor-pointer">
                                                         <img
-                                                            src={editQuestion?.image || "/Icons/AddPic.png"}
+                                                            src={ editQuestion?.displayImageChange ||editQuestion?.image || "/Icons/AddPic.png"}
                                                             className="h-12"
                                                             alt="Profile Preview"
                                                         />
@@ -768,7 +796,7 @@ export default function Forum() {
                                                                 const file = e.target.files[0];
                                                                 if (file) {
                                                                     const imageUrl = URL.createObjectURL(file);
-                                                                    setEditQuestion({ ...editQuestion, image: imageUrl });
+                                                                    setEditQuestion({ ...editQuestion, image: file, displayImageChange: imageUrl });
                                                                 }
                                                             }}
                                                         />
@@ -806,7 +834,6 @@ export default function Forum() {
                                             <div className="w-full flex justify-end items-center">
                                                 <button
                                                     className="py-2 px-4 rounded-md border-[1px] text-sm text-white bg-red-900 hover:bg-red-700"
-                                                    onClick={handleSubmit}
                                                 >
                                                     Submit
                                                 </button>
@@ -861,6 +888,7 @@ export default function Forum() {
                                                             onClick={(e) => {
                                                                 openPostOption()
                                                                 handleEditQuestion(checkQuestion.question_id)
+                                                                setOpenEditQuestion(true)
                                                                 e.stopPropagation()
                                                             }}
                                                             className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
@@ -997,7 +1025,7 @@ export default function Forum() {
 
                                                 return relatedAnswers.length > 0 ? (
                                                     relatedAnswers
-                                                        .filter((answer) => !answer.parent_answer_id) // Top-level answers only
+                                                        .filter((answer) => !answer.parent_answer_id)
                                                         .map((answer) => {
                                                             const answerVotes = all_QA.votes.filter(
                                                                 (vote) => vote.target_id === answer.answer_id && vote.target_type === "answer"
