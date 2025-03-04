@@ -117,6 +117,8 @@ export default function CheckJobPage() {
       });
 
       if (response.ok) {
+        setOpenApply(false)
+        alert("File uploaded successfully!")
         setUploadStatus('File uploaded successfully!');
       } else {
         const errorMessage = await response.text();

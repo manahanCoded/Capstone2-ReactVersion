@@ -114,19 +114,19 @@ export default function Home() {
           <MaxWidthWrapper className="flex flex-row justify-center items-center md:gap-4">
             <FeatureCard
               title="Modules"
-              description="10 Modules 12 lessons"
+              description=""
               link="/modules"
               imgSrc="/IMG_Dashboard/Features/modules.jpg"
             />
             <FeatureCard
               title="Games"
-              description="4 Games"
+              description=""
               link="/games"
               imgSrc="/IMG_Dashboard/Features/demos.jpg"
             />
             <FeatureCard
               title="Jobs"
-              description="Find Job"
+              description=""
               link="/jobs"
               imgSrc="/IMG_Dashboard/Features/question.jpg"
             />
