@@ -336,7 +336,7 @@ const Navbar = () => {
       </div>
       {
         notification ? (
-          <div className="absolute w-60 top-14 right-20 right-2 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+          <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
             {displayAnnouncement.map((announcement) => (
               <div
                 key={announcement.id}
