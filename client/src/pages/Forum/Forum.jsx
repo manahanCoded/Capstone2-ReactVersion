@@ -38,7 +38,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
-
+import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
 
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -50,6 +50,7 @@ export default function Forum() {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const [specifyQuestion, setSpecifyQuestion] = useState("all");
+    const [showUnapprovedOnly, setShowUnapprovedOnly] = useState(false);
     const [all_QA, setAll_QA] = useState([]);
     const [imageFile, setImageFile] = useState();
 
@@ -225,6 +226,35 @@ export default function Forum() {
             }
         } catch (error) {
             console.error("Error:", error);
+        }
+    };
+
+    const handleAllowQuestion = async (questionID, isAllow) => {
+        try {
+
+            setVisibleQuestions((prevQuestions) =>
+                prevQuestions.map((q) =>
+                    q.question_id === questionID ? { ...q, is_resolved: isAllow } : q
+                )
+            );
+            if (checkQuestion) {
+                setCheckQuestion((prevQuestions) => ({ ...prevQuestions, is_resolved: isAllow }));
+            }
+
+            const response = await fetch(`${API_URL}/api/question-answer/allow-question/${questionID}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ is_resolved: isAllow }),
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update question status");
+            }
+            openPostOption(null)
+            fetchAllQA();
+        } catch (error) {
+            alert("An error occurred: " + error.message);
         }
     };
 
@@ -635,6 +665,18 @@ export default function Forum() {
                                     Ask a Question
                                 </p>
                             }
+                            {checkUser?.role === "admin" && (
+                                <p
+                                    onClick={() => {
+                                        setShowUnapprovedOnly((prev) => !prev)
+                                    }}
+                                    className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"
+                                        }`}
+                                >
+                                    <ChecklistOutlinedIcon />
+                                    Approval
+                                </p>
+                            )}
                         </div>
                     </section>
                 </section>
@@ -742,7 +784,7 @@ export default function Forum() {
                             <section className="fixed h-screen flex items-center justify-center inset-0 z-50 bg-black bg-opacity-50">
                                 <div className="h-[42rem] w-[60rem] mt-4 flex flex-col gap-4 rounded-xl py-4 px-6  mb-4 bg-white shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
                                     <section className="w-full flex flex-row items-center gap-4">
-                                        {editQuestion?.image ? (
+                                        {editQuestion?.Image ? (
                                             <img
                                                 src={editQuestion?.user_image}
                                                 className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
@@ -783,7 +825,7 @@ export default function Forum() {
                                                 <label className="w-fit">
                                                     <div className=" mt-3 flex justify-between gap-2 items-center flex-col p-4 rounded-xl border-2 border-dashed border-gray-500 bg-gray-200 cursor-pointer">
                                                         <img
-                                                            src={ editQuestion?.displayImageChange ||editQuestion?.image || "/Icons/AddPic.png"}
+                                                            src={editQuestion?.displayImageChange || editQuestion?.image || "/Icons/AddPic.png"}
                                                             className="h-12"
                                                             alt="Profile Preview"
                                                         />
@@ -870,19 +912,40 @@ export default function Forum() {
                                                     }}
                                                 />
                                             )}
-                                            <div className="flex flex-wrap gap-1 items-center text-xs">
-                                                <p className=" text-gray-600">{checkQuestion.name ? checkQuestion.name : checkQuestion.email}</p>
-                                                <p>•</p>
-                                                <p className=" text-gray-500">{timeAgo(checkQuestion.created_at)}</p>
-                                                <p>•</p>
-                                                <p className=" text-gray-600">{checkQuestion.topic_type}</p>
+                                            <div className="flex flex-col gap-1 text-xs">
+                                                {(checkUser?.role === "admin") && (
+                                                    <div className={`gap-1 text-xs ${question.is_resolved ? "text-green-500" : "text-red-500"}`}>
+                                                        <p>{question.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
+                                                    </div>
+
+                                                )}
+                                                <div className="flex flex-wrap gap-1 items-center text-xs">
+                                                    <p className=" text-gray-600">{checkQuestion.name ? checkQuestion.name : checkQuestion.email}</p>
+                                                    <p>•</p>
+                                                    <p className=" text-gray-500">{timeAgo(checkQuestion.created_at)}</p>
+                                                    <p>•</p>
+                                                    <p className=" text-gray-600">{checkQuestion.topic_type}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className={`${checkUser.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}>
-                                            <MoreHorizIcon className="cursor-pointer"
-                                                onClick={() => openPostOption(checkQuestion.question_id)} />
+                                        <div className={`${checkUser.id ? "" : "hidden"}relative p-1 rounded-full cursor-pointer hover:bg-gray-300`}
+                                            onClick={() => openPostOption(checkQuestion.question_id)} >
+                                            <MoreHorizIcon className="" />
                                             {openPostId === checkQuestion.question_id &&
-                                                <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                <div className="w-36 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                    {(checkUser?.role === "admin") && (
+                                                        <div
+                                                            onClick={(e) => {
+                                                                handleAllowQuestion(checkQuestion.question_id, !checkQuestion.is_resolved);
+                                                                e.stopPropagation();
+                                                            }}
+                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                        >
+                                                            {checkQuestion.is_resolved ? <CloseIcon /> : <CheckIcon />}
+                                                            <p>{checkQuestion.is_resolved ? "Disapprove" : "Approve"}</p>
+                                                        </div>
+
+                                                    )}
                                                     {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                         <div
                                                             onClick={(e) => {
@@ -944,7 +1007,7 @@ export default function Forum() {
                                                 (vote) => vote.target_id === checkQuestion.question_id && vote.target_type === "question");
                                             return (
                                                 <section className="my-2 flex flex-row items-center justify-between gap-2">
-                                                    <div className=" flex flex-row items-center gap-2">
+                                                    <div className=" flex flex-row items-center gap-2 text-sm">
                                                         <button
                                                             className={`flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200  ${isUpvoted ? "text-red-500" : "text-black"}`}
                                                             onClick={(e) => {
@@ -957,8 +1020,8 @@ export default function Forum() {
                                                             }
                                                             }
                                                         >
-                                                            {isUpvoted ? <FavoriteIcon style={{ fontSize: "16px" }} />
-                                                                : <FavoriteBorderIcon style={{ fontSize: "16px" }} />}
+                                                            {isUpvoted ? <FavoriteIcon style={{ fontSize: "18px" }} />
+                                                                : <FavoriteBorderIcon style={{ fontSize: "18px" }} />}
 
                                                             <span className="ml-2 ">
                                                                 {(() => {
@@ -972,8 +1035,8 @@ export default function Forum() {
                                                             href="#comment"
                                                             className="flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200"
                                                         >
-                                                            <ChatBubbleOutlineRoundedIcon style={{ fontSize: "16px" }} />
-                                                            <span className="ml-2 text-gray-500 text-sm">
+                                                            <ChatBubbleOutlineRoundedIcon style={{ fontSize: "18px" }} />
+                                                            <span className="ml-2 text-gray-500 ">
                                                                 {(() => {
                                                                     const commentCount = all_QA.answers.filter(
                                                                         (answer) => answer.question_id === checkQuestion.question_id
@@ -1226,17 +1289,20 @@ export default function Forum() {
                                 :
                                 <section>
                                     {visibleQuestions &&
-                                        visibleQuestions.filter((question) => specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion
-                                        ).length > 0 ? (
                                         visibleQuestions
-                                            .filter(
-                                                (question) =>
-                                                    specifyQuestion === "all" ||
-                                                    question.email === specifyQuestion ||
-                                                    question.topic_type === specifyQuestion
+                                            .filter((question) =>
+                                                (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
+                                                (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
+                                                (!showUnapprovedOnly || !question.is_resolved)
+                                            )
+                                            .length > 0 ? (
+                                        visibleQuestions
+                                            .filter((question) =>
+                                                (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
+                                                (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
+                                                (!showUnapprovedOnly || !question.is_resolved)
                                             )
                                             .map((question) => {
-
                                                 const questionVotes = all_QA.votes.filter(
                                                     (vote) => vote.target_id === question.question_id && vote.target_type === "question"
                                                 );
@@ -1268,23 +1334,46 @@ export default function Forum() {
                                                                             }}
                                                                         />
                                                                     )}
-                                                                    <div className="flex flex-wrap gap-1 items-center text-xs">
-                                                                        <p className=" text-gray-600">{question.name ? question.name : question.email}</p>
-                                                                        <p>•</p>
-                                                                        <p className=" text-gray-500">{timeAgo(question.created_at)}</p>
-                                                                        <p>•</p>
-                                                                        <p className=" text-gray-600">{question.topic_type}</p>
+
+                                                                    <div className="flex flex-col gap-1 text-xs">
+                                                                        {(checkUser?.role === "admin") && (
+                                                                            <div className={`gap-1 text-xs ${question.is_resolved ? "text-green-500" : "text-red-500"}`}>
+                                                                                <p>{question.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
+                                                                            </div>
+
+                                                                        )}
+                                                                        <div className="flex flex-wrap gap-1 items-center text-xs">
+                                                                            <p className=" text-gray-600">{question.name ? question.name : question.email}</p>
+                                                                            <p>•</p>
+                                                                            <p className=" text-gray-500">{timeAgo(question.created_at)}</p>
+                                                                            <p>•</p>
+                                                                            <p className=" text-gray-600">{question.topic_type}</p>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className={`${checkUser?.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}>
-                                                                    <MoreHorizIcon className="cursor-pointer"
-                                                                        onClick={(e) => {
-                                                                            openPostOption(question.question_id)
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                        } />
+                                                                <div className={`${checkUser?.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}
+                                                                    onClick={(e) => {
+                                                                        openPostOption(question.question_id)
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                    }
+                                                                >
+                                                                    <MoreHorizIcon className="cursor-pointer" />
                                                                     {openPostId === question.question_id &&
-                                                                        <div className="w-32 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                                        <div className="w-36 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                                            {(checkUser?.role === "admin") && (
+                                                                                <div
+                                                                                    onClick={(e) => {
+                                                                                        handleAllowQuestion(question.question_id, !question.is_resolved);
+                                                                                        e.stopPropagation();
+                                                                                    }}
+                                                                                    className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                >
+                                                                                    {question.is_resolved ? <CloseIcon /> : <CheckIcon />}
+                                                                                    <p>{question.is_resolved ? "Disapprove" : "Approve"}</p>
+                                                                                </div>
+
+                                                                            )}
                                                                             {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                                 <div
                                                                                     onClick={(e) => {
