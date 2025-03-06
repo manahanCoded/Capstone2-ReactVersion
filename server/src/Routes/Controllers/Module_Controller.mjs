@@ -12,8 +12,7 @@ const allModule_Storage = async (req, res) => {
       }
 
       const module = result.rows[0];
-
-      // Convert binary data to base64 for easier handling on the frontend
+      
       if (module.file_data) {
         module.file_data = module.file_data.toString('base64');
       }

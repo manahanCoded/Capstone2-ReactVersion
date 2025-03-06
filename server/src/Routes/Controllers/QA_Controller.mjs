@@ -12,6 +12,7 @@ const qa_all = async (req, res) => {
                     q.is_resolved, 
                     q.image, 
                     q.file_mime_type,
+                    q.isupdated,
                     u.id AS user_id,
                     u.email,
                     u.type,
@@ -41,7 +42,8 @@ const qa_all = async (req, res) => {
                     users.image,
                     users.file_mime_type
                     FROM QA_answers
-                    INNER JOIN users ON QA_answers.user_id = users.id;
+                    INNER JOIN users ON QA_answers.user_id = users.id
+                    ORDER BY created_at
                     `),
             db.query("SELECT * FROM qa_votes")
         ]);
@@ -99,6 +101,81 @@ const question = async (req, res) => {
         res.status(500).json({ error: "Failed to save qeustion." });
     }
 };
+
+
+const update_question = async (req, res) => {
+    const { id } = req.params;
+    const { question_text, topic, topic_type, user_id } = req.body;
+
+    if (!user_id || !question_text || !topic || !topic_type) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const checkResult = await db.query("SELECT * FROM QA_questions WHERE question_id = $1", [id]);
+
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: "Question not found" });
+        }
+        const image = req.file ? req.file.buffer : checkResult.rows[0].image;
+        const file_mime_type = req.file ? req.file.mimetype : checkResult.rows[0].file_mime_type;
+
+        const query = `
+            UPDATE QA_questions SET 
+            question_text = $1, 
+            topic = $2,
+            topic_type = $3, 
+            image = $4,
+            file_mime_type = $5,
+            isUpdated = $6, 
+            updated_by = $7
+            WHERE question_id = $8
+            RETURNING *;
+        `;
+        const values = [question_text, topic, topic_type, image, file_mime_type, true, user_id, id];
+
+        const result = await db.query(query, values);
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Question updated successfully", 
+            updatedQuestion: result.rows[0] 
+        });
+
+    } catch (err) {
+        console.error("Database Error:", err);
+
+        if (err.code === "23505") {
+            return res.status(409).json({ error: "Duplicate entry detected" });
+        }
+
+        return res.status(500).json({ error: "Failed to update question. Please try again." });
+    }
+};
+
+const allowQuestion = async (req, res) => {
+    const { id } = req.params;
+    const { is_resolved } = req.body;
+
+    try {
+        const result = await db.query(
+            "UPDATE QA_QUESTIONS SET is_resolved = $2 WHERE question_id = $1 RETURNING *",
+            [id, is_resolved]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Question not found" });
+        }
+
+        res.status(200).json({ message: "Question status updated successfully", data: result.rows[0] });
+
+    } catch (error) {
+        console.error("Error updating question status:", error);
+        res.status(500).json({ error: "Failed to allow question. Please try again." });
+    }
+};
+
+
 
 const answer = async (req, res) => {
     const { question_id, user_id, answer_text, parent_answer_id } = req.body;
@@ -280,4 +357,4 @@ const isAccepted = async (req, res) => {
 
 
 
-export { qa_all, question, answer, vote, delete_question, delete_answer, isAccepted, update_answer }
+export { qa_all, question, answer, vote, delete_question, delete_answer, isAccepted, update_answer, update_question, allowQuestion }

@@ -114,19 +114,19 @@ export default function Home() {
           <MaxWidthWrapper className="flex flex-row justify-center items-center md:gap-4">
             <FeatureCard
               title="Modules"
-              description="10 Modules 12 lessons"
+              description=""
               link="/modules"
               imgSrc="/IMG_Dashboard/Features/modules.jpg"
             />
             <FeatureCard
               title="Games"
-              description="4 Games"
+              description=""
               link="/games"
               imgSrc="/IMG_Dashboard/Features/demos.jpg"
             />
             <FeatureCard
               title="Jobs"
-              description="Find Job"
+              description=""
               link="/jobs"
               imgSrc="/IMG_Dashboard/Features/question.jpg"
             />
@@ -134,7 +134,7 @@ export default function Home() {
         </section>
 
         {/* Partners Section */}
-        <section className="relative -top-12 pt-14 inline-block w-screen">
+        <section className="relative -top-14 pt-14 inline-block w-screen overflow-hidden">
           <MaxWidthWrapper>
             <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[96vw] max-sm:overflow-hidden max-sm:h-40">
               <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
