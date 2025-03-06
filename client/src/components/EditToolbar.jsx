@@ -179,7 +179,7 @@ const QuillToolbar = ({ toolbarId }) => {
       {!isHiddenRoute && (
         <span className="ql-formats">
           <a
-            href="https://cryptowarriors.h5p.com/content#"
+            href="https://cryptowarrior.h5p.com/content"
             target="_blank"
             rel="noopener noreferrer"
             className="ql-h5p-button"

@@ -141,8 +141,7 @@ export default function CreateJobPage() {
 
 
     async function postAnnouncement(e) {
-        e.preventDefault();
-
+        e.preventDefault()
         try {
             const res = await axios.post(
                 `${API_URL}/api/announcement/addAnnouncements`,
@@ -156,6 +155,8 @@ export default function CreateJobPage() {
             );
             if (res.status === 201) {
                 navigate("/jobs");
+                alert("Announcement created successfully");
+                window.location.reload();
             } else {
                 alert("Failed to create Announcement.");
             }

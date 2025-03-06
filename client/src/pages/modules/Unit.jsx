@@ -99,7 +99,7 @@ export default function Unit() {
                     </div>
                     <div className=" bg-green-400 lg:w-4/6  top-20">
                         <div className="h-[30rem] w-full bg-red-700 relative">
-                            <img className="absolute inset-0 w-full h-full object-cover z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                            <img className="absolute inset-0 aspect-[20/13] h-full z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                 src={moduleName.file_url} alt="" />
                         </div>
                     </div>
