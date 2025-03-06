@@ -146,7 +146,7 @@ export default function Home() {
       flex items-center justify-center min-h-screen h-screen w-screen`}
     >
       {isPickingCategory ? (
-        <div className=" picking-bg fixed bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
+        <div className=" picking-bg fixed bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto font-pxltd">
           <div className="game-modal content bg-[url('/Game_images/dont-fall2.png')] max-w-[1100px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">
@@ -193,12 +193,16 @@ export default function Home() {
 
       {tries === 0 ? (
         <div className="picking-bg fixed  bg-black left-0 top-44 w-[100%] h-[110%]  flex items-center justify-center -mt-44 z-10 pointer-events-auto">
-          <div className="game-modal content bg-[url('/Game_images/dont-fall2.png')] max-w-[1150px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
+          <div className="game-modal content bg-[url('/Game_images/dont-fall2.png')] max-w-[1150px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10 font-pxltd">
             <h4 className="text-4xl font-bold text-white">
-              Total Score: {score}{' '}
+              Total Score
+              <span className="font-sans text-5xl font-bold"> : </span>
+              {score}{' '}
             </h4>
             <h4 className="text-4xl font-bold text-white">
-              Number of unscrambled words: {score / 10 < 0 ? 0 : score / 10}
+              Number of unscrambled words
+              <span className="font-sans text-5xl font-bold"> : </span>
+              {score / 10 < 0 ? 0 : score / 10}
             </h4>
             <button
               className="category-btn bg-black  text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
@@ -223,43 +227,101 @@ export default function Home() {
 
       {isCorrect || wrongGuessCount === maxGuesses ? (
         <div
-          className={`fixed left-50 top-0  flex  justify-center mt-20 z-09 pointer-events-auto p-1`}
+          className={`fixed left-50 top-0  flex flex-col  justify-center mt-20 z-20 pointer-events-auto p-1 font-pxltd ${
+            isCorrect ? 'flex-none' : ''
+          }`}
         >
           <div
             className={`content ${
-              wrongGuessCount === maxGuesses ? 'bg-red-600' : ''
+              wrongGuessCount === maxGuesses ? 'bg-red-600 animate-shake' : ''
             } ${
-              isCorrect ? 'bg-green-600' : ''
-            } max-w-[400px] w-full max-h-[100px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10`}
+              isCorrect ? 'bg-green-600 motion-preset-confetti' : ''
+            } max-w-[400px] w-full max-h-[120px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10 z-10`}
           >
-            <h4 className="text-4xl font-bold text-white">
+            <h4
+              className={`text-4xl font-bold text-white ${
+                isCorrect ? 'motion-preset-confetti' : 'animate-shake'
+              }`}
+            >
               {wrongGuessCount === maxGuesses ? 'No more guesses' : ''}
               {isCorrect ? 'Correct Word' : ''}
             </h4>
           </div>
+
+          {wrongGuessCount === maxGuesses ? (
+            <img
+              src={`/Game_images/full-heart.png`}
+              alt="lives-img"
+              className=" w-32 max-h-32 h-32  z-20 -mt-44 ml-36  animate-fall"
+            />
+          ) : (
+            ''
+          )}
+          {isCorrect ? (
+            <img
+              src={`/Game_images/score.png`}
+              alt="lives-img"
+              className=" w-32 max-h-32 h-32  relative z-30 -mt-56  ml-72 motion-preset-confetti"
+            />
+          ) : (
+            ''
+          )}
         </div>
       ) : (
         ''
       )}
 
-      <div className="w-[1100px] bg-white flex flex-col py-14 px-10 rounded-xl items-end">
+      <div className="w-[1100px] bg-white flex flex-col py-14 px-10 rounded-xl items-end font-pxltd">
         <div className="flex justify-around gap-5 mr-4 -mt-8 items-center">
           <img
             src={`/Game_images/lives${tries}.png`}
             alt="lives-img"
-            className=" w-40 max-h-32 h-16"
+            className={`w-40 max-h-32 h-16 ${
+              tries === 1 ? 'animate-pulse' : ''
+            }`}
           />
-          <h2 className="text-3xl mr-3">Score: {score}</h2>
+          <h2 className="text-3xl mr-3">
+            Score
+            <span className="font-sans text-4xl font-bold"> : </span>
+            {score}
+          </h2>
         </div>
         <div className="flex gap-16">
           <div className="w-[300px] flex flex-col justify-center items-center">
             <img
               src={`/Game_images/BalloonMan${wrongGuessCount}.png`}
               alt="hangman-img"
-              className="max-w-72 max-h-80"
+              className={`max-w-72 max-h-80 ${
+                wrongGuessCount === maxGuesses ? 'motion-preset-confetti' : ''
+              }`}
             />
-            <h1 className="text-2xl mt-5 text-center uppercase font-extrabold">
-              Don't FALL
+            <h1
+              className={`text-2xl mt-5 text-center uppercase font-extrabold 
+                ${
+                  category === 'nft' &&
+                  wrongGuessCount !== maxGuesses &&
+                  !isCorrect
+                    ? 'text-purple-900'
+                    : ''
+                } 
+                ${
+                  category === 'cryptocurrency' &&
+                  wrongGuessCount !== maxGuesses &&
+                  !isCorrect
+                    ? 'text-yellow-900'
+                    : ''
+                }  
+                ${
+                  category === 'blockchain' &&
+                  wrongGuessCount !== maxGuesses &&
+                  !isCorrect
+                    ? 'text-blue-900'
+                    : ''
+                }  
+            `}
+            >
+              Don
+              <span className="font-sans text-3xl font-bold">'</span>t FALL
             </h1>
             {/* <h2>Tries: {tries}</h2>
           <h2>Score: {score}</h2> */}
@@ -267,19 +329,59 @@ export default function Home() {
           <div className="game-box mt-24">
             <ul className="word-display flex list-none gap-3 items-center justify-center">
               {revealedLetters.map((char, index) => (
-                <li key={index} className={`letter ${char ? 'guessed' : ''}`}>
+                <li
+                  key={index}
+                  className={`letter ${char ? 'guessed' : ''}
+                      ${
+                        category === 'nft' &&
+                        wrongGuessCount !== maxGuesses &&
+                        !isCorrect
+                          ? 'border-purple-900 text-purple-900'
+                          : ''
+                      } 
+                      ${
+                        category === 'cryptocurrency' &&
+                        wrongGuessCount !== maxGuesses &&
+                        !isCorrect
+                          ? 'border-yellow-900 text-yellow-900'
+                          : ''
+                      }  
+                      ${
+                        category === 'blockchain' &&
+                        wrongGuessCount !== maxGuesses &&
+                        !isCorrect
+                          ? 'border-blue-900 text-blue-900'
+                          : ''
+                      }  
+                      border-b-4 
+                `}
+                >
                   {char || ''}
                 </li>
               ))}
             </ul>
             <h4 className="hint-text text-2xl">
-              Hint:
+              Hint
+              <span className="font-sans text-2xl font-bold"> : </span>
               <b className="text-xl"> {hint}</b>
             </h4>
-            <h4 className="guesses-text text-red-600 text-xl">
-              Incorrect guesses:
-              <b>
-                {wrongGuessCount}/{maxGuesses}
+            <h4
+              className={`guesses-tex text-xl 
+            ${wrongGuessCount >= 0 ? 'text-green-600' : ''}
+            ${
+              wrongGuessCount >= 3 && wrongGuessCount < 5
+                ? 'text-yellow-600'
+                : ''
+            }
+            ${wrongGuessCount >= 5 ? 'text-red-600' : ''}
+            `}
+            >
+              Incorrect guesses
+              <span className="font-sans text-2xl font-bold"> : </span>
+              <b className={`${wrongGuessCount >= 4 ? 'animate-pulse' : ''}`}>
+                {wrongGuessCount}
+                <span className="font-sans text-2xl font-bold"> / </span>
+                {maxGuesses}
               </b>
             </h4>
             <div className="keyboard flex gap-1 flex-wrap justify-center mt-10">

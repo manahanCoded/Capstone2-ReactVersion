@@ -8,7 +8,7 @@ export const games = [
   {
     title: 'Guessing Quest',
     description:
-      'Test your intuition by guessing items. A fun and interactive game inspired by blockchain randomization!',
+      'Test your intuition by guessing items. A fun and interactive game inspired by topic randomization and fill in the blanks!',
     img: '/Game_images/frontPage/guess3.png',
     img_2: '/Game_images/frontPage/guess2.png',
     path: '/games/guessing-game',
@@ -16,7 +16,7 @@ export const games = [
   {
     title: "Don't Fall",
     description:
-      'Dive into the world of Web3 and try to guess the correct word before time runs out. Each word relates to blockchain technology and crypto concepts!',
+      'Dive into the world of Web3 and try to guess the correct word before you run out of guesses. Each word relates to blockchain technology and crypto concepts!',
     img: '/Game_images/frontPage/hangman3.png',
     img_2: '/Game_images/frontPage/hangman2.png',
     path: '/games/hangman',
@@ -47,15 +47,15 @@ export default function Games() {
     setSearchTerm(e.target.value)
   }
 
-
-  const filteredGames = games.filter((game) =>
-    game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    game.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredGames = games.filter(
+    (game) =>
+      game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      game.description.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
-    <div className='h-screen'>
-      <div className=' flex flex-col items-center'>
+    <div className="h-screen">
+      <div className=" flex flex-col items-center">
         <MaxWidthWrapper className="flex flex-col items-center justify-center mt-20 lg:mx-20">
           <h1 className="text-3xl font-semibold mb-4">Challenge Yourself</h1>
           <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center gap-6 text-xs border-b-[1px] bg-white">

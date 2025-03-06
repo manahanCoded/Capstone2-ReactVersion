@@ -11,7 +11,7 @@ export default function Scramble() {
   const [time, setTime] = useState(5)
   const [isPickingCategory, setIsPickingCategory] = useState(true)
   const [isTimesUp, setIsTimesUp] = useState(false)
-  const [tries, setTries] = useState(3)
+  const [tries, setTries] = useState(6)
   const [score, setScore] = useState(0)
   const [showGameOverModal, setShowGameOverModal] = useState(false)
   const [isIncorrect, setIsIncorrect] = useState(false)
@@ -181,7 +181,7 @@ export default function Scramble() {
       flex items-center justify-center min-h-screen h-screen w-screen`}
     >
       {isPickingCategory ? (
-        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
+        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto font-pxltd">
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">
@@ -191,7 +191,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('blockchain')
                     setIsPickingCategory(false)
-                    setTries(3)
+                    setTries(6)
                     if (category === 'blockchain') {
                       setTime(5)
                     }
@@ -204,7 +204,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('nft')
                     setIsPickingCategory(false)
-                    setTries(3)
+                    setTries(6)
                     if (category === 'nft') {
                       setTime(5)
                     }
@@ -217,7 +217,7 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('cryptocurrency')
                     setIsPickingCategory(false)
-                    setTries(3)
+                    setTries(6)
                     if (category === 'cryptocurrency') {
                       setTime(5)
                     }
@@ -242,14 +242,18 @@ export default function Scramble() {
         <div
           className={`picking-bg fixed bg-black left-0 w-[100%] h-[110%]  flex items-center justify-center ${
             tries <= 0 ? 'mt-20' : '-mt-44'
-          } z-10 pointer-events-auto p-1`}
+          } z-10 pointer-events-auto p-1 font-pxltd`}
         >
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-4xl font-bold text-white">
-              Total Score: {score}{' '}
+              Total Score
+              <span className="font-sans text-5xl font-bold"> : </span>
+              {score}{' '}
             </h4>
             <h4 className="text-4xl font-bold text-white">
-              Number of unscrambled words: {score / 10 < 0 ? 0 : score / 10}
+              Number of unscrambled words
+              <span className="font-sans text-5xl font-bold"> : </span>
+              {score / 10 < 0 ? 0 : score / 10}
             </h4>
             <button
               className="category-btn bg-black  text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
@@ -275,46 +279,117 @@ export default function Scramble() {
 
       {isIncorrect || isCorrect || isTimesUp ? (
         <div
-          className={`fixed left-50 top-0  flex  justify-center mt-20 z-09 pointer-events-auto p-1`}
+          className={`fixed left-50 top-0  flex flex-col  justify-center mt-20 z-30 pointer-events-auto p-1 font-pxltd`}
         >
           <div
             className={`content ${
-              isIncorrect || isTimesUp ? 'bg-red-600' : ''
+              isIncorrect || isTimesUp ? 'bg-red-600 animate-shake' : ''
             } ${
-              isCorrect ? 'bg-green-600' : ''
-            } max-w-[400px] w-full max-h-[100px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10`}
+              isCorrect ? 'bg-green-600 motion-preset-confetti' : ''
+            } max-w-[400px] w-full max-h-[120px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10 z-10`}
           >
-            <h4 className="text-4xl font-bold text-white">
+            <h4
+              className={`text-4xl font-bold text-white ${
+                isIncorrect || isTimesUp
+                  ? 'animate-shake'
+                  : 'motion-preset-confetti'
+              }`}
+            >
               {isIncorrect ? 'Incorrect Word' : ''}
               {isCorrect ? 'Correct Word' : ''}
               {isTimesUp ? 'Times Up' : ''}
             </h4>
           </div>
+          {isTimesUp ? (
+            <img
+              src={`/Game_images/full-heart.png`}
+              alt="lives-img"
+              className=" w-32 max-h-32 h-32  z-20 -mt-44 ml-20  animate-fall"
+            />
+          ) : (
+            ''
+          )}
+          {isCorrect ? (
+            <img
+              src={`/Game_images/score.png`}
+              alt="lives-img"
+              className=" w-32 max-h-32 h-32  relative z-30 -mt-56  ml-72 motion-preset-confetti"
+            />
+          ) : (
+            ''
+          )}
         </div>
       ) : (
         ''
       )}
 
-      <div className="container w-[950px] rounded-md bg-white">
+      <div className="container w-[950px] rounded-md bg-white font-pxltd mt-16">
         <div className="flex items-center justify-between">
-          <h2 className="text-4xl font-medium py-4 px-6 ">Web3 Mix n' Match</h2>
+          <h2
+            className={`text-4xl font-medium py-4 px-6 
+              ${category === 'blockchain' ? 'text-blue-900' : ''} 
+              ${
+                category === 'nft' && !isIncorrect && !isCorrect && !isTimesUp
+                  ? 'text-purple-900'
+                  : ''
+              } 
+              ${
+                category === 'cryptocurrency' &&
+                !isIncorrect &&
+                !isCorrect &&
+                !isTimesUp
+                  ? 'text-yellow-900'
+                  : ''
+              }  
+            `}
+          >
+            Web3 Mix n<span className="font-sans text-4xl font-bold">'</span>
+            Match
+          </h2>
           <div className="flex justify-around gap-5 mr-4 items-center">
             <img
               src={`/Game_images/lives${tries / 2}.png`}
               alt="lives-img"
-              className=" w-40 max-h-32 h-16"
+              className={`w-40 max-h-32 h-16 ${
+                tries / 2 === 1 ? 'animate-pulse z-0' : ''
+              }`}
             />
-            <h2 className="text-4xl mr-3">Score: {score}</h2>
+            <h2 className="text-3xl mr-3">
+              Score
+              <span className="font-sans text-4xl font-bold"> : </span>
+              {score}
+            </h2>
           </div>
         </div>
 
         <div className="content ">
-          <p className="word text-5xl font-medium text-center uppercase tracking-[24px] -mr-6 p-10">
+          <p
+            className={`word text-5xl font-medium text-center uppercase tracking-[24px] -mr-6 p-10 
+              ${category === 'blockchain' ? 'text-blue-900' : ''} 
+              ${
+                category === 'nft' && !isIncorrect && !isCorrect && !isTimesUp
+                  ? 'text-purple-900'
+                  : ''
+              } 
+              ${
+                category === 'cryptocurrency' &&
+                !isIncorrect &&
+                !isCorrect &&
+                !isTimesUp
+                  ? 'text-yellow-900'
+                  : ''
+              }  
+            `}
+          >
             {isTimesUp ? correctWord : randomWord}
           </p>
           <div className="details">
             <p className="my-8 text-5xl">
-              <span className="text-3xl my-5">Hint: {hint}</span>
+              <span className="text-2xl my-5">
+                Hint
+                <span className="font-sans text-3xl font-bold"> : </span>
+                <span className="text-xl"> {hint}</span>
+              </span>
             </p>
 
             {tries > 0 ? (
@@ -329,10 +404,14 @@ export default function Scramble() {
                 }}
               >
                 <div
+                  className={`
+                    ${time >= 0 && time < 2 ? 'bg-red-600' : ''} 
+                    ${time >= 2 && time < 3 ? 'bg-yellow-600' : ''} 
+                    ${time >= 3 && time < 6 ? 'bg-green-600' : ''}  
+                `}
                   style={{
                     width: `${progress * 100}%`,
                     height: '100%',
-                    backgroundColor: '#0070f3',
                     borderRadius: 10,
                   }}
                 />
@@ -352,7 +431,7 @@ export default function Scramble() {
           />
           <div className="buttons flex justify-between mt-5 mb-5">
             <button
-              className="refresh-word bg-gray-600 text-2xl font-bold mb-6 hover:bg-gray-900 hover:text-white"
+              className="refresh-word bg-gray-600 text-2xl font-bold mb-6 hover:bg-gray-900 hover:text-white "
               onClick={() => {
                 let wordString = shuffleWord(randomWord)
                 console.log('These is the value of wordString', wordString)

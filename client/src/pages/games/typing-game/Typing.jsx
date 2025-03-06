@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from 'react'
 import './typing-game.css'
 import {
@@ -46,7 +44,7 @@ export default function TypingGame() {
 
   useEffect(() => {
     let interval
-    if (isTyping && timeLeft > 0) {
+    if (isTyping && timeLeft > 0 && charIndex !== paragraphLength) {
       interval = setInterval(() => {
         setTimeLeft(timeLeft - 1)
         let correctChars = charIndex - mistakes
@@ -121,21 +119,35 @@ export default function TypingGame() {
 
   const paragraphLength = paragraph[pIndex].split('').length
   if (charIndex === paragraphLength) {
-    alert(
-      `Congrats, in ${timeLeft} seconds you have a record of WPM: ${WPM} CPM: ${CPM}`
-    )
-    resetGame()
+    // alert(
+    //   `Congrats, in ${timeLeft} seconds you have a record of WPM: ${WPM} CPM: ${CPM}`
+    // )
+    // resetGame()
   }
 
   console.log('This is the length of the paragraph', paragraphLength)
   console.log('P index: ', pIndex)
   return (
     <div
-      className={`${category === 'blockchain' ? 'bg-blue-900' : ''} ${
-        category === 'nft' ? 'bg-purple-900' : ''
-      } ${
-        category === 'cryptocurrency' ? 'bg-yellow-900' : ''
-      }  flex items-center justify-center min-h-screen h-screen w-screen`}
+      className={`
+      ${
+        category === 'blockchain' && charIndex !== paragraphLength
+          ? 'bg-blue-900'
+          : ''
+      } 
+      ${
+        category === 'nft' && charIndex !== paragraphLength
+          ? 'bg-purple-900'
+          : ''
+      } 
+      ${
+        category === 'cryptocurrency' && charIndex !== paragraphLength
+          ? 'bg-yellow-900'
+          : ''
+      }  
+      ${timeLeft === 0 ? 'bg-red-900' : ''}  
+      ${charIndex === paragraphLength ? 'bg-green-900' : ''}  
+      flex items-center justify-center min-h-screen h-screen w-screen font-pxltd`}
     >
       {isPickingCategory ? (
         <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
@@ -192,8 +204,35 @@ export default function TypingGame() {
         ''
       )}
 
+      {timeLeft === 0 || charIndex === paragraphLength ? (
+        <div
+          className={`fixed left-50 top-0  flex flex-col  justify-center mt-20 z-30 pointer-events-auto p-1 font-pxltd`}
+        >
+          <div
+            className={`content ${
+              timeLeft === 0 ? 'bg-red-600 animate-shake' : ''
+            } ${
+              charIndex === paragraphLength
+                ? 'bg-green-600 motion-preset-confetti'
+                : ''
+            } max-w-[400px] w-full max-h-[120px] h-full text-center rounded-lg p-8 mb-24 flex  justify-center items-center gap-10 z-10`}
+          >
+            <h4
+              className={`text-4xl font-bold text-white ${
+                timeLeft === 0 ? 'animate-shake' : 'motion-preset-confetti'
+              }`}
+            >
+              {charIndex === paragraphLength ? 'Congrats' : ''}
+              {timeLeft === 0 ? 'Times Up' : ''}
+            </h4>
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+
       <div className="container max-w-[950px] w-full m-1 p-8 rounded-xl background-white">
-        <div className="test ">
+        <div className="test font-sans">
           <input
             type="text"
             className="opacity-0 -z-50 absolute"
@@ -215,19 +254,27 @@ export default function TypingGame() {
         </div>
         <div className="result">
           <p>
-            Time Left: <strong>{timeLeft}</strong>
+            Time Left
+            <span className="font-sans text-2xl font-bold"> : </span>
+            <strong>{timeLeft}</strong>
           </p>
           <p>
-            Mistakes: <strong>{mistakes}</strong>
+            Mistakes
+            <span className="font-sans text-2xl font-bold"> : </span>{' '}
+            <strong>{mistakes}</strong>
           </p>
           <p>
-            WPM: <strong>{WPM}</strong>
+            WPM
+            <span className="font-sans text-2xl font-bold"> : </span>{' '}
+            <strong>{WPM}</strong>
           </p>
           <p>
-            CPM: <strong>{CPM}</strong>
+            CPM
+            <span className="font-sans text-2xl font-bold"> : </span>{' '}
+            <strong>{CPM}</strong>
           </p>
           <button
-            className="btn w-[140px] h-12"
+            className="btn w-[140px] h-12 text-xl text-white"
             onClick={() => {
               setIsPickingCategory(true)
               resetGame()

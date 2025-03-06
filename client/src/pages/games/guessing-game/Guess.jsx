@@ -230,7 +230,7 @@ export default function GuessingGame() {
           >
             <h4
               className={`text-4xl font-bold text-white ${
-                guessCount < 1 ? '' : 'motion-preset-confetti'
+                guessCount < 1 ? 'animate-shake' : 'motion-preset-confetti'
               }`}
             >
               {guessCount < 1 ? 'No more guesses' : ''}
@@ -339,7 +339,7 @@ export default function GuessingGame() {
                 } 
                 ${guessCount > 3 && guessCount <= 5 ? 'text-yellow-900' : ''}
                 ${
-                  guessCount > 0 && guessCount <= 3
+                  guessCount >= 0 && guessCount <= 3
                     ? 'text-red-900 animate-pulse'
                     : ''
                 }
