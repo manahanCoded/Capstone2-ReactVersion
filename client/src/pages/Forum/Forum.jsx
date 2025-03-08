@@ -693,7 +693,7 @@ export default function Forum() {
                                         {checkUser?.image ? (
                                             <img
                                                 src={`data:${checkUser?.file_mime_type};base64,${checkUser?.image}`}
-                                                className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                                 alt="Profile Picture"
                                             />
                                         ) : (
@@ -788,10 +788,10 @@ export default function Forum() {
                             <section className="fixed h-screen flex items-center justify-center inset-0 z-50 bg-black bg-opacity-50">
                                 <div className="h-[42rem] w-[60rem] mt-4 flex flex-col gap-4 rounded-xl py-4 px-6  mb-4 bg-white shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
                                     <section className="w-full flex flex-row items-center gap-4">
-                                        {editQuestion?.Image ? (
+                                        {editQuestion?.user_image ? (
                                             <img
                                                 src={editQuestion?.user_image}
-                                                className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                                 alt="Profile Picture"
                                             />
                                         ) : (
