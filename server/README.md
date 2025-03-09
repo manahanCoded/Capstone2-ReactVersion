@@ -123,7 +123,7 @@ CREATE TABLE announcements (
 	publisher text not null,
 	title text not null,
 	description text not null,
-	date date not null
+	date date SET DEFAULT NOW() AT TIME ZONE 'Asia/Manila'
 )
 
 <!-- DATABASE FOR applicants -->

@@ -12,7 +12,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import "react-quill-new/dist/quill.snow.css";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { Filter } from "bad-words";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -21,6 +21,8 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
     const [showReplies, setShowReplies] = useState(true);
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
     const [showEdit, setShowEdit] = useState(false)
+    const filter = new Filter();
+
 
     const handleEdit = (editID, editText) => {
         if (editID === editReply.anser_id) {
@@ -192,7 +194,7 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                         rows={1}
                         placeholder="Write a reply..."
                         value={editReply.answer_text}
-                        onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: e.target.value }))}
+                        onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: filter.clean(e.target.value) }))}
                     />
                     <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
                         <button
@@ -253,7 +255,7 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                         rows={1}
                         placeholder="Write a reply..."
                         value={answers[reply.answer_id] || ""}
-                        onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: e.target.value }))}
+                        onChange={(e) => setAnswers((prev) => ({ ...prev, [reply.answer_id]: filter.clean(e.target.value) }))}
                     />
                     <div className=" w-full flex justify-end items-center gap-2 text-[0.7rem] px-2 ">
                         <button

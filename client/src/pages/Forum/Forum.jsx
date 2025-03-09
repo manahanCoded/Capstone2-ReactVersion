@@ -39,7 +39,7 @@ import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
 import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
-
+import {Filter} from "bad-words";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -69,6 +69,8 @@ export default function Forum() {
 
     const [openEditQuestion, setOpenEditQuestion] = useState(false)
     const [editQuestion, setEditQuestion] = useState()
+
+    const filter = new Filter();
 
     const [openPostId, setOpenPostId] = useState(null);
     const openPostOption = (postId) => {
@@ -188,7 +190,7 @@ export default function Forum() {
 
         const formData = new FormData();
         formData.append("user_id", checkUser.id);
-        formData.append("question_text", questionText);
+        formData.append("question_text", filter.clean(questionText));
         formData.append("topic", topic);
         formData.append("topic_type", topicType);
 
@@ -644,7 +646,9 @@ export default function Forum() {
                         {types.map((type) => (
                             <p
                                 key={type.name}
-                                onClick={() => setSpecifyQuestion(type.value)}
+                                onClick={() => {
+                                     setCheckQuestion(null)
+                                    setSpecifyQuestion(type.value)}}
                                 className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
                                     }`}
                             >
@@ -689,7 +693,7 @@ export default function Forum() {
                                         {checkUser?.image ? (
                                             <img
                                                 src={`data:${checkUser?.file_mime_type};base64,${checkUser?.image}`}
-                                                className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                                 alt="Profile Picture"
                                             />
                                         ) : (
@@ -717,7 +721,7 @@ export default function Forum() {
                                                     className="w-full border-[1px] border-gray-600 rounded-md mt-2 text-sm p-3"
                                                     placeholder="Question about"
                                                     value={topic}
-                                                    onChange={(e) => setTopic(e.target.value)}
+                                                    onChange={(e) => setTopic(filter.clean(e.target.value))}
                                                 />
                                                 <p className="w-full flex justify-end  text-[0.7rem]">({topic.length}/300)</p>
                                             </div>
@@ -784,10 +788,10 @@ export default function Forum() {
                             <section className="fixed h-screen flex items-center justify-center inset-0 z-50 bg-black bg-opacity-50">
                                 <div className="h-[42rem] w-[60rem] mt-4 flex flex-col gap-4 rounded-xl py-4 px-6  mb-4 bg-white shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
                                     <section className="w-full flex flex-row items-center gap-4">
-                                        {editQuestion?.Image ? (
+                                        {editQuestion?.user_image ? (
                                             <img
                                                 src={editQuestion?.user_image}
-                                                className="h-14 w-14 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                                 alt="Profile Picture"
                                             />
                                         ) : (
@@ -985,7 +989,7 @@ export default function Forum() {
                                         >
                                             <div className="absolute inset-0 bg-black/50 rounded-xl backdrop-blur-sm"></div>
                                             <img
-                                                className="w-full  aspect-[20/13] rounded-lg object-contain backdrop-blur-sm"
+                                                className="w-full aspect-[20/13] rounded-lg object-contain backdrop-blur-sm"
                                                 src={checkQuestion.image}
                                                 alt="Uploaded"
                                             />
@@ -1064,7 +1068,7 @@ export default function Forum() {
                                             value={answers[checkQuestion.question_id] || ""}
                                             rows={1}
                                             onChange={(e) =>
-                                                handleAnswerChange(checkQuestion.question_id, e.target.value)
+                                                handleAnswerChange(checkQuestion.question_id, filter.clean(e.target.value))
                                             }
                                         ></textarea>
 
@@ -1173,7 +1177,7 @@ export default function Forum() {
                                                                                 rows={1}
                                                                                 placeholder="Write a reply..."
                                                                                 value={editReply.answer_text}
-                                                                                onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: e.target.value }))}
+                                                                                onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: filter.clean(e.target.value)}))}
                                                                             />
                                                                             <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
                                                                                 <button
@@ -1232,7 +1236,7 @@ export default function Forum() {
                                                                                 rows={1}
                                                                                 placeholder="Write a reply..."
                                                                                 value={answers[answer.answer_id] || ""}
-                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: e.target.value }))}
+                                                                                onChange={(e) => setAnswers((prev) => ({ ...prev, [answer.answer_id]: filter.clean(e.target.value) }))}
                                                                             />
                                                                             <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
                                                                                 <button
