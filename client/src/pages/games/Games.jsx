@@ -57,8 +57,10 @@ export default function Games() {
     <div className="h-screen">
       <div className=" flex flex-col items-center">
         <MaxWidthWrapper className="flex flex-col items-center justify-center mt-20 lg:mx-20">
-          <h1 className="text-3xl font-semibold mb-4">Challenge Yourself</h1>
-          <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center gap-6 text-xs border-b-[1px] bg-white">
+          <h1 className="text-3xl font-semibold mb-4 motion-preset-slide-down-right">
+            Challenge Yourself
+          </h1>
+          <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center gap-6 text-xs border-b-[1px] bg-white motion-preset-slide-down-right">
             <p className="text-xl font-medium mb-4">🌟 Games 🌟</p>
             <div className="lg:w-1/3 w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
               <input
@@ -71,7 +73,7 @@ export default function Games() {
               <SearchOutlinedIcon className="mr-2" />
             </div>
           </section>
-          <MaxWidthWrapper className="h-fit max-w-screen-2xl  m-auto py-8">
+          <MaxWidthWrapper className="h-fit max-w-screen-2xl  m-auto py-8 motion-preset-blur-up">
             <div className=" w-full flex flex-wrap  gap-6">
               {filteredGames.map((game, index) => (
                 <div

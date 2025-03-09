@@ -8,10 +8,10 @@ export default function Scramble() {
   const [correctWord, setCorrectWord] = useState('')
   const [hint, setHint] = useState('')
   const [userInput, setUserInput] = useState('')
-  const [time, setTime] = useState(5)
+  const [time, setTime] = useState(15)
   const [isPickingCategory, setIsPickingCategory] = useState(true)
   const [isTimesUp, setIsTimesUp] = useState(false)
-  const [tries, setTries] = useState(6)
+  const [tries, setTries] = useState(3)
   const [score, setScore] = useState(0)
   const [showGameOverModal, setShowGameOverModal] = useState(false)
   const [isIncorrect, setIsIncorrect] = useState(false)
@@ -74,7 +74,7 @@ export default function Scramble() {
     console.log('This the value of isPickingCategory: ', isPickingCategory)
 
     clearInterval(timerRef.current)
-    setTime(5)
+    setTime(15)
     if (tries > 0) initTimer()
     setIsTimesUp(false)
 
@@ -158,7 +158,7 @@ export default function Scramble() {
   }, [isPickingCategory])
 
   console.log('Tries: ', tries)
-  const progress = (5 - time) / 5
+  const progress = (15 - time) / 15
 
   return (
     <div
@@ -181,7 +181,7 @@ export default function Scramble() {
       flex items-center justify-center min-h-screen h-screen w-screen`}
     >
       {isPickingCategory ? (
-        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto font-pxltd">
+        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-28 z-10 pointer-events-auto font-pxltd motion-preset-shrink">
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">
@@ -191,9 +191,9 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('blockchain')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'blockchain') {
-                      setTime(5)
+                      setTime(15)
                     }
                   }}
                 >
@@ -204,9 +204,9 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('nft')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'nft') {
-                      setTime(5)
+                      setTime(15)
                     }
                   }}
                 >
@@ -217,9 +217,9 @@ export default function Scramble() {
                   onClick={() => {
                     setCategory('cryptocurrency')
                     setIsPickingCategory(false)
-                    setTries(6)
+                    setTries(3)
                     if (category === 'cryptocurrency') {
-                      setTime(5)
+                      setTime(15)
                     }
                   }}
                 >
@@ -241,8 +241,8 @@ export default function Scramble() {
       {showGameOverModal && !isPickingCategory ? (
         <div
           className={`picking-bg fixed bg-black left-0 w-[100%] h-[110%]  flex items-center justify-center ${
-            tries <= 0 ? 'mt-20' : '-mt-44'
-          } z-10 pointer-events-auto p-1 font-pxltd`}
+            tries <= 0 ? 'mt-32' : '-mt-44'
+          } z-10 pointer-events-auto p-1 font-pxltd motion-preset-fade`}
         >
           <div className="game-modal content bg-[url('/Game_images/picking-bg.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-4xl font-bold text-white">
@@ -348,10 +348,10 @@ export default function Scramble() {
           </h2>
           <div className="flex justify-around gap-5 mr-4 items-center">
             <img
-              src={`/Game_images/lives${tries / 2}.png`}
+              src={`/Game_images/lives${tries}.png`}
               alt="lives-img"
               className={`w-40 max-h-32 h-16 ${
-                tries / 2 === 1 ? 'animate-pulse z-0' : ''
+                tries === 1 ? 'animate-pulse z-0' : ''
               }`}
             />
             <h2 className="text-3xl mr-3">
@@ -405,9 +405,9 @@ export default function Scramble() {
               >
                 <div
                   className={`
-                    ${time >= 0 && time < 2 ? 'bg-red-600' : ''} 
-                    ${time >= 2 && time < 3 ? 'bg-yellow-600' : ''} 
-                    ${time >= 3 && time < 6 ? 'bg-green-600' : ''}  
+                    ${time >= 0 && time < 5 ? 'bg-red-600' : ''} 
+                    ${time >= 5 && time < 10 ? 'bg-yellow-600' : ''} 
+                    ${time >= 10 && time < 15 ? 'bg-green-600' : ''}  
                 `}
                   style={{
                     width: `${progress * 100}%`,

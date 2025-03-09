@@ -5,9 +5,9 @@ import './home.css'
 export default function Home() {
   return (
     <>
-      <div className="mt-14">
+      <div className="mt-14 max-sm:overflow-x-hidden">
         <MaxWidthWrapper className=" w-full flex lg:flex-row sm:flex-col md:flex-row justify-between items-center max-h-screen max-sm:items-center max-sm:justify-center sm:text-center">
-          <section className="w-2/4 px-8 mt-12 mb-14 max-sm:text-center max-sm:w-[100%] sm:w-[100%] md:w-2/4 md:text-start ">
+          <section className="w-2/4 px-8 mt-12 mb-14 max-sm:text-center max-sm:w-[100%] sm:w-[100%] md:w-2/4 md:text-start motion-preset-slide-left">
             <h2 className="md:text-4xl lg:text-6xl sm:text-3xl mb-4 font-semibold text-[#333333] max-sm:text-3xl">
               Unlock the power of{' '}
               <span className="font-custom text-yellow-600">Blockchain</span>
@@ -34,7 +34,7 @@ export default function Home() {
               Get Started
             </Link>
           </section>
-          <section className="banner w-2/4 lg:-mr-12 ">
+          <section className="banner w-2/4 lg:-mr-12 motion-preset-fade">
             {/* <img
               src="/IMG_Dashboard/main.png"
               alt=""
@@ -100,51 +100,103 @@ export default function Home() {
         </MaxWidthWrapper>
 
         {/* PAGE 2 */}
-        <section className="pt-14 pb-44 bg-gray-100">
-          <MaxWidthWrapper className="mb-10 text-center">
-            <h2 className="md:text-4xl text-2xl font-semibold text-[#333333]">
-              Our <span className="text-red-900">Features</span> Specially For
-              You
+        <section className="pt-24 pb-24 bg-gray-100">
+          <MaxWidthWrapper className="mb-10 text-center w-[70%]">
+            <h2 className="md:text-4xl text-2xl font-semibold text-[#333333] max-sm:text-xl">
+              <span className="text-red-900 ">Engage, Learn,</span> and{' '}
+              <span className="text-red-900 ">Earn Confidence</span> in
+              Blockchain
             </h2>
-            <p className="md:text-lg text-md mt-1">
-              When Something is easy to read, people might get so caught up in
-              it that they mess some of the smaller details.
+            <p className="md:text-lg text-md mt-1 mb-12 max-sm:text-sm">
+              Learn Blockchain, Crypto, and NFTs through interactive lessons,
+              and comprehension checks—all in one easy-to-use platform.
             </p>
+            <Link
+              to="/modules"
+              className="py-4 px-16 bg-red-700 text-white font-bold text-xl rounded-full hover:bg-red-900 max-sm:p-4 max-sm:text-xs "
+            >
+              View Modules
+            </Link>
           </MaxWidthWrapper>
           <MaxWidthWrapper className="flex flex-row justify-center items-center md:gap-4">
             <FeatureCard
-              title="Modules"
-              description=""
+              title="Web3 Modules"
+              description="Master blockchain, crypto, and NFTs through expert-designed modules—simple, structured, and accessible."
               link="/modules"
               imgSrc="/IMG_Dashboard/Features/modules.jpg"
             />
             <FeatureCard
-              title="Games"
-              description=""
+              title="Interactive Quizzes"
+              description="Reinforce your knowledge with interactive quizzes—engaging, structured, and designed for mastery."
               link="/games"
-              imgSrc="/IMG_Dashboard/Features/demos.jpg"
+              imgSrc="/IMG_Dashboard/Features/interactive-quiz.jpg"
             />
             <FeatureCard
-              title="Jobs"
-              description=""
+              title="Comprehension Checks"
+              description="Wrap up each module with comprehension checks to reinforce key blockchain, crypto, and NFT concepts—simple but effective"
               link="/jobs"
-              imgSrc="/IMG_Dashboard/Features/question.jpg"
+              imgSrc="/IMG_Dashboard/Features/comprehension-checks.jpg"
             />
           </MaxWidthWrapper>
         </section>
+        {/* PAGE 3 */}
+        <section className="pt-24 pb-24 bg-white">
+          <MaxWidthWrapper className="mb-10 ml-48 max-sm:ml-0">
+            <h2 className="md:text-4xl text-2xl font-semibold text-[#333333] w-[70%] mb-4 max-sm:text-lg">
+              <span className="text-red-900">Enhance learning</span> and{' '}
+              <span className="text-red-900">boost engagement </span>
+              with blockchain simulations and games
+            </h2>
+            <p className="md:text-lg text-md mt-1 w-[70%] max-sm:text-sm">
+              Level up your blockchain knowledge with interactive simulations
+              and games—learn by playing, mastering key concepts along the way.
+            </p>
+          </MaxWidthWrapper>
+          <MaxWidthWrapper className="flex flex-row justify-center items-center md:gap-4 ">
+            <div className="flex flex-col items-center justify-center ">
+              <FeatureCard
+                title="Games"
+                description="Gamify your blockchain learning—test your skills with Don't fall, Web3 Mix n' Match, Guessing Quest, and Typing Speed Challenge"
+                link="/modules"
+                imgSrc="/IMG_Dashboard/Features/games.gif"
+              />
+              <Link
+                to="/games"
+                className="py-4 px-16 bg-red-700 text-white font-bold text-xl
+                rounded-full mt-6 hover:bg-red-900 max-sm:p-2 max-sm:text-sm"
+              >
+                Play Games
+              </Link>
+            </div>
 
+            <div className="flex flex-col items-center justify-center">
+              <FeatureCard
+                title="Blockchain Simulation"
+                description="Learn by doing—simulate crowdfunding with smart contracts and understand decentralized finance in real-time."
+                link="/games"
+                imgSrc="/IMG_Dashboard/Features/blockchain.gif"
+              />
+              <Link
+                to="https://cryptowarriorssimulation.netlify.app/"
+                className="py-4 px-16 bg-red-700 text-white font-bold text-xl rounded-full mt-6 hover:bg-red-900 max-sm:p-2 max-sm:text-sm"
+              >
+                Visit Simulation
+              </Link>
+            </div>
+          </MaxWidthWrapper>
+        </section>
         {/* Partners Section */}
-        <section className="relative -top-14 pt-14 inline-block w-screen overflow-hidden">
+        <section className="relative -top-8 pt-14 pb-24 inline-block w-screen overflow-hidden bg-gray-100 max-sm:py-4 max-sm:static">
           <MaxWidthWrapper>
             <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[96vw] max-sm:overflow-hidden max-sm:h-40">
-              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-3xl">
+              <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-4xl mb-4 max-sm:text-xl">
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
-              <section className="partners-container relative top-3 bg-white rounded-2xl  flex w-screen max-sm:gap-2 ">
+              <section className="partners-container relative top-3 bg-gray-100 rounded-2xl  flex w-screen max-sm:gap-2 ">
                 <div className="flex flex-row justify-between items-center rounded-2xl animate-slide max-sm:gap-2 mx-0">
                   <PartnerCard
                     name="Coins PH"
-                    imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph4.jpg"
                   />
                   <PartnerCard
                     name="University of the Cordilleras"
@@ -153,7 +205,7 @@ export default function Home() {
 
                   <PartnerCard
                     name="DICT CAR"
-                    imgSrc="/IMG_Dashboard/Partners/dict8.png"
+                    imgSrc="/IMG_Dashboard/Partners/dict10.jpg"
                   />
                   <PartnerCard
                     name="PC Express"
@@ -171,7 +223,7 @@ export default function Home() {
                 <div className="flex flex-row justify-between items-center rounded-2xl  animate-slide mx-0 max-sm:gap-2">
                   <PartnerCard
                     name="Coins PH"
-                    imgSrc="/IMG_Dashboard/Partners/coinsph3.png"
+                    imgSrc="/IMG_Dashboard/Partners/coinsph4.jpg"
                   />
                   <PartnerCard
                     name="University of the Cordilleras"
@@ -180,7 +232,7 @@ export default function Home() {
 
                   <PartnerCard
                     name="DICT CAR"
-                    imgSrc="/IMG_Dashboard/Partners/dict8.png"
+                    imgSrc="/IMG_Dashboard/Partners/dict10.jpg"
                   />
                   <PartnerCard
                     name="PC Express"
@@ -197,6 +249,45 @@ export default function Home() {
                 </div>
               </section>
             </div>
+          </MaxWidthWrapper>
+        </section>
+        {/* PAGE 4 */}
+        <section className="pt-24 pb-24 -mt-10 bg-white">
+          <MaxWidthWrapper className="mb-10 text-center">
+            <h2 className="md:text-4xl text-2xl font-semibold text-[#333333] max-sm:text-xl">
+              <span className="text-red-900">Get hired</span> by our partner
+              companies
+            </h2>
+            <p className="md:text-lg text-md mt-1 mb-12 max-sm:text-md">
+              Explore job opportunities from our trusted partners offering
+              exclusive job opportunities.
+            </p>
+            <Link
+              to="/jobs"
+              className="py-4 px-16 bg-red-700 text-white font-bold text-xl rounded-full mt-6 hover:bg-red-900 max-sm:p-4 max-sm:text-xs "
+            >
+              View Jobs
+            </Link>
+          </MaxWidthWrapper>
+          <MaxWidthWrapper className="flex flex-row justify-center items-center md:gap-4">
+            <FeatureCard
+              title="Variety of Jobs"
+              description="Take the next step in your career with handpicked job opportunities—relevant, structured, and built for success"
+              link="/modules"
+              imgSrc="/IMG_Dashboard/Features/variety-of-jobs.jpg"
+            />
+            <FeatureCard
+              title="Online Application"
+              description="Simplify your job search with our online application platform—fast, structured, and hassle-free."
+              link="/games"
+              imgSrc="/IMG_Dashboard/Features/online-application.jpg"
+            />
+            <FeatureCard
+              title="Trusted Partners"
+              description="Apply for jobs with confidence—100% legitimate opportunities from our carefully vetted partner organizations."
+              link="/jobs"
+              imgSrc="/IMG_Dashboard/Features/trusted-partners.jpg"
+            />
           </MaxWidthWrapper>
         </section>
 
@@ -223,28 +314,31 @@ function PartnerCard({ name, imgSrc }) {
 }
 function FeatureCard({ title, description, link, imgSrc }) {
   return (
-    <div className="group w-96 flex flex-col items-center">
+    <div className="group w-96 flex flex-col items-center h-[400px]">
       <div className="w-[90%] overflow-hidden">
         <img
           src={imgSrc}
           alt=""
-          className="w-full rounded-md object-cover transition-transform duration-300 ease-in-out group-hover:scale-125"
+          className="w-full rounded-md object-cover transition-transform duration-300 ease-in-out group-hover:scale-125 "
         />
       </div>
-      <section className="w-[90%] mt-4 flex md:flex-row flex-col justify-between md:items-center gap-4">
+      <section className="w-[95%] mt-4 flex md:flex-row flex-col justify-between md:items-center gap-4 ml-4">
         <div>
-          <h3 className="md:text-xl font-semibold">{title}</h3>
+          <h3 className="md:text-xl font-semibold my-4">{title}</h3>
           <p className="lg:text-base md:text-sm text-xs text-gray-500">
             {description}
           </p>
         </div>
-        <Link
-          to={link}
-          className="md:py-2 py-1 md:px-4 px-2 md:w-fit w-full text-center rounded-md text-white bg-red-900 hover:bg-red-950"
-        >
-          Visit
-        </Link>
       </section>
     </div>
   )
+}
+
+{
+  /* <Link
+  to={link}
+  className="md:py-2 py-1 md:px-4 px-2 md:w-fit w-full text-center rounded-md text-white bg-red-900 hover:bg-red-950"
+>
+  Visit
+</Link> */
 }

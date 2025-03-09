@@ -150,7 +150,7 @@ export default function TypingGame() {
       flex items-center justify-center min-h-screen h-screen w-screen font-pxltd`}
     >
       {isPickingCategory ? (
-        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto">
+        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-28 z-10 pointer-events-auto motion-preset-shrink">
           <div className="game-modal content bg-[url('/Game_images/typing-game.png')]  max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">

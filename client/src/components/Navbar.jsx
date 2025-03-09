@@ -9,9 +9,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import axios from 'axios'
 import 'react-quill-new/dist/quill.snow.css'
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -109,59 +108,60 @@ const Navbar = () => {
   return (
     <nav className="fixed inset-0 h-14 z-50">
       <div className="h-14 px-3.5 md:px-8 flex justify-between items-center bg-white border-b-[1px] border-gray-400">
-        <div className='flex flex-row gap-2 items-center md:hidden'>
-        <div className={`relative p-1 rounded-full cursor-pointer hover:bg-gray-300 md:hidden`}>
-          <MenuOutlinedIcon 
-          style={{fontSize:"1.5rem"}}
-          onClick={()=>setMenu(!menu)}/>
-          <div className={`${menu?"block": "hidden"} w-36 absolute top-11 left-0 z-30 flex flex-col  rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]`}>
-            <Link
-              to="/modules"
-              className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+        <div className="flex flex-row gap-2 items-center md:hidden">
+          <div
+            className={`relative p-1 rounded-full cursor-pointer hover:bg-gray-300 md:hidden`}
+          >
+            <MenuOutlinedIcon
+              style={{ fontSize: '1.5rem' }}
+              onClick={() => setMenu(!menu)}
+            />
+            <div
+              className={`${
+                menu ? 'block' : 'hidden'
+              } w-36 absolute top-11 left-0 z-30 flex flex-col  rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]`}
             >
-              Modules
-            </Link>
-            <Link
-              to="/games"
-              className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-            >
-              Games
-            </Link>
-            <a
-              href="https://cryptowarriorssimulation.netlify.app/"
-              className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-            >
-              Demo
-            </a>
-            <Link
-              to="/jobs-home"
-              className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-            >
-              Jobs
-            </Link>
-            <Link
-              to="/forum"
-              className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-            >
-              Forum
-            </Link>
+              <Link
+                to="/modules"
+                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+              >
+                Modules
+              </Link>
+              <Link
+                to="/games"
+                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+              >
+                Games
+              </Link>
+              <a
+                href="https://cryptowarriorssimulation.netlify.app/"
+                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+              >
+                Demo
+              </a>
+              <Link
+                to="/jobs-home"
+                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+              >
+                Jobs
+              </Link>
+              <Link
+                to="/forum"
+                className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+              >
+                Forum
+              </Link>
+            </div>
           </div>
+          <Link to="/" className="">
+            <img
+              className="h-12 md:hidden"
+              src="/IMG_Jobs/icon_maroon.png"
+              alt="Crypto Warriors"
+            />
+          </Link>
         </div>
-          <Link
-          to="/"
-          className=""
-        >
-          <img
-            className="h-12 md:hidden"
-            src="/IMG_Jobs/icon_maroon.png"
-            alt="Crypto Warriors"
-          />
-        </Link>
-        </div>
-        <Link
-          to="/"
-          className=""
-        >
+        <Link to="/" className="">
           <img
             className="h-6 hidden md:block"
             src="/Icons/LOGO_Maroon.png"
@@ -193,13 +193,13 @@ const Navbar = () => {
             href="https://cryptowarriorssimulation.netlify.app/"
             className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
           >
-            Demo
+            Simulation
           </a>
           <Link
             to="/jobs-home"
             className={
               location.pathname === '/jobs' ||
-                location.pathname === '/jobs-home'
+              location.pathname === '/jobs-home'
                 ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
                 : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
@@ -334,46 +334,44 @@ const Navbar = () => {
           </Link>
         )}
       </div>
-      {
-        notification ? (
-          <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-            {displayAnnouncement.map((announcement) => (
-              <div
-                key={announcement.id}
-                onClick={() => handleAnnouncementClick(announcement)}
-                className="text-sm w-full border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
-              >
-                <h2 className="group-hover:text-white truncate line-clamp-1">{announcement.title}</h2>
-              </div>
-            ))}
-          </div>
-        ) : null
-      }
-
-      {
-        isModalOpen && (
-          <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="h-[60vh] bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">
-                {selectedAnnouncement?.title}
+      {notification ? (
+        <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+          {displayAnnouncement.map((announcement) => (
+            <div
+              key={announcement.id}
+              onClick={() => handleAnnouncementClick(announcement)}
+              className="text-sm w-full border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
+            >
+              <h2 className="group-hover:text-white truncate line-clamp-1">
+                {announcement.title}
               </h2>
-              <p
-                className="text-gray-700 mb-4"
-                dangerouslySetInnerHTML={{
-                  __html: selectedAnnouncement.description,
-                }}
-              ></p>
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Close
-              </button>
             </div>
-          </section>
-        )
-      }
-    </nav >
+          ))}
+        </div>
+      ) : null}
+
+      {isModalOpen && (
+        <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="h-[60vh] bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">
+              {selectedAnnouncement?.title}
+            </h2>
+            <p
+              className="text-gray-700 mb-4"
+              dangerouslySetInnerHTML={{
+                __html: selectedAnnouncement.description,
+              }}
+            ></p>
+            <button
+              onClick={closeModal}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Close
+            </button>
+          </div>
+        </section>
+      )}
+    </nav>
   )
 }
 

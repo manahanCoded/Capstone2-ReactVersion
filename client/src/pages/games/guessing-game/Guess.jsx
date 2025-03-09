@@ -136,7 +136,7 @@ export default function GuessingGame() {
       flex items-center justify-center min-h-screen h-screen w-screen`}
     >
       {isPickingCategory ? (
-        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-40 z-10 pointer-events-auto font-pxltd">
+        <div className="picking-bg fixed  bg-black left-0 top-40 w-[100%] h-[110%]  flex items-center justify-center -mt-28 z-10 pointer-events-auto font-pxltd motion-preset-shrink">
           <div className="game-modal content bg-[url('/Game_images/guessing-word.png')]  max-w-[1000px] w-full max-h-[570px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center">
             <h4 className="text-5xl font-bold text-white">Choose category: </h4>
             <div className="title-buttons flex flex-col justify-around items-center">
@@ -181,7 +181,7 @@ export default function GuessingGame() {
         ''
       )}
       {tries === 0 ? (
-        <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-20 z-10 pointer-events-auto font-pxltd">
+        <div className="picking-bg fixed  bg-black left-0 top- w-[100%] h-[110%]  flex items-center justify-center mt-32 z-10 pointer-events-auto font-pxltd motion-preset-fade">
           <div className="game-modal content bg-[url('/Game_images/guessing-word.png')] max-w-[1000px] w-full max-h-[540px] h-full text-center rounded-lg p-8 mb-24 flex flex-col justify-center items-center gap-10">
             <h4 className="text-3xl font-bold text-white">
               Total Score:
