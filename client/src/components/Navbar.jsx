@@ -9,9 +9,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import axios from 'axios'
 import 'react-quill-new/dist/quill.snow.css'
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
-import CloseIcon from '@mui/icons-material/Close'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import CloseIcon from '@mui/icons-material/Close';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -26,7 +26,7 @@ const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [menu, setMenu] = useState(false)
-  const [isOpen, setIsOpen] = useState(false);
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -106,23 +106,22 @@ const Navbar = () => {
     setSelectedAnnouncement(null)
   }
 
+
   function formatDate(timestamp) {
-    const date = new Date(timestamp)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       hour12: true,
-    })
+    });
   }
 
   function timeAgo(timestamp) {
-    const seconds = Math.floor(
-      (new Date().getTime() - new Date(timestamp).getTime()) / 1000
-    )
+    const seconds = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 1000);
     const intervals = {
       year: 31536000,
       month: 2592000,
@@ -130,30 +129,23 @@ const Navbar = () => {
       hour: 3600,
       minute: 60,
     };
-    
     for (const [unit, value] of Object.entries(intervals)) {
-      const count = Math.floor(seconds / value)
-      if (count >= 1) return `${count} ${unit}${count > 1 ? 's' : ''} `
+      const count = Math.floor(seconds / value);
+      if (count >= 1) return `${count} ${unit}${count > 1 ? "s" : ""}  ago`;
     }
-    return 'Just now'
+    return "Just now";
   }
+
 
   return (
     <nav className="fixed inset-0 h-14 z-50">
       <div className="h-14 px-3.5 md:px-8 flex justify-between items-center bg-white border-b-[1px] border-gray-400">
-        <div className="flex flex-row gap-2 items-center md:hidden">
-          <div
-            className={`relative p-1 rounded-full cursor-pointer hover:bg-gray-300 md:hidden`}
-          >
+        <div className='flex flex-row gap-2 items-center md:hidden'>
+          <div className={`relative p-1 rounded-full cursor-pointer hover:bg-gray-300 md:hidden`}>
             <MenuOutlinedIcon
-              style={{ fontSize: '1.5rem' }}
-              onClick={() => setMenu(!menu)}
-            />
-            <div
-              className={`${
-                menu ? 'block' : 'hidden'
-              } w-36 absolute top-11 left-0 z-30 flex flex-col  rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]`}
-            >
+              style={{ fontSize: "1.5rem" }}
+              onClick={() => setMenu(!menu)} />
+            <div className={`${menu ? "block" : "hidden"} w-36 absolute top-11 left-0 z-30 flex flex-col  rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]`}>
               <Link
                 to="/modules"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
@@ -186,7 +178,10 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-          <Link to="/" className="">
+          <Link
+            to="/"
+            className=""
+          >
             <img
               className="h-12 md:hidden"
               src="/IMG_Jobs/icon_maroon.png"
@@ -194,7 +189,10 @@ const Navbar = () => {
             />
           </Link>
         </div>
-        <Link to="/" className="">
+        <Link
+          to="/"
+          className=""
+        >
           <img
             className="h-6 hidden md:block"
             src="/Icons/LOGO_Maroon.png"
@@ -232,7 +230,7 @@ const Navbar = () => {
             to="/jobs-home"
             className={
               location.pathname === '/jobs' ||
-              location.pathname === '/jobs-home'
+                location.pathname === '/jobs-home'
                 ? 'px-2 h-full md:block hidden border-b-[3px] border-red-900'
                 : 'px-2 h-full md:block hidden hover:border-b-[3px] border-red-900'
             }
@@ -367,19 +365,6 @@ const Navbar = () => {
           </Link>
         )}
       </div>
-<<<<<<< HEAD
-      {notification && (
-        <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-          {displayAnnouncement.map((announcement) => (
-            <div
-              key={announcement.id}
-              onClick={() => handleAnnouncementClick(announcement)}
-              className="text-sm w-full border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
-            >
-              <h2 className="group-hover:text-white truncate line-clamp-1">
-                {announcement.title}
-              </h2>
-=======
       {
         notification && (
           <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
@@ -410,8 +395,8 @@ const Navbar = () => {
                 </button>
               </section>
               <section className='h-full w-full  flex flex-row gap-2'>
-              <div className="relative">
-      {/* Mobile Toggle Button */}
+                 <div className="relative">
+
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden w-full bg-red-900 text-white px-4 py-2 text-sm font-semibold flex justify-between items-center"
@@ -420,7 +405,7 @@ const Navbar = () => {
         <span>{isOpen ? '▲' : '▼'}</span>
       </button>
 
-      {/* Announcement List */}
+
       <div className={`h-[90%] overflow-y-scroll md:block ${isOpen ? 'block' : 'hidden'}`}>
         {displayAnnouncement.map((announcement) => (
           <div
@@ -480,84 +465,11 @@ const Navbar = () => {
                   </div>
                 </div>
               </section>
->>>>>>> 84e5d73 (style changes on notification)
             </div>
-          ))}
-        </div>
-      )}
-
-      {isModalOpen && (
-        <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="h-[42rem] w-[80vw] bg-white py-6 rounded-lg shadow-lg  ">
-            <section className="flex flex-row justify-between border-b px-6 pb-2">
-              <h3 className="text-2xl font-bold tracking-wide text-red-900">
-                Notification
-              </h3>
-              <button
-                onClick={closeModal}
-                className="p-1 cursor-pointer  rounded-full hover:bg-gray-300"
-              >
-                <CloseIcon />
-              </button>
-            </section>
-            <section className="flex flex-row gap-2">
-              <div className="w-56 ">
-                {displayAnnouncement.map((announcement) => (
-                  <div
-                    key={announcement.id}
-                    onClick={() => handleAnnouncementClick(announcement)}
-                    className="w-56 text-sm  border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between gap-2 items-center py-2 px-4 group hover:bg-red-900"
-                  >
-                    <div className="flex flex-row gap-2 items-center">
-                      {announcement?.image ? (
-                        <img
-                          src={announcement?.image}
-                          className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                          alt="Profile Picture"
-                        />
-                      ) : (
-                        <AccountCircleIcon
-                          style={{
-                            width: '2.5rem',
-                            height: '2.5rem',
-                            color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                          }}
-                        />
-                      )}
-                      <div className="text-xs">
-                        <p className="group-hover:text-white truncate line-clamp-1">
-                          {announcement.name
-                            ? announcement.name
-                            : announcement.email}
-                        </p>
-                        <p className="group-hover:text-white  break-words line-clamp-1">
-                          {announcement.title}
-                        </p>
-                        <p className="group-hover:text-white truncate line-clamp-1">
-                          {timeAgo(announcement.date)}
-                        </p>
-                      </div>
-                    </div>
-                    <ArrowForwardIosIcon />
-                  </div>
-                ))}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-4">
-                  {selectedAnnouncement?.title}
-                </h2>
-                <p
-                  className="text-gray-700 mb-4"
-                  dangerouslySetInnerHTML={{
-                    __html: selectedAnnouncement.description,
-                  }}
-                ></p>
-              </div>
-            </section>
-          </div>
-        </section>
-      )}
-    </nav>
+          </section>
+        )
+      }
+    </nav >
   )
 }
 
