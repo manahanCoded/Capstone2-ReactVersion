@@ -104,7 +104,7 @@ const create_job = async (req, res) => {
 
 const display_job = async (req, res) => {
   try {
-    const response = await db.query("SELECT * from jobs ORDER BY id ");
+    const response = await db.query("SELECT * from jobs ORDER BY id DESC");
 
     const jobsWithImages = response.rows.map((job) => {
       if (job.file_data) {

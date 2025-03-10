@@ -14,7 +14,8 @@ const allAnnouncement = async (req, res) => {
     users.image,
     users.file_mime_type
     FROM announcements
-    INNER JOIN users ON  announcements.publisher = users.email;
+    INNER JOIN users ON  announcements.publisher = users.email
+    ORDER BY announcements.id DESC;
 `);
 
 const formattedAnnouncement = result.rows.map((announcement) => ({

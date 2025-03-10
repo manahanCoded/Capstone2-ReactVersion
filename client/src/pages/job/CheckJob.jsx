@@ -118,8 +118,8 @@ export default function CheckJobPage() {
 
       if (response.ok) {
         setOpenApply(false)
-        alert("File uploaded successfully!")
-        setUploadStatus('File uploaded successfully!');
+        alert("Application uploaded successfully check email and wait for wait for response thank you!")
+        setUploadStatus('Application uploaded successfully check email and wait for wait for response thank you!');
       } else {
         const errorMessage = await response.text();
         alert('Upload failed: ' + errorMessage);
