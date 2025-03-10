@@ -129,14 +129,8 @@ const Navbar = () => {
       day: 86400,
       hour: 3600,
       minute: 60,
-<<<<<<< HEAD
-=======
     };
-    for (const [unit, value] of Object.entries(intervals)) {
-      const count = Math.floor(seconds / value);
-      if (count >= 1) return `${count} ${unit}${count > 1 ? "s" : ""}  ago`;
->>>>>>> 84e5d73 (style changes on notification)
-    }
+    
     for (const [unit, value] of Object.entries(intervals)) {
       const count = Math.floor(seconds / value)
       if (count >= 1) return `${count} ${unit}${count > 1 ? 's' : ''} `
