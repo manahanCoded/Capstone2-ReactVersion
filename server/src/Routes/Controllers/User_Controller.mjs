@@ -254,8 +254,6 @@ const userInfo = (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
-
-
   const imageBase64 = req.user.image ? req.user.image.toString('base64') : null;
 
   return res.status(200).json({

@@ -12,7 +12,7 @@ import 'react-quill-new/dist/quill.snow.css'
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const Navbar = () => {
@@ -26,7 +26,7 @@ const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [menu, setMenu] = useState(false)
-
+  const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -371,7 +371,10 @@ const Navbar = () => {
             {displayAnnouncement.map((announcement) => (
               <div
                 key={announcement.id}
-                onClick={() => handleAnnouncementClick(announcement)}
+                onClick={() => {
+                  setNotification(false)
+                  handleAnnouncementClick(announcement)
+                }}
                 className="text-sm w-full border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
               >
                 <h2 className="group-hover:text-white truncate line-clamp-1">{announcement.title}</h2>
@@ -383,8 +386,8 @@ const Navbar = () => {
 
       {
         isModalOpen && (
-          <section className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
-            <div className="h-[42rem] lg:w-[80vw]  bg-white  rounded-lg shadow-lg  ">
+          <MaxWidthWrapper className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
+            <div className="h-[42rem] lg:w-[80vw] w-full bg-white  rounded-lg shadow-lg  ">
               <section className='flex flex-row justify-between border-b px-6 py-2 pt-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]'>
                 <h3 className='text-xl font-bold tracking-wide text-red-900'>Notification</h3>
                 <button
@@ -394,57 +397,59 @@ const Navbar = () => {
                   <CloseIcon />
                 </button>
               </section>
-              <section className='h-full w-full  flex flex-row gap-2'>
-                 <div className="relative">
+              <section className='h-full w-full flex md:flex-row flex-col md:py-4 px-2 py-1 gap-2'>
+                <div className="relative ">
 
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden w-full bg-red-900 text-white px-4 py-2 text-sm font-semibold flex justify-between items-center"
-      >
-        Announcements
-        <span>{isOpen ? '▲' : '▼'}</span>
-      </button>
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="md:hidden w-full flex justify-between items-center mb-2 p-3 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                  >
+                    <span>{selectedAnnouncement?.title? selectedAnnouncement.title: "Announcement"}</span>
+                    {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
+                  </button>
 
-
-      <div className={`h-[90%] overflow-y-scroll md:block ${isOpen ? 'block' : 'hidden'}`}>
-        {displayAnnouncement.map((announcement) => (
-          <div
-            key={announcement.id}
-            onClick={() => handleAnnouncementClick(announcement)}
-            className="md:w-56 overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row justify-between gap-2 items-center py-2 px-4 group hover:bg-red-900"
-          >
-            <div className="flex flex-row gap-2 items-center">
-              {announcement?.image ? (
-                <img
-                  src={announcement?.image}
-                  className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                  alt="Profile Picture"
-                />
-              ) : (
-                <AccountCircleIcon
-                  style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                  }}
-                />
-              )}
-              <div className="text-xs">
-                <p className="group-hover:text-white font-bold truncate line-clamp-1">
-                  {announcement.name ? announcement.name : announcement.email}
-                </p>
-                <p className="group-hover:text-white break-words line-clamp-1">{announcement.title}</p>
-                <p className="group-hover:text-white text-gray-500 text-[0.7rem] truncate line-clamp-1">
-                  {timeAgo(announcement.date)}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-                <div className='h-full py-4'>
-                  <div className="h-[90%] flex-1 p-6 overflow-y-auto">
+                  <div className={`md:h-[90%] h-[70%] overflow-y-scroll overflow-hidden md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
+                    {displayAnnouncement.map((announcement) => (
+                      <div
+                        key={announcement.id}
+                        onClick={() => {
+                          setIsOpen(!isOpen)
+                          handleAnnouncementClick(announcement)
+                        }}
+                        className="md:w-56 w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row justify-between gap-2 items-center py-2 px-4 group hover:bg-red-900"
+                      >
+                        <div className="flex flex-row gap-2 items-center">
+                          {announcement?.image ? (
+                            <img
+                              src={announcement?.image}
+                              className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                              alt="Profile Picture"
+                            />
+                          ) : (
+                            <AccountCircleIcon
+                              style={{
+                                width: '2.5rem',
+                                height: '2.5rem',
+                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                              }}
+                            />
+                          )}
+                          <div className="text-xs">
+                            <p className="group-hover:text-white font-bold truncate line-clamp-1">
+                              {announcement.name ? announcement.name : announcement.email}
+                            </p>
+                            <p className="group-hover:text-white break-words line-clamp-1">{announcement.title}</p>
+                            <p className="group-hover:text-white text-gray-500 text-[0.7rem] truncate line-clamp-1">
+                              {timeAgo(announcement.date)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className='h-full w-full py-4'>
+                  <div className="md:h-[90%] h-[80%]  w-full flex-1 px-2 overflow-y-auto">
                     {selectedAnnouncement ? (
                       <>
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -466,7 +471,7 @@ const Navbar = () => {
                 </div>
               </section>
             </div>
-          </section>
+          </MaxWidthWrapper>
         )
       }
     </nav >
