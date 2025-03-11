@@ -367,7 +367,8 @@ const Navbar = () => {
       </div>
       {
         notification && (
-          <div className="absolute w-60 top-14 right-20 text-xs h-fit rounded-lg overflow-y-auto bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+          <section className='absolute py-1 top-14 right-20 text-xs rounded-lg  bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+          <div className="max-h-60 w-60 overflow-y-auto">
             {displayAnnouncement.map((announcement) => (
               <div
                 key={announcement.id}
@@ -375,12 +376,13 @@ const Navbar = () => {
                   setNotification(false)
                   handleAnnouncementClick(announcement)
                 }}
-                className="text-sm w-full border-b-[1px] cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
+                className="text-sm w-full border-b cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-gray-100"
               >
-                <h2 className="group-hover:text-white truncate line-clamp-1">{announcement.title}</h2>
+                <h2 className=" truncate line-clamp-1">{announcement.title}</h2>
               </div>
             ))}
           </div>
+          </section>
         )
       }
 
@@ -408,7 +410,7 @@ const Navbar = () => {
                     {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
                   </button>
 
-                  <div className={`md:h-[90%] h-[70%] overflow-y-scroll overflow-hidden md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
+                  <div className={`md:h-[90%] h-[70%] overflow-y-scroll overflow-hidden pr-3 md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
                     {displayAnnouncement.map((announcement) => (
                       <div
                         key={announcement.id}
