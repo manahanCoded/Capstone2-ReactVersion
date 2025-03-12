@@ -66,6 +66,7 @@ export default function JobDashboards() {
         { field: "salary", headerName: "Salary", width: 120 },
         { field: "city", headerName: "City", width: 150 },
         { field: "state", headerName: "State", width: 150 },
+        { field: "applicants", headerName: "Applicants", width: 150 },
         {
             field: "file_data",
             headerName: "Image",

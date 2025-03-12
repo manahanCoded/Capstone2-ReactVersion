@@ -247,7 +247,11 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
             {replyingTo === reply.answer_id && (
                 <form
                     onClick={handleClick}
-                    onSubmit={(e) => handleAnswerSubmit(e, reply.question_id, reply.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
+                    onSubmit={(e) => {
+                        setShowReplies(false)
+                        handleAnswerSubmit(e, reply.question_id, reply.answer_id)
+                        }} 
+                        className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                     <textarea
                         ref={textareaRef}
                         className="w-full px-4 outline-none"

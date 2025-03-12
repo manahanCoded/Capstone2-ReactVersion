@@ -219,9 +219,11 @@ export default function CheckJobPage() {
           <section className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 p-4 md:px-8 m-auto rounded-lg">
             <div className="flex justify-between items-center">
               <h1 className="md:text-5xl text-4xl font-semibold">{job?.title ?? "Job Title Not Available"}</h1>
+              {user?.role === "client" &&
               <button className="rounded-sm p-4 text-xs font-bold bg-red-900 text-white" onClick={() => setOpenApply(true)}>
                 Apply Now
               </button>
+              }
             </div>
             <div className="flex flex-col justify-between gap-3">
               <div className="w-full flex flex-row justify-evenly flex-wrap gap-6 bg-slate-100 p-4 rounded-md lg:text-sm text-xs text-slate-500">
