@@ -90,7 +90,7 @@ export default function Home() {
     if (tries - 1 === 0) {
       setTimeout(() => {
         setTries(tries - 1)
-      }, 2000)
+      }, 1000)
     } else {
       setTries(tries - 1)
     }
@@ -99,7 +99,7 @@ export default function Home() {
       setWrongGuessCount(0)
       setGameOver(false)
       playAgain()
-    }, 2000)
+    }, 1000)
   }
   if (correctLetters.length === currentWord.length) {
     setGameOver(true)
@@ -288,13 +288,37 @@ export default function Home() {
         </div>
         <div className="flex gap-16">
           <div className="w-[300px] flex flex-col justify-center items-center">
-            <img
-              src={`/Game_images/BalloonMan${wrongGuessCount}.png`}
-              alt="hangman-img"
-              className={`max-w-72 max-h-80 ${
-                wrongGuessCount === maxGuesses ? 'motion-preset-confetti' : ''
-              }`}
-            />
+            {wrongGuessCount === 6 ? (
+              <div className="flex flex-col items-center justify-center mt-24 -mb-4">
+                <img
+                  src={`/Game_images/falling-stickman.gif`}
+                  alt="hangman-img"
+                  className={`max-w-60 max-h-32 -mb-16 z-0 ${
+                    wrongGuessCount === maxGuesses
+                      ? 'motion-preset-confetti'
+                      : ''
+                  }`}
+                />
+                <img
+                  src={`/Game_images/MonsterFinal.png`}
+                  alt="hangman-img"
+                  className={`max-w-72 max-h-40 z-10 ${
+                    wrongGuessCount === maxGuesses
+                      ? 'motion-preset-confetti'
+                      : ''
+                  }`}
+                />
+              </div>
+            ) : (
+              <img
+                src={`/Game_images/BalloonMan${wrongGuessCount}.png`}
+                alt="hangman-img"
+                className={`max-w-72 max-h-80 ${
+                  wrongGuessCount === maxGuesses ? 'motion-preset-confetti' : ''
+                }`}
+              />
+            )}
+
             <h1
               className={`text-2xl mt-5 text-center uppercase font-extrabold 
                 ${

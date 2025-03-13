@@ -1,125 +1,801 @@
-export let blockchainGuess = [
+export const blockchainGuess = [
+  {
+    word: 'blockchain',
+    hint: 'A decentralized ledger that records transactions across multiple computers.',
+  },
+  {
+    word: 'cryptography',
+    hint: 'The practice of securing information using encryption and decryption.',
+  },
+  {
+    word: 'ethereum',
+    hint: 'A decentralized platform that enables smart contracts and decentralized applications.',
+  },
+  {
+    word: 'bitcoin',
+    hint: 'The first decentralized cryptocurrency, created in 2009 by Satoshi Nakamoto.',
+  },
+  {
+    word: 'mining',
+    hint: 'The process of validating transactions and adding them to the blockchain.',
+  },
+  {
+    word: 'ledger',
+    hint: 'A digital record of transactions maintained by a blockchain.',
+  },
+  {
+    word: 'wallet',
+    hint: 'A digital tool used to store and manage cryptocurrencies.',
+  },
+  {
+    word: 'token',
+    hint: 'A digital asset representing value or utility, built on a blockchain.',
+  },
+  {
+    word: 'consensus',
+    hint: 'A process by which nodes agree on the state of the blockchain.',
+  },
+  {
+    word: 'hash',
+    hint: 'A cryptographic function that converts data into a fixed-length string.',
+  },
+  {
+    word: 'node',
+    hint: 'A computer connected to a blockchain network that validates transactions.',
+  },
+
+  {
+    word: 'fork',
+    hint: 'A change in the blockchain protocol, creating a new version of the chain.',
+  },
   {
     word: 'genesis',
-    hint: 'The first block of a blockchain',
+    hint: 'The first block in a blockchain, often hardcoded.',
+  },
+  {
+    word: 'immutable',
+    hint: 'A property of blockchain where data cannot be altered once recorded.',
   },
   {
     word: 'peer',
-    hint: 'A participant in a blockchain network',
+    hint: 'A participant in a blockchain network.',
+  },
+
+  {
+    word: 'satoshi',
+    hint: 'The smallest unit of Bitcoin, equal to 0.00000001 BTC.',
   },
   {
-    word: 'nonce',
-    hint: 'A number used once to validate a blockchain block',
+    word: 'scalability',
+    hint: 'The ability of a blockchain to handle increasing amounts of transactions.',
   },
   {
-    word: 'sharding',
-    hint: 'A scaling solution that splits the blockchain into smaller parts',
+    word: 'sidechain',
+    hint: 'A separate blockchain connected to the main chain for additional functionality.',
   },
   {
-    word: 'immutability',
-    hint: 'The characteristic of blockchain that prevents changes to past records',
-  },
-  {
-    word: 'oracles',
-    hint: 'Third-party services that provide real-world data to blockchains',
+    word: 'transaction',
+    hint: 'An exchange of value recorded on a blockchain.',
   },
   {
     word: 'validator',
-    hint: 'A participant responsible for confirming transactions in blockchain',
+    hint: 'A node responsible for verifying transactions on a blockchain.',
+  },
+
+  {
+    word: 'dapp',
+    hint: 'A decentralized application running on a blockchain.',
   },
   {
-    word: 'protocol',
-    hint: 'A set of rules governing blockchain operations',
+    word: 'oracle',
+    hint: 'A service providing external data to smart contracts.',
+  },
+
+  {
+    word: 'hardfork',
+    hint: 'A permanent divergence in a blockchain, creating two separate chains.',
+  },
+  {
+    word: 'softfork',
+    hint: 'A backward-compatible update to a blockchain protocol.',
+  },
+
+  {
+    word: 'confirmation',
+    hint: 'The process of validating a transaction on the blockchain.',
+  },
+
+  {
+    word: 'hashrate',
+    hint: 'The computational power used in mining and processing transactions.',
+  },
+  {
+    word: 'multisig',
+    hint: 'A wallet requiring multiple signatures to authorize a transaction.',
+  },
+  {
+    word: 'nonce',
+    hint: 'A number used once in cryptographic communication.',
+  },
+  {
+    word: 'permissioned',
+    hint: 'A blockchain where access is restricted to authorized participants.',
+  },
+  {
+    word: 'permissionless',
+    hint: 'A blockchain where anyone can participate without restrictions.',
+  },
+  {
+    word: 'sharding',
+    hint: 'A method of splitting a blockchain into smaller, more manageable parts.',
+  },
+  {
+    word: 'testnet',
+    hint: 'A blockchain environment for testing purposes.',
+  },
+  {
+    word: 'timestamp',
+    hint: 'A record of when a transaction or block was created.',
+  },
+  {
+    word: 'unspent',
+    hint: 'Refers to transaction outputs that have not been spent.',
+  },
+
+  {
+    word: 'zksnark',
+    hint: 'A form of zero-knowledge proof used in blockchain.',
+  },
+
+  {
+    word: 'dust',
+    hint: 'A small amount of cryptocurrency, often too small to transact.',
+  },
+  {
+    word: 'governance',
+    hint: 'The process of managing and making decisions in a blockchain network.',
   },
   {
     word: 'interoperability',
-    hint: 'The ability of different blockchains to communicate',
+    hint: 'The ability of different blockchains to work together seamlessly.',
+  },
+
+  {
+    word: 'offchain',
+    hint: 'Transactions or processes occurring outside the blockchain.',
+  },
+  {
+    word: 'onchain',
+    hint: 'Transactions or processes occurring directly on the blockchain.',
+  },
+
+  {
+    word: 'segwit',
+    hint: 'Segregated Witness, a Bitcoin protocol upgrade to improve scalability.',
+  },
+
+  {
+    word: 'unconfirmed',
+    hint: 'A transaction that has not yet been added to a block.',
+  },
+
+  {
+    word: 'xpub',
+    hint: 'An extended public key used in hierarchical deterministic wallets.',
+  },
+  {
+    word: 'yield',
+    hint: 'The return on investment generated by staking or lending cryptocurrencies.',
+  },
+  {
+    word: 'epoch',
+    hint: 'A fixed period of time in a blockchain’s consensus mechanism.',
+  },
+  {
+    word: 'finality',
+    hint: 'The point at which a transaction cannot be reversed.',
+  },
+
+  {
+    word: 'jail',
+    hint: 'A penalty for validators who act maliciously in a proof-of-stake system.',
+  },
+
+  {
+    word: 'mempool',
+    hint: 'A pool of unconfirmed transactions waiting to be added to a block.',
+  },
+
+  {
+    word: 'opcode',
+    hint: 'A code used in smart contracts to perform specific operations.',
+  },
+  {
+    word: 'parachain',
+    hint: 'A parallel blockchain connected to a main blockchain network.',
+  },
+
+  {
+    word: 'reorg',
+    hint: 'A reorganization of the blockchain due to a fork.',
+  },
+  {
+    word: 'slashing',
+    hint: 'A penalty for validators who act maliciously in a proof-of-stake system.',
+  },
+  {
+    word: 'trustless',
+    hint: 'A system where trust is not required between participants.',
+  },
+  {
+    word: 'utxo',
+    hint: 'Unspent Transaction Output, a model used in Bitcoin to track funds.',
+  },
+
+  {
+    word: 'zether',
+    hint: 'A privacy-focused protocol for confidential transactions.',
+  },
+]
+export const cryptoGuess = [
+  {
+    word: 'cryptocurrency',
+    hint: 'A digital currency secured by cryptography, often decentralized.',
+  },
+  {
+    word: 'altcoin',
+    hint: 'Any cryptocurrency other than Bitcoin.',
+  },
+  {
+    word: 'exchange',
+    hint: 'A platform where cryptocurrencies are bought and sold.',
+  },
+  {
+    word: 'stablecoin',
+    hint: 'A cryptocurrency pegged to a stable asset like USD.',
+  },
+  {
+    word: 'liquidity',
+    hint: 'The ease of converting a cryptocurrency into cash or other assets.',
+  },
+  {
+    word: 'staking',
+    hint: 'The process of holding funds in a cryptocurrency wallet to support network operations.',
+  },
+  {
+    word: 'decentralization',
+    hint: 'The transfer of control from a central authority to a distributed network.',
+  },
+  {
+    word: 'fiat',
+    hint: 'Government-issued currency like USD or EUR, not backed by a physical commodity.',
+  },
+  {
+    word: 'gas',
+    hint: 'A fee paid for executing transactions on a blockchain network.',
+  },
+  {
+    word: 'privatekey',
+    hint: 'A secret key used to sign transactions and access a cryptocurrency wallet.',
   },
   {
     word: 'publickey',
-    hint: 'A cryptographic key used to receive blockchain transactions',
-  },
-]
-
-export let cryptoGuess = [
-  {
-    word: 'defi',
-    hint: 'A financial system built on blockchain without intermediaries',
-  },
-  {
-    word: 'fomo',
-    hint: 'A term describing the fear of missing out on crypto investments',
+    hint: 'A cryptographic key used to receive funds in a blockchain network.',
   },
   {
     word: 'whale',
-    hint: 'An individual or entity holding large amounts of cryptocurrency',
+    hint: 'An individual or entity holding a large amount of cryptocurrency.',
   },
   {
-    word: 'rugpull',
-    hint: 'A scam where developers abandon a project after taking funds',
+    word: 'airdrops',
+    hint: 'Free distribution of cryptocurrency tokens to wallet addresses.',
+  },
+
+  {
+    word: 'deflation',
+    hint: 'A decrease in the general price level of goods and services.',
   },
   {
-    word: 'airdrop',
-    hint: 'Free distribution of crypto tokens to promote a project',
-  },
-  {
-    word: 'bearmarket',
-    hint: 'A prolonged period of declining cryptocurrency prices',
-  },
-  {
-    word: 'hotwallet',
-    hint: 'An online cryptocurrency wallet connected to the internet',
-  },
-  {
-    word: 'coldstorage',
-    hint: 'An offline method of storing cryptocurrency for security',
-  },
-  {
-    word: 'pumpanddump',
-    hint: 'A market manipulation scheme where prices are inflated and then dumped',
+    word: 'inflation',
+    hint: 'An increase in the general price level of goods and services.',
   },
   {
     word: 'halving',
-    hint: 'An event that reduces the number of new cryptocurrency rewards',
+    hint: 'An event where the reward for mining Bitcoin is reduced by half.',
+  },
+  {
+    word: 'ico',
+    hint: 'Initial Coin Offering, a fundraising method for new cryptocurrencies.',
+  },
+  {
+    word: 'kyc',
+    hint: 'Know Your Customer, a process to verify the identity of users.',
+  },
+  {
+    word: 'marketcap',
+    hint: 'The total value of a cryptocurrency, calculated by price multiplied by supply.',
+  },
+  {
+    word: 'nft',
+    hint: 'Non-Fungible Token, a unique digital asset representing ownership.',
+  },
+  {
+    word: 'otc',
+    hint: 'Over-the-Counter, trading done directly between parties without an exchange.',
+  },
+
+  {
+    word: 'rekt',
+    hint: 'Slang for suffering significant financial losses in trading.',
+  },
+
+  {
+    word: 'segwit',
+    hint: 'Segregated Witness, a Bitcoin protocol upgrade to improve scalability.',
+  },
+  {
+    word: 'shill',
+    hint: 'Promoting a cryptocurrency with exaggerated claims.',
+  },
+  {
+    word: 'tokensale',
+    hint: 'A sale of cryptocurrency tokens to raise funds.',
+  },
+  {
+    word: 'volatility',
+    hint: 'The degree of variation in the price of a cryptocurrency.',
+  },
+
+  {
+    word: 'dao',
+    hint: 'Decentralized Autonomous Organization, a community-led entity with no central authority.',
+  },
+  {
+    word: 'defi',
+    hint: 'Decentralized Finance, financial services built on blockchain technology.',
+  },
+
+  {
+    word: 'memecoin',
+    hint: 'A cryptocurrency created as a joke or meme, often with no utility.',
+  },
+  {
+    word: 'metaverse',
+    hint: 'A virtual reality space where users can interact with a computer-generated environment.',
+  },
+  {
+    word: 'moon',
+    hint: 'Slang for a cryptocurrency experiencing a rapid price increase.',
+  },
+  {
+    word: 'rugpull',
+    hint: 'A scam where developers abandon a project and take investors’ funds.',
+  },
+  {
+    word: 'satoshi',
+    hint: 'The smallest unit of Bitcoin, equal to 0.00000001 BTC.',
+  },
+  {
+    word: 'seedphrase',
+    hint: 'A series of words used to recover a cryptocurrency wallet.',
+  },
+
+  {
+    word: 'tokenomics',
+    hint: 'The economic model and structure of a cryptocurrency token.',
+  },
+  {
+    word: 'whitelist',
+    hint: 'A list of approved participants for a token sale or event.',
+  },
+  {
+    word: 'zksnark',
+    hint: 'A form of zero-knowledge proof used in blockchain.',
+  },
+
+  {
+    word: 'dust',
+    hint: 'A small amount of cryptocurrency, often too small to transact.',
+  },
+  {
+    word: 'governance',
+    hint: 'The process of managing and making decisions in a blockchain network.',
+  },
+  {
+    word: 'interoperability',
+    hint: 'The ability of different blockchains to work together seamlessly.',
+  },
+
+  {
+    word: 'offchain',
+    hint: 'Transactions or processes occurring outside the blockchain.',
+  },
+  {
+    word: 'onchain',
+    hint: 'Transactions or processes occurring directly on the blockchain.',
+  },
+
+  {
+    word: 'segwit',
+    hint: 'Segregated Witness, a Bitcoin protocol upgrade to improve scalability.',
+  },
+
+  {
+    word: 'unconfirmed',
+    hint: 'A transaction that has not yet been added to a block.',
+  },
+
+  {
+    word: 'xpub',
+    hint: 'An extended public key used in hierarchical deterministic wallets.',
+  },
+  {
+    word: 'yield',
+    hint: 'The return on investment generated by staking or lending cryptocurrencies.',
+  },
+  {
+    word: 'epoch',
+    hint: 'A fixed period of time in a blockchain’s consensus mechanism.',
+  },
+  {
+    word: 'finality',
+    hint: 'The point at which a transaction cannot be reversed.',
+  },
+
+  {
+    word: 'jail',
+    hint: 'A penalty for validators who act maliciously in a proof-of-stake system.',
+  },
+
+  {
+    word: 'mempool',
+    hint: 'A pool of unconfirmed transactions waiting to be added to a block.',
+  },
+
+  {
+    word: 'opcode',
+    hint: 'A code used in smart contracts to perform specific operations.',
+  },
+  {
+    word: 'parachain',
+    hint: 'A parallel blockchain connected to a main blockchain network.',
+  },
+
+  {
+    word: 'reorg',
+    hint: 'A reorganization of the blockchain due to a fork.',
+  },
+  {
+    word: 'slashing',
+    hint: 'A penalty for validators who act maliciously in a proof-of-stake system.',
+  },
+  {
+    word: 'trustless',
+    hint: 'A system where trust is not required between participants.',
+  },
+  {
+    word: 'utxo',
+    hint: 'Unspent Transaction Output, a model used in Bitcoin to track funds.',
+  },
+
+  {
+    word: 'zether',
+    hint: 'A privacy-focused protocol for confidential transactions.',
+  },
+  {
+    word: 'address',
+    hint: 'A unique identifier for sending and receiving cryptocurrency.',
+  },
+
+  {
+    word: 'deflationary',
+    hint: 'A cryptocurrency with a decreasing supply over time.',
+  },
+
+  {
+    word: 'faucet',
+    hint: 'A website or app that distributes small amounts of cryptocurrency for free.',
+  },
+
+  {
+    word: 'keccak',
+    hint: 'A cryptographic hashing algorithm used in Ethereum.',
+  },
+
+  {
+    word: 'mainnet',
+    hint: 'The live version of a blockchain network.',
+  },
+
+  {
+    word: 'rebase',
+    hint: 'A mechanism that adjusts the supply of a cryptocurrency to maintain price stability.',
+  },
+
+  {
+    word: 'uniswap',
+    hint: 'A decentralized exchange built on Ethereum.',
+  },
+
+  {
+    word: 'xlm',
+    hint: 'The ticker symbol for Stellar Lumens, a cryptocurrency for cross-border payments.',
   },
 ]
-
-export let nftGuess = [
+export const nftGuess = [
   {
-    word: 'collection',
-    hint: 'A group of related NFTs released by a creator',
+    word: 'nft',
+    hint: 'A unique digital asset stored on a blockchain.',
   },
   {
-    word: 'trait',
-    hint: 'A specific characteristic or property of an NFT',
+    word: 'minting',
+    hint: 'The process of creating an NFT on a blockchain.',
+  },
+  {
+    word: 'metadata',
+    hint: 'Data describing an NFT, such as its name, attributes, and ownership.',
+  },
+  {
+    word: 'marketplace',
+    hint: 'A platform where NFTs are bought, sold, and traded.',
+  },
+  {
+    word: 'royalties',
+    hint: 'A percentage of resale earnings paid to the original NFT creator.',
+  },
+  {
+    word: 'ownership',
+    hint: 'Proof that an individual holds a specific NFT.',
+  },
+  {
+    word: 'airdrop',
+    hint: 'The free distribution of NFTs to wallet holders.',
+  },
+  {
+    word: 'utility',
+    hint: 'Additional benefits or use cases attached to an NFT beyond ownership.',
+  },
+  {
+    word: 'collection',
+    hint: 'A group of NFTs released under a single project or theme.',
   },
   {
     word: 'rarity',
-    hint: 'A measure of how unique an NFT is within a collection',
+    hint: 'The uniqueness or scarcity of an NFT within a collection.',
+  },
+  {
+    word: 'whitelist',
+    hint: 'A list of approved users granted early access to mint NFTs.',
   },
   {
     word: 'burning',
-    hint: 'Permanently removing an NFT from circulation',
+    hint: 'The process of permanently removing an NFT from circulation.',
   },
   {
-    word: 'snapshot',
-    hint: 'A record taken of NFT holders at a specific moment',
-  },
-  {
-    word: 'mintpass',
-    hint: 'A token granting access to mint new NFTs',
+    word: 'interoperability',
+    hint: 'The ability of NFTs to function across multiple platforms or blockchains.',
   },
 
   {
-    word: 'whitelist',
-    hint: 'A list of approved users given early NFT minting access',
+    word: 'tokenomics',
+    hint: 'The economic model governing the value and distribution of NFTs.',
+  },
+
+  {
+    word: 'opensea',
+    hint: 'A popular NFT marketplace for buying and selling digital assets.',
   },
   {
-    word: 'bridging',
-    hint: 'Transferring NFTs between different blockchains',
+    word: 'rarible',
+    hint: 'A decentralized NFT marketplace for creators and collectors.',
+  },
+  {
+    word: 'pfp',
+    hint: 'Profile Picture, a type of NFT used as a social media avatar.',
+  },
+  {
+    word: 'gaswar',
+    hint: 'A situation where users compete to pay higher gas fees to mint NFTs.',
+  },
+  {
+    word: 'bluechip',
+    hint: 'A high-value, reputable NFT project with strong demand.',
+  },
+  {
+    word: 'flipping',
+    hint: 'Buying an NFT and quickly reselling it for profit.',
+  },
+  {
+    word: 'hodl',
+    hint: 'A term for holding onto NFTs or cryptocurrencies long-term.',
+  },
+  {
+    word: 'traits',
+    hint: 'Unique characteristics or attributes of an NFT.',
+  },
+  {
+    word: 'moonbirds',
+    hint: 'A popular NFT collection featuring pixelated owl artwork.',
+  },
+  {
+    word: 'boredape',
+    hint: 'A highly sought-after NFT collection featuring cartoon apes.',
+  },
+  {
+    word: 'cryptopunks',
+    hint: 'One of the earliest and most iconic NFT collections.',
+  },
+  {
+    word: 'sandbox',
+    hint: 'A virtual world where users can buy, sell, and create NFTs.',
+  },
+  {
+    word: 'decentraland',
+    hint: 'A blockchain-based virtual reality platform powered by NFTs.',
+  },
+  {
+    word: 'playtoearn',
+    hint: 'Games where players earn NFTs or cryptocurrency as rewards.',
+  },
+  {
+    word: 'metaverse',
+    hint: 'A virtual reality space where NFTs are used for ownership and interaction.',
+  },
+  {
+    word: 'avatar',
+    hint: 'A digital representation of a user, often tokenized as an NFT.',
+  },
+  {
+    word: 'ens',
+    hint: 'Ethereum Name Service, a domain system tokenized as NFTs.',
+  },
+  {
+    word: 'ipfs',
+    hint: 'InterPlanetary File System, a decentralized storage solution for NFTs.',
+  },
+  {
+    word: 'soulbound',
+    hint: 'An NFT that cannot be transferred or sold, tied to a specific user.',
+  },
+  {
+    word: 'gamification',
+    hint: 'Using game-like elements to enhance the utility of NFTs.',
+  },
+  {
+    word: 'nftfi',
+    hint: 'Decentralized finance (DeFi) services built around NFTs.',
+  },
+  {
+    word: 'staking',
+    hint: 'Locking up NFTs to earn rewards or benefits.',
+  },
+  {
+    word: 'fractional',
+    hint: 'Splitting an NFT into smaller, tradable shares.',
+  },
+  {
+    word: 'index',
+    hint: 'A metric or tool for tracking the performance of NFT collections.',
+  },
+  {
+    word: 'lending',
+    hint: 'A service where users can borrow against their NFTs.',
+  },
+  {
+    word: 'insurance',
+    hint: 'Protection against loss or damage to NFTs.',
+  },
+  {
+    word: 'artgallery',
+    hint: 'A virtual or physical space showcasing NFT artwork.',
   },
   {
     word: 'auction',
-    hint: 'A bidding process where NFTs are sold to the highest offer',
+    hint: 'A bidding process for buying or selling NFTs.',
+  },
+  {
+    word: 'collab',
+    hint: 'A collaboration between artists or brands to create NFTs.',
+  },
+  {
+    word: 'community',
+    hint: 'A group of collectors and creators focused on NFTs.',
+  },
+  {
+    word: 'derivative',
+    hint: 'A secondary asset or product based on an original NFT.',
+  },
+  {
+    word: 'gaming',
+    hint: 'Video games that incorporate NFTs as in-game assets.',
+  },
+  {
+    word: 'license',
+    hint: 'Legal rights or permissions associated with an NFT.',
+  },
+  {
+    word: 'memorabilia',
+    hint: 'NFTs representing collectible items or historical moments.',
+  },
+  {
+    word: 'music',
+    hint: 'Songs or albums tokenized as NFTs.',
+  },
+  {
+    word: 'photography',
+    hint: 'Photographs tokenized as NFTs.',
+  },
+  {
+    word: 'platform',
+    hint: 'A website or app for creating, buying, or selling NFTs.',
+  },
+  {
+    word: 'portfolio',
+    hint: 'A collection of NFTs owned by an individual or entity.',
+  },
+  {
+    word: 'scalability',
+    hint: 'The ability of a blockchain to handle large numbers of NFT transactions.',
+  },
+  {
+    word: 'security',
+    hint: 'Measures to protect NFTs from theft or fraud.',
+  },
+  {
+    word: 'sustainability',
+    hint: 'Efforts to reduce the environmental impact of NFTs.',
+  },
+  {
+    word: 'trading',
+    hint: 'The act of buying and selling NFTs for profit.',
+  },
+  {
+    word: 'vault',
+    hint: 'A secure storage solution for NFTs.',
+  },
+  {
+    word: 'wallet',
+    hint: 'A digital wallet designed to store and manage NFTs.',
+  },
+  {
+    word: 'whitelabel',
+    hint: 'A customizable NFT platform for brands or creators.',
+  },
+  {
+    word: 'yield',
+    hint: 'Earnings generated from owning or staking NFTs.',
+  },
+  {
+    word: 'zoning',
+    hint: 'Regulations or rules governing the use of NFTs in virtual spaces.',
+  },
+  {
+    word: 'bridge',
+    hint: 'A tool for transferring NFTs between blockchains.',
+  },
+  {
+    word: 'oracle',
+    hint: 'A service providing external data to NFT smart contracts.',
+  },
+
+  {
+    word: 'governance',
+    hint: 'The process of managing and making decisions in an NFT community.',
+  },
+  {
+    word: 'identity',
+    hint: 'Using NFTs to represent digital or real-world identities.',
+  },
+  {
+    word: 'legacy',
+    hint: 'Passing down NFTs as digital heirlooms.',
+  },
+  {
+    word: 'monetization',
+    hint: 'Generating revenue from NFTs through sales, royalties, or other means.',
+  },
+  {
+    word: 'verification',
+    hint: 'Confirming the authenticity and ownership of an NFT.',
   },
 ]
