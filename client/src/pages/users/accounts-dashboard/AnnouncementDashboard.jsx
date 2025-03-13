@@ -48,7 +48,7 @@ export default function AnnouncementsDashboard() {
             try {
                 const response = await fetch(`${API_URL}/api/announcement/allAnnouncements`);
                 const data = await response.json();
-                setAnnouncements(data);
+                setAnnouncements(data.announcement);
             } catch (error) {
                 console.error("Error fetching announcements:", error);
             } finally {
@@ -206,17 +206,6 @@ export default function AnnouncementsDashboard() {
                                 className="bg-white border rounded h-[55vh] overflow-y-auto"
                             />
                         </div>
-                        <TextField
-                            label="Date"
-                            type="date"
-                            value={editingRow?.date || ''}
-                            onChange={(e) => handleFieldChange("date", e.target.value)}
-                            fullWidth
-                            margin="dense"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
                     </div>
                 </DialogContent>
                 <DialogActions>

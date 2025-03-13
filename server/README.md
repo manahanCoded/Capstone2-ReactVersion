@@ -123,7 +123,7 @@ CREATE TABLE announcements (
 	publisher text not null,
 	title text not null,
 	description text not null,
-	date date SET DEFAULT NOW() AT TIME ZONE 'Asia/Manila'
+    date TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'Asia/Manila')
 )
 
 <!-- DATABASE FOR applicants -->
@@ -179,7 +179,7 @@ CREATE TABLE QA_answers (
     user_id INT NOT NULL,          
     answer_text TEXT NOT NULL,      
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    is_accepted BOOLEAN DEFAULT FALSE,v
+    is_accepted BOOLEAN DEFAULT FALSE,
     parent_answer_id INT
 );
 

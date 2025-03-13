@@ -65,7 +65,7 @@ export default function Profile() {
                             <div
                                 key={tab.id}
                                 className={`flex items-center justify-between pl-4 py-3 w-full cursor-pointer mb-4 
-                    ${openTab === tab.id ? "bg-white text-red-700 font-semibold border-r-4 border-red-800" : " hover:bg-red-600 hover:text-white text-[#333333]"} 
+                    ${openTab === tab.id ? "bg-white text-red-700 font-semibold md:border-r-4 border-red-800" : " hover:bg-red-600 hover:text-white text-[#333333]"} 
                     transition duration-200 ease-in-out `}
                                 onClick={() => setOpenTab(tab.id)}
                             >

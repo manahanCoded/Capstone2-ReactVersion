@@ -174,7 +174,7 @@ export default function Unit() {
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
                                     const score = userScore?.score || 0;
-                                    const passed = userScore?.passed ? "Passed" : "Failed";
+                                    const passed = userScore?.passed ? userScore?.passed  : "Untaken";
                                     const completedUnits = units.filter((unit) => {
                                         const userScore = userScores.find((score) => score.module_id === unit.id);
                                         return userScore?.completed === true;  //

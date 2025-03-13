@@ -12,4 +12,4 @@ router.delete('/deleteAnnouncement', deleteAnnouncement)
 
 router.post('/editAnnouncement', editAnnouncement)
 
-export default router
+export default router   

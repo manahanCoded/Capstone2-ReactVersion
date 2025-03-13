@@ -128,6 +128,7 @@ export default function CreateJobPage() {
           const res = await axios.post(`${API_URL}/api/job/create`, formData);
           if (res.status === 201) {
             alert("Job created successfully.");
+            navigate("/jobs")
           } else {
             alert("Failed to create job.");
           }
