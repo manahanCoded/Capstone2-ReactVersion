@@ -39,7 +39,7 @@ import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
 import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
-import {Filter} from "bad-words";
+import { Filter } from "bad-words";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -69,6 +69,8 @@ export default function Forum() {
 
     const [openEditQuestion, setOpenEditQuestion] = useState(false)
     const [editQuestion, setEditQuestion] = useState()
+
+    const [checkImage, setCheckImage] = useState(false);
 
     const filter = new Filter();
 
@@ -647,8 +649,9 @@ export default function Forum() {
                             <p
                                 key={type.name}
                                 onClick={() => {
-                                     setCheckQuestion(null)
-                                    setSpecifyQuestion(type.value)}}
+                                    setCheckQuestion(null)
+                                    setSpecifyQuestion(type.value)
+                                }}
                                 className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
                                     }`}
                             >
@@ -656,7 +659,7 @@ export default function Forum() {
                                 {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
                             </p>
                         ))}
-                        <div className="md:mt-4 md:pt-4 md:border-t border-gray-400">
+                        <div className="md:mt-4 md:pt-4 md:border-t flex md:flex-col flex-row gap-1 border-gray-400">
                             {checkUser?.id &&
                                 <p
                                     className={`h-12 px-3 py-1 flex items-center gap-2 rounded-md cursor-pointer ${isOpen ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"}`}
@@ -989,10 +992,25 @@ export default function Forum() {
                                         >
                                             <div className="absolute inset-0 bg-black/50 rounded-xl backdrop-blur-sm"></div>
                                             <img
-                                                className="w-full aspect-[20/13] rounded-lg object-contain backdrop-blur-sm"
+                                                className="w-full aspect-[20/13] rounded-lg object-contain  cursor-pointer backdrop-blur-sm"
                                                 src={checkQuestion.image}
                                                 alt="Uploaded"
+                                                onClick={() => setCheckImage(true)}
                                             />
+                                            {checkImage && (
+                                                   <div
+                                                   className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+                                                   onClick={() => setCheckImage(false)}
+                                               >
+                                                   <div
+                                                       className="max-w-[90%] max-h-[90%] rounded-lg shadow-lg"
+                                                       onClick={(e) => e.stopPropagation()} 
+                                                   >
+                                                       <img className="w-full h-full object-contain" 
+                                                        src={checkQuestion.image} alt="Expanded" />
+                                                   </div>
+                                               </div>
+                                            )}
                                         </div>
 
                                     )}
@@ -1177,7 +1195,7 @@ export default function Forum() {
                                                                                 rows={1}
                                                                                 placeholder="Write a reply..."
                                                                                 value={editReply.answer_text}
-                                                                                onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: filter.clean(e.target.value)}))}
+                                                                                onChange={(e) => setEditReply((prev) => ({ ...prev, answer_text: filter.clean(e.target.value) }))}
                                                                             />
                                                                             <div className=" w-full flex justify-end items-center text-[0.7rem] gap-2 px-2 ">
                                                                                 <button

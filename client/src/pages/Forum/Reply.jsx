@@ -248,7 +248,7 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                 <form
                     onClick={handleClick}
                     onSubmit={(e) => {
-                        setShowReplies(false)
+                        setShowReplies(falseq)
                         handleAnswerSubmit(e, reply.question_id, reply.answer_id)
                         }} 
                         className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
