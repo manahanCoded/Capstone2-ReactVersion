@@ -409,8 +409,8 @@ const Navbar = () => {
                     <span>{selectedAnnouncement?.title? selectedAnnouncement.title: "Announcement"}</span>
                     {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
                   </button>
-                  <div className={`md:h-[90%] h-[60%] md:block hidden overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]`}>
-                  <div className={`h-full overflow-y-scroll md:pr-3 md:block w-full `}>
+
+                  <div className={`md:h-[90%] h-[70%] overflow-y-scroll overflow-hidden pr-3 md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
                     {displayAnnouncement.map((announcement) => (
                       <div
                         key={announcement.id}
@@ -448,48 +448,6 @@ const Navbar = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                  </div>
-                  <div className={`md:h-[90%] h-[60%]  md:hidden block  overflow-hidden ${isOpen ? 'block' : 'hidden'} shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]`}>
-                  <div className={`h-full overflow-y-scroll md:pr-3 md:block w-full `}>
-                    {displayAnnouncement.map((announcement) => (
-                      <div
-                        key={announcement.id}
-                        onClick={() => {
-                          setIsOpen(!isOpen)
-                          handleAnnouncementClick(announcement)
-                        }}
-                        className="md:w-56 w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row justify-between gap-2 items-center py-2 px-4 group hover:bg-red-900"
-                      >
-                        <div className="flex flex-row gap-2 items-center">
-                          {announcement?.image ? (
-                            <img
-                              src={announcement?.image}
-                              className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                              alt="Profile Picture"
-                            />
-                          ) : (
-                            <AccountCircleIcon
-                              style={{
-                                width: '2.5rem',
-                                height: '2.5rem',
-                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                              }}
-                            />
-                          )}
-                          <div className="text-xs">
-                            <p className="group-hover:text-white font-bold truncate line-clamp-1">
-                              {announcement.name ? announcement.name : announcement.email}
-                            </p>
-                            <p className="group-hover:text-white break-words line-clamp-1">{announcement.title}</p>
-                            <p className="group-hover:text-white text-gray-500 text-[0.7rem] truncate line-clamp-1">
-                              {timeAgo(announcement.date)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                   </div>
                 </div>
                 <div className='h-full w-full py-4'>

@@ -40,6 +40,7 @@ import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
 import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
 import { Filter } from "bad-words";
+import Notification from "@/components/Notification";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -224,7 +225,7 @@ export default function Forum() {
                         },
                     ],
                 }));
-                window.location.reload()
+       
             } else {
                 alert("Error submitting question: " + (data.error || "Unknown error"));
             }
@@ -683,6 +684,12 @@ export default function Forum() {
                                     <ChecklistOutlinedIcon />
                                     Approval
                                 </p>
+                            )}
+                                {checkUser?.role === "admin" && (
+        
+                                    <Notification/>
+                            
+
                             )}
                         </div>
                     </section>
