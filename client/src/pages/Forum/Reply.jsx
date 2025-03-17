@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import { useNavigate } from "react-router-dom";
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
@@ -18,9 +19,10 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 
 const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answers, setAnswers, replyingTo, setReplyingTo, updateReply, handleEditAnswer, setEditReply, editReply }) => {
+    const navigate = useNavigate()
     const [showReplies, setShowReplies] = useState(true);
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
-    const [showEdit, setShowEdit] = useState(false)
+
     const filter = new Filter();
 
 
@@ -246,11 +248,11 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
 
             {replyingTo === reply.answer_id && (
                 <form
-                    onClick={handleClick}
-                    onSubmit={(e) => {
-                        setShowReplies(falseq)
-                        handleAnswerSubmit(e, reply.question_id, reply.answer_id)
-                        }} 
+                onClick={handleClick}
+                onSubmit={(e) => {
+                    setShowReplies(false);
+                    handleAnswerSubmit(e, reply.question_id, reply.answer_id);
+                }}
                         className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                     <textarea
                         ref={textareaRef}

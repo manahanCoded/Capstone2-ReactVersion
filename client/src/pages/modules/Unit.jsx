@@ -97,10 +97,12 @@ export default function Unit() {
                                 decentralization, blockchain, and smart contracts to empower users with transparency, security, and digital ownership.</p>
                         </div>
                     </div>
-                    <div className=" bg-green-400 lg:w-4/6  top-20">
-                        <div className="h-[30rem] w-full bg-red-700 relative">
+                    <div className=" lg:w-4/6  top-20">
+                        <div className="h-[30rem] w-full relative">
+                            {moduleName.file_url &&
                             <img className="absolute inset-0 aspect-[20/13] h-full z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                 src={moduleName.file_url} alt="" />
+                            }
                         </div>
                     </div>
                 </section>
@@ -159,7 +161,7 @@ export default function Unit() {
                             <div className="text-center text-gray-500">No units found.</div>
                         )}
                     </div>
-                    <div className="lg:block hidden bg-gray-50 lg:w-4/6 ">
+                    <div className="lg:block hidden mt-0.5 bg-gray-50 lg:w-4/6 ">
                         <div className="h-64 p-8 border-b ">
                             <h3 className="text-lg font-semibold text-red-900  ">Achievements</h3>
                             <p className="text-sm mt-2">Badge you can earn by completing the module.</p>

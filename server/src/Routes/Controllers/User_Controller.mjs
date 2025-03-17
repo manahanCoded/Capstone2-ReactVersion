@@ -275,7 +275,7 @@ const accountsDashboard = async (req, res) => {
     return res.status(401).json({ message: "No user found. Unauthorized!" })
   }
 
-  const response = await db.query("SELECT email, role, type from users")
+  const response = await db.query("SELECT id, email, role, type from users")
   res.json(response.rows)
 }
 

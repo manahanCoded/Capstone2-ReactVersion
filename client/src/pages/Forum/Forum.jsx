@@ -40,7 +40,6 @@ import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
 import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
 import { Filter } from "bad-words";
-import Notification from "@/components/Notification";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -72,6 +71,8 @@ export default function Forum() {
     const [editQuestion, setEditQuestion] = useState()
 
     const [checkImage, setCheckImage] = useState(false);
+
+    const [unseenQuestions, setUnseenQuestions] = useState([]);
 
     const filter = new Filter();
 
@@ -157,13 +158,26 @@ export default function Forum() {
                 const res = await fetch(`${API_URL}/api/question-answer/all`);
                 const data = await res.json();
                 setAll_QA(data);
+
+                if (!checkUser || checkUser.role !== "admin") return;
+
+                try {
+                    const unseen = data.questions.filter(q =>
+                        !q.is_resolved && (!q.seen_by || !q.seen_by.includes(checkUser.id) && !q.seen_by.includes(checkUser.id.toString()))
+                    );
+
+                    setUnseenQuestions(unseen);
+                } catch (err) {
+                    console.error("❌ Error fetching unseen questions:", err);
+                }
+
             } catch (err) {
                 console.error('Error fetching QA data:', err);
             }
         }
 
         handleAll_QA();
-    }, []);
+    }, [checkUser, openPostOption]);
 
 
     const handleTopicType = (event) => {
@@ -225,7 +239,7 @@ export default function Forum() {
                         },
                     ],
                 }));
-       
+                window.location.reload()
             } else {
                 alert("Error submitting question: " + (data.error || "Unknown error"));
             }
@@ -634,7 +648,7 @@ export default function Forum() {
     return (
         <div className="h-screen ">
             <div className="w-full flex md:flex-row flex-col justify-between md:gap-14 px-3.5 md:px-8">
-                <section className="md:sticky top-0 md:h-screen md:w-[28rem] md:pt-24 pt-16 md:pr-8 flex flex-col gap-1 items-center md:border-r border-gray-400">
+                <section className="md:sticky top-0 md:h-screen md:w-[24rem] md:pt-24 pt-16 md:pr-6 flex flex-col gap-1 items-center md:border-r border-gray-400">
                     <div className=" w-full flex flex-row pl-4 px-2 py-1 mb-4 justify-between items-center border-[1px] rounded-xl text-xs">
                         <input
                             placeholder="Search related questions"
@@ -676,20 +690,23 @@ export default function Forum() {
                             {checkUser?.role === "admin" && (
                                 <p
                                     onClick={() => {
+                                        setCheckQuestion(null)
                                         setShowUnapprovedOnly((prev) => !prev)
                                     }}
-                                    className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"
+                                    className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly
+                                            ? "bg-red-700 text-white"
+                                            : "hover:bg-red-800 hover:text-white"
                                         }`}
                                 >
                                     <ChecklistOutlinedIcon />
                                     Approval
-                                </p>
-                            )}
-                                {checkUser?.role === "admin" && (
-        
-                                    <Notification/>
-                            
 
+                                    {unseenQuestions.length > 0 && (
+                                        <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                            {unseenQuestions.length}
+                                        </span>
+                                    )}
+                                </p>
                             )}
                         </div>
                     </section>
@@ -1005,18 +1022,18 @@ export default function Forum() {
                                                 onClick={() => setCheckImage(true)}
                                             />
                                             {checkImage && (
-                                                   <div
-                                                   className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-                                                   onClick={() => setCheckImage(false)}
-                                               >
-                                                   <div
-                                                       className="max-w-[90%] max-h-[90%] rounded-lg shadow-lg"
-                                                       onClick={(e) => e.stopPropagation()} 
-                                                   >
-                                                       <img className="w-full h-full object-contain" 
-                                                        src={checkQuestion.image} alt="Expanded" />
-                                                   </div>
-                                               </div>
+                                                <div
+                                                    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+                                                    onClick={() => setCheckImage(false)}
+                                                >
+                                                    <div
+                                                        className="max-w-[90%] max-h-[90%] rounded-lg shadow-lg"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <img className="w-full h-full object-contain"
+                                                            src={checkQuestion.image} alt="Expanded" />
+                                                    </div>
+                                                </div>
                                             )}
                                         </div>
 

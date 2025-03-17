@@ -32,8 +32,6 @@
     "passport-google-oauth2": "^0.2.0",
     "passport-local": "^1.0.0",
     "pg": "^8.13.0",
-    "pg-promise": "^11.12.1",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "pg-promise": "^11.12.1"
   }
 }

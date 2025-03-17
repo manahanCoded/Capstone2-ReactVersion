@@ -11,18 +11,27 @@ export default function AccountsDashboard() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
+    const [units, setUnits] = useState([]);
+    const [userScores, setUserScores] = useState([]);
+    const [moduleName, setModuleName] = useState([]);
+    const [badges, setBadges] = useState([]);
+    const [checkUser, setCheckUser] = useState({});
 
     useEffect(() => {
-        async function checkUser() {
+        async function fetchUserProfile() { // Renamed to avoid conflict
             try {
                 const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
+
                 if (!res.ok) {
                     navigate("/user/login");
                     return;
                 }
+
+                const data = await res.json();
+                setCheckUser(data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -34,8 +43,9 @@ export default function AccountsDashboard() {
             }
         }
 
-        checkUser();
+        fetchUserProfile();
     }, [navigate]);
+
 
     useEffect(() => {
         const handleAccounts = async () => {
@@ -81,6 +91,91 @@ export default function AccountsDashboard() {
         }
     };
 
+    useEffect(() => {
+        if (!checkUser.id) return;
+
+        async function fetchUnitsAndScores() {
+            try {
+                const [unitsRes, scoresRes, moduleData] = await Promise.all([
+                    axios.get(`${API_URL}/api/module/allModule`),
+                    axios.get(`${API_URL}/api/module/get-all-user-info`),
+                    axios.get(`${API_URL}/api/module/allModule-storage`),
+                ]);
+
+                setUnits(unitsRes.data.listall);
+                setUserScores(scoresRes.data);
+                setModuleName(moduleData.data.success ? moduleData.data.listall : []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchUnitsAndScores();
+    }, [checkUser.id]);
+
+    useEffect(() => {
+        if (moduleName.length === 0 || units.length === 0 || userScores.length === 0) return;
+    
+        const userBadgesMap = {};
+    
+        userScores.forEach((score) => {
+            if (!score.completed) return; // Only process completed modules
+    
+            const completedModule = units.find((module) => module.id === score.module_id);
+            if (!completedModule) return;
+    
+            const moduleInfo = moduleName.find((module) => module.id === completedModule.storage_section_id);
+            if (!moduleInfo) return;
+    
+            if (!userBadgesMap[score.user_id]) {
+                userBadgesMap[score.user_id] = [];
+            }
+    
+            const imageData = moduleInfo.achievement_image_data?.startsWith("data:image")
+                ? moduleInfo.achievement_image_data
+                : `data:image/png;base64,${moduleInfo.achievement_image_data}`;
+    
+            // Create a unique key to identify the badge
+            const badgeKey = `${moduleInfo.name}-${imageData}`;
+    
+            // Prevent duplicates
+            if (!userBadgesMap[score.user_id].some((badge) => `${badge.name}-${badge.achievement_image_data}` === badgeKey)) {
+                userBadgesMap[score.user_id].push({
+                    name: moduleInfo.name || "Unknown Badge",
+                    achievement_image_data: imageData,
+                });
+            }
+        });
+    
+console.log("✅ Final userBadgesMap (no duplicates):", JSON.stringify(userBadgesMap, null, 2));
+        console.log("✅ Final userBadgesMap (no duplicates):", userBadgesMap);
+        setBadges(userBadgesMap);
+    }, [moduleName, units, userScores]);
+    
+    
+    
+
+    const rows = filteredAccounts.map((account, index) => {
+        console.log("Processing account:", account); // Debugging
+        console.log("Account ID:", account?.user_id); // See if `id` exists
+    
+        return {
+            id: index,
+            user_id: account?.id || "Unknown", // Prevent undefined values
+            email: account.email || "N/A",
+            role: account.role || "N/A",
+            badges: badges[account?.id] || [], // Safely access `id`
+        };
+    });
+
+console.table(accounts);
+    
+    
+
+
+
     const columns = [
         { field: "email", headerName: "Email", width: 300 },
         { field: "role", headerName: "Role", width: 300 },
@@ -104,17 +199,38 @@ export default function AccountsDashboard() {
                 </FormControl>
             ),
         },
+        {
+            field: "badges",
+            headerName: "Badges",
+            width: 400,
+            renderCell: (params) => {
+                const userBadges = params.row.badges || []; // Get badges for this specific user
+        
+                if (userBadges.length === 0) {
+                    return <p>No badges earned</p>;
+                }
+        
+                return (
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                        {userBadges.map((badge, index) => (
+                            <div key={index} style={{ textAlign: "center" }}>
+                                <img
+                                    src={badge.achievement_image_data}
+                                    alt={badge.name || "Badge"}
+                                    style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+                                />
+                                <p style={{ fontSize: "12px", marginTop: "5px" }}>{badge.name}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+        }
+            
     ];
 
-    const rows = filteredAccounts.map((account, index) => ({
-        id: index,
-        email: account.email || "N/A",
-        role: account.role || "N/A",
-        emailChange: account.email,
-        roleChange: account.role,
-    }));
+    
 
-    // Show loading spinner while data is being fetched
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -128,9 +244,7 @@ export default function AccountsDashboard() {
             <AdminDashboard />
             <section className="mt-8">
                 <MaxWidthWrapper>
-                    {/* Search Input */}
                     <Box sx={{ marginBottom: 2 }}>
-                        {/* Search Control */}
                         <TextField
                             label="Search"
                             variant="outlined"
@@ -141,7 +255,6 @@ export default function AccountsDashboard() {
                         />
                     </Box>
 
-                    {/* DataGrid Table */}
                     <div className="w-full">
                         <DataGrid
                             rows={rows}

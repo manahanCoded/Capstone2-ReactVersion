@@ -169,28 +169,10 @@ CREATE TABLE QA_questions (
     file_mime_type TEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     isUpdated boolean DEFAULT false,
-    updated_by INTEGER,
-    COLUMN seen_by JSONB DEFAULT '[]';
+    updated_by INTEGER
 );
 
 
-CREATE OR REPLACE FUNCTION notify_new_question() RETURNS TRIGGER AS $$
-BEGIN
-  PERFORM pg_notify('new_question', json_build_object(
-    'question_id', NEW.question_id,
-    'user_id', NEW.user_id,
-    'question_text', NEW.question_text,
-    'topic', NEW.topic,
-    'created_at', NEW.created_at
-  )::text);
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER question_insert_trigger
-AFTER INSERT ON QA_questions
-FOR EACH ROW
-EXECUTE FUNCTION notify_new_question();
 
 
 <!-- DATABASE FOR Question&Answer  answers-->
