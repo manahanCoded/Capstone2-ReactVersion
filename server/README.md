@@ -172,9 +172,6 @@ CREATE TABLE QA_questions (
     updated_by INTEGER
 );
 
-
-
-
 <!-- DATABASE FOR Question&Answer  answers-->
 CREATE TABLE QA_answers (
     answer_id SERIAL PRIMARY KEY,   

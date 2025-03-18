@@ -177,7 +177,7 @@ export default function Forum() {
         }
 
         handleAll_QA();
-    }, [checkUser, openPostOption]);
+    }, [checkUser]);
 
 
     const handleTopicType = (event) => {
@@ -476,11 +476,17 @@ export default function Forum() {
             const data = await response.json();
 
             if (response.ok) {
-                setAll_QA((prevData) => ({
-                    ...prevData,
-                    questions: prevData.questions.filter(q => q.question_id !== questionId),
-                    answers: prevData.answers.filter(a => a.question_id !== questionId),
-                }));
+                setAll_QA((prevData) => {
+                    const updatedQuestions = prevData.questions.filter(q => q.question_id !== questionId);
+                    const updatedAnswers = prevData.answers.filter(a => a.question_id !== questionId);
+                    
+                    return {
+                      ...prevData,
+                      questions: updatedQuestions,
+                      answers: updatedAnswers,
+                    };
+                  });
+                  
             } else {
                 alert(`Error deleting question: ${data.error || "Unknown error"}`);
             }
@@ -667,7 +673,7 @@ export default function Forum() {
                                     setCheckQuestion(null)
                                     setSpecifyQuestion(type.value)
                                 }}
-                                className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
+                                className={`h-11 px-3 md:pl-6 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100 rounded-md cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
                                     }`}
                             >
                                 {specifyQuestion === type.value ? type.filled : type.outlined}
@@ -677,7 +683,7 @@ export default function Forum() {
                         <div className="md:mt-4 md:pt-4 md:border-t flex md:flex-col flex-row gap-1 border-gray-400">
                             {checkUser?.id &&
                                 <p
-                                    className={`h-12 px-3 py-1 flex items-center gap-2 rounded-md cursor-pointer ${isOpen ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"}`}
+                                    className={`h-11 px-3 md:pl-6 py-1 flex items-center gap-2 rounded-md cursor-pointer ${isOpen ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"}`}
                                     onClick={toggleForm}
                                 >
                                     {isOpen ?
@@ -693,7 +699,7 @@ export default function Forum() {
                                         setCheckQuestion(null)
                                         setShowUnapprovedOnly((prev) => !prev)
                                     }}
-                                    className={`h-12 px-3 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly
+                                    className={`h-11 px-3 md:pl-6 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly
                                             ? "bg-red-700 text-white"
                                             : "hover:bg-red-800 hover:text-white"
                                         }`}

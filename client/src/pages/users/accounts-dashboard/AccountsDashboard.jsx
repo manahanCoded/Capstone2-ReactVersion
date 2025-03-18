@@ -117,29 +117,29 @@ export default function AccountsDashboard() {
 
     useEffect(() => {
         if (moduleName.length === 0 || units.length === 0 || userScores.length === 0) return;
-    
+
         const userBadgesMap = {};
-    
+
         userScores.forEach((score) => {
             if (!score.completed) return; // Only process completed modules
-    
+
             const completedModule = units.find((module) => module.id === score.module_id);
             if (!completedModule) return;
-    
+
             const moduleInfo = moduleName.find((module) => module.id === completedModule.storage_section_id);
             if (!moduleInfo) return;
-    
+
             if (!userBadgesMap[score.user_id]) {
                 userBadgesMap[score.user_id] = [];
             }
-    
+
             const imageData = moduleInfo.achievement_image_data?.startsWith("data:image")
                 ? moduleInfo.achievement_image_data
                 : `data:image/png;base64,${moduleInfo.achievement_image_data}`;
-    
+
             // Create a unique key to identify the badge
             const badgeKey = `${moduleInfo.name}-${imageData}`;
-    
+
             // Prevent duplicates
             if (!userBadgesMap[score.user_id].some((badge) => `${badge.name}-${badge.achievement_image_data}` === badgeKey)) {
                 userBadgesMap[score.user_id].push({
@@ -148,37 +148,29 @@ export default function AccountsDashboard() {
                 });
             }
         });
-    
-console.log("✅ Final userBadgesMap (no duplicates):", JSON.stringify(userBadgesMap, null, 2));
-        console.log("✅ Final userBadgesMap (no duplicates):", userBadgesMap);
+
         setBadges(userBadgesMap);
     }, [moduleName, units, userScores]);
-    
-    
-    
+
+
+
 
     const rows = filteredAccounts.map((account, index) => {
-        console.log("Processing account:", account); // Debugging
-        console.log("Account ID:", account?.user_id); // See if `id` exists
-    
         return {
             id: index,
-            user_id: account?.id || "Unknown", // Prevent undefined values
+            user_id: account?.id || "Unknown",
             email: account.email || "N/A",
             role: account.role || "N/A",
-            badges: badges[account?.id] || [], // Safely access `id`
+            badges: badges[account?.id] || [],
         };
     });
 
-console.table(accounts);
-    
-    
 
 
 
     const columns = [
         { field: "email", headerName: "Email", width: 300 },
-        { field: "role", headerName: "Role", width: 300 },
+        { field: "role", headerName: "Role", width: 100 },
         {
             field: "roleChange",
             headerName: "Change Role",
@@ -202,34 +194,39 @@ console.table(accounts);
         {
             field: "badges",
             headerName: "Badges",
-            width: 400,
+            minWidth: 200,
+            flex: 1,
             renderCell: (params) => {
-                const userBadges = params.row.badges || []; // Get badges for this specific user
-        
+                const userBadges = params.row.badges || [];
+
                 if (userBadges.length === 0) {
                     return <p>No badges earned</p>;
                 }
-        
+
                 return (
-                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <div className="flex justify-start gap-4  h-24 p-[5px]">
                         {userBadges.map((badge, index) => (
-                            <div key={index} style={{ textAlign: "center" }}>
+                            <div key={index} className="flex  flex-col  items-center  gap-1 h-24 ">
                                 <img
                                     src={badge.achievement_image_data}
                                     alt={badge.name || "Badge"}
-                                    style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+                                    className="w-6 h-6 rounded-full object-cover"
                                 />
-                                <p style={{ fontSize: "12px", marginTop: "5px" }}>{badge.name}</p>
+                                <p className="text-xs">
+                                    {badge.name}
+                                </p>
                             </div>
                         ))}
                     </div>
+
+
                 );
             },
         }
-            
+
     ];
 
-    
+
 
     if (loading) {
         return (

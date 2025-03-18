@@ -34,50 +34,49 @@ export default function Achievements() {
         fetchUser();
     }, [navigate]);
 
-   useEffect(() => {
-    async function fetchUnitsAndScores() {
-        if (!checkUser.id) return;
-
-        try {
-            const unitsRes = await axios.get(`${API_URL}/api/module/allModule`);
-            setUnits(unitsRes.data.listall);
-
-            const scoresRes = await axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`);
-            setUserScores(scoresRes.data);
-
-            const moduleData = await axios.get(`${API_URL}/api/module/allModule-storage`);
-            if (moduleData.data.success && moduleData.data.listall.length > 0) {
-                const moduleStorage = moduleData.data.listall;
-                setModuleName(moduleStorage); 
-            } else {
-                setModuleName(null);
+       useEffect(() => {
+            if (!checkUser.id) return;
+    
+            async function fetchUnitsAndScores() {
+                try {
+                    const [unitsRes, scoresRes, moduleData] = await Promise.all([
+                        axios.get(`${API_URL}/api/module/allModule`),
+                        axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`),
+                        axios.get(`${API_URL}/api/module/allModule-storage`),
+                    ]);
+    
+                    setUnits(unitsRes.data.listall);
+                    setUserScores(scoresRes.data);
+                    setModuleName(moduleData.data.success ? moduleData.data.listall : []);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                } finally {
+                    setLoading(false);
+                }
             }
+    
+            fetchUnitsAndScores();
+        }, [checkUser.id]);
 
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchUnitsAndScores();
-}, [checkUser.id]);
+ 
 
-useEffect(() => {
-    // Only compute getAchievements if moduleName, units, and userScores are updated
-    if (moduleName && moduleName.length > 0 && units.length > 0 && userScores.length > 0) {
-        const completedModules = units.filter((module) => {
-            return userScores.some((score) => score.module_id === module.id && score.completed);
-        });
-
-        // Get achievements without filtering out undefined values
-        const getAchievements = completedModules.map((completedModule) => {
-            return moduleName.find((module) => module?.id === completedModule.storage_section_id);
-        });
-
-        console.log(getAchievements); // Log to inspect the result
-        setBadges(getAchievements); // Set the badges state
-    }
-}, [moduleName, units, userScores]);
+        useEffect(() => {
+            if (moduleName?.length && units?.length && userScores?.length) {
+              const completedModules = units.filter((module) =>
+                userScores.some((score) => score.module_id === module.id && score.completed)
+              );
+          
+              const getAchievements = completedModules
+                .map((completedModule) =>
+                  moduleName.find((module) => module?.id === completedModule.storage_section_id)
+                )
+                .filter((item, index, self) => item && index === self.findIndex((m) => m?.id === item?.id));
+          
+              console.log(getAchievements);
+              setBadges(getAchievements);
+            }
+          }, [moduleName, units, userScores]);
+          
 
     
 
