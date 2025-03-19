@@ -272,6 +272,9 @@ export default function Forum() {
             }
             openPostOption(null)
             fetchAllQA();
+            setUnseenQuestions((prevUnseen) => 
+                prevUnseen.filter(q => q.question_id !== questionID)
+              );
         } catch (error) {
             alert("An error occurred: " + error.message);
         }
@@ -456,6 +459,7 @@ export default function Forum() {
 
 
 
+    const [updateDeleteKey, setUpdateDeleteKey] = useState(0);
 
     const handleDeleteQuestion = async (questionId) => {
         if (!checkUser?.id) {
@@ -477,16 +481,16 @@ export default function Forum() {
 
             if (response.ok) {
                 setAll_QA((prevData) => {
-                    const updatedQuestions = prevData.questions.filter(q => q.question_id !== questionId);
-                    const updatedAnswers = prevData.answers.filter(a => a.question_id !== questionId);
-                    
-                    return {
-                      ...prevData,
-                      questions: updatedQuestions,
-                      answers: updatedAnswers,
-                    };
-                  });
-                  
+                    const updatedQuestions = prevData.questions.filter((q) => q.question_id !== questionId);
+                    return { ...prevData, questions: updatedQuestions };
+                });
+
+                setUpdateDeleteKey((prevKey) => prevKey + 1); 
+
+                setUnseenQuestions((prevUnseen) => 
+                    prevUnseen.filter(q => q.question_id !== questionId)
+                  );
+
             } else {
                 alert(`Error deleting question: ${data.error || "Unknown error"}`);
             }
@@ -494,22 +498,6 @@ export default function Forum() {
             console.error("Error deleting question:", error);
             alert("An error occurred while deleting the question. Please try again.");
         }
-    };
-
-    // Handle input changes for replies
-    const handleInputChange = (id, value) => {
-        setInputValues((prev) => ({ ...prev, [id]: value }));
-    };
-
-    // Handle likes/dislikes
-    const toggleLike = (id) => {
-        setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
-        setDislikes((prev) => ({ ...prev, [id]: false })); // Remove dislike if liked
-    };
-
-    const toggleDislike = (id) => {
-        setDislikes((prev) => ({ ...prev, [id]: !prev[id] }));
-        setLikes((prev) => ({ ...prev, [id]: false })); // Remove like if disliked
     };
 
 
@@ -526,6 +514,9 @@ export default function Forum() {
             if (res.ok) {
                 fetchAllQA()
                 setOpenPostId(null)
+                setUnseenQuestions((prevUnseen) => 
+                    prevUnseen.filter(q => q.question_id !== acceptID)
+                  );
             } else {
                 alert(data.error || "An error occurred on the server.");
             }
@@ -700,8 +691,8 @@ export default function Forum() {
                                         setShowUnapprovedOnly((prev) => !prev)
                                     }}
                                     className={`h-11 px-3 md:pl-6 py-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly
-                                            ? "bg-red-700 text-white"
-                                            : "hover:bg-red-800 hover:text-white"
+                                        ? "bg-red-700 text-white"
+                                        : "hover:bg-red-800 hover:text-white"
                                         }`}
                                 >
                                     <ChecklistOutlinedIcon />
@@ -999,6 +990,7 @@ export default function Forum() {
                                                     )}
                                                     {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                         <div
+                                                            key={updateDeleteKey}
                                                             onClick={() => {
                                                                 setCheckQuestion(null)
                                                                 handleDeleteQuestion(checkQuestion.question_id)
@@ -1443,6 +1435,7 @@ export default function Forum() {
                                                                             )}
                                                                             {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                                 <div
+                                                                                    key={updateDeleteKey}
                                                                                     onClick={(e) => {
                                                                                         handleDeleteQuestion(question.question_id)
                                                                                         e.stopPropagation()
