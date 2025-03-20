@@ -17,8 +17,8 @@ export default function AccountsDashboard() {
     const [badges, setBadges] = useState([]);
     const [checkUser, setCheckUser] = useState({});
 
-    useEffect(() => {
-        async function fetchUserProfile() { // Renamed to avoid conflict
+   useEffect(() => {
+        async function checkUser() {
             try {
                 const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
@@ -29,9 +29,15 @@ export default function AccountsDashboard() {
                     navigate("/user/login");
                     return;
                 }
-
                 const data = await res.json();
-                setCheckUser(data);
+
+                if (data.role === "client") {
+                    navigate("/");
+                    return;
+                }
+
+                setCheckUser(data)
+
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -43,7 +49,7 @@ export default function AccountsDashboard() {
             }
         }
 
-        fetchUserProfile();
+        checkUser();
     }, [navigate]);
 
 

@@ -53,8 +53,14 @@ export default function JobDashboards() {
     }, []);
 
     const filteredJobs = jobs.filter((job) =>
-        job.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.title.toLowerCase().includes(searchTerm.toLowerCase())
+        job.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.salary?.toString().includes(searchTerm.toLowerCase()) ||
+        job.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.title?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = [
@@ -103,14 +109,14 @@ export default function JobDashboards() {
                     </Box>
                     <div className="w-full">
                         <DataGrid
-                            rows={jobs}
+                            rows={filteredJobs}
                             columns={columns}
                             pageSize={10}
-                            rowsPerPageOptions={[10, 20, 50]}
+                            rowsPerPageOptions={[5, 10, 20]}
                             autoHeight
                             loading={loading}
                         />
-                   </div>
+                    </div>
                 </MaxWidthWrapper>
             </section>
         </div>

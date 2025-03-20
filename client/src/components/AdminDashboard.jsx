@@ -19,11 +19,11 @@ const AdminDashboard = () => {
                         Module
                     </Link>
                     <Link
-                        to="/user/jobs-dashboard" className={`${location.pathname === "/jobs/jobs-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
+                        to="/user/jobs-dashboard" className={`${location.pathname === "/user/jobs-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold cursor-pointer `}>
                         Jobs
                     </Link>
                     <Link
-                        to="/user/announcements-dashboard" className={`${location.pathname === "/announcement" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
+                        to="/user/announcements-dashboard" className={`${location.pathname === "/user/announcements-dashboard" ? "px-3 py-2 rounded-2xl bg-gray-200 border-[1px]" : ""}w-20  flex justify-center items-center hover:text-gray-500 font-semibold px-3 py-2  cursor-pointer`}>
                         Announcement
                     </Link>
                     <Link

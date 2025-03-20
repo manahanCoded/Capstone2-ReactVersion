@@ -3,7 +3,7 @@ import db from "../../Database/DB_Connect.mjs";
 const allAnnouncement = async (req, res) => {
   try {
     const result = await db.query(`SELECT 
-    announcements.id,
+    announcements.id AS announcementsid,
     announcements.title,
     announcements.description,
     announcements.date,
@@ -70,7 +70,7 @@ const addAnnouncement = async (req, res) => {
 };
 
 const editAnnouncement = async (req, res) => {
-  const { id, title, publisher, description } = req.body;
+  const { id, title, description } = req.body;
 
   if (!id || !title || !description ) {
     return res.status(400).json({
@@ -81,8 +81,8 @@ const editAnnouncement = async (req, res) => {
 
   try {
     const result = await db.query(
-      "UPDATE announcements SET title = $1, publisher = $2, description = $3 WHERE id = $4 RETURNING *",
-      [title, publisher, description, id]
+      "UPDATE announcements SET title = $1, description = $2 WHERE id = $3 RETURNING *",
+      [title, description, id]
     );
 
     if (result.rowCount === 0) {

@@ -941,7 +941,7 @@ export default function Forum() {
                                                 />
                                             )}
                                             <div className="flex flex-col gap-1 text-xs">
-                                                {(checkUser?.role === "admin") && (
+                                                {(checkUser?.id === checkQuestion.user_id || checkUser?.role === "admin") && (
                                                     <div className={`gap-1 text-xs ${checkQuestion.is_resolved ? "text-green-500" : "text-red-500"}`}>
                                                         <p>{checkQuestion.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
                                                     </div>
@@ -1380,7 +1380,7 @@ export default function Forum() {
                                                                     )}
 
                                                                     <div className="flex flex-col gap-1 text-xs">
-                                                                        {(checkUser?.role === "admin") && (
+                                                                        {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
                                                                             <div className={`gap-1 text-xs ${question.is_resolved ? "text-green-500" : "text-red-500"}`}>
                                                                                 <p>{question.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
                                                                             </div>

@@ -11,20 +11,30 @@ export default function ModuleDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedFilter, setSelectedFilter] = useState('');
-
+    const [checkUser, setCheckUser] = useState()
+    
     const navigate = useNavigate()
-
-    useEffect(() => {
+   useEffect(() => {
         async function checkUser() {
             try {
                 const res = await fetch(`${API_URL}/api/user/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
+
                 if (!res.ok) {
                     navigate("/user/login");
                     return;
                 }
+                const data = await res.json();
+
+                if (data.role === "client") {
+                    navigate("/");
+                    return;
+                }
+
+                setCheckUser(data)
+
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -134,7 +144,7 @@ export default function ModuleDashboard() {
                             rows={rows}
                             columns={columns}
                             pageSize={5}
-                            rowsPerPageOptions={[5]}
+                            rowsPerPageOptions={[5, 10, 20]}
                             disableSelectionOnClick
                         />
                     </Box>

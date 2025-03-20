@@ -106,6 +106,21 @@ const Navbar = () => {
     setSelectedAnnouncement(null)
   }
 
+  const [selectedFilter, setSelectedFilter] = useState('today');
+
+  const filteredAnnouncements = displayAnnouncement.filter((announcement) => {
+    if (selectedFilter === 'today') {
+      const today = new Date();
+      const announcementDate = new Date(announcement.date);
+      return (
+        announcementDate.getDate() === today.getDate() &&
+        announcementDate.getMonth() === today.getMonth() &&
+        announcementDate.getFullYear() === today.getFullYear()
+      );
+    }
+    return true;
+  });
+
 
   function formatDate(timestamp) {
     const date = new Date(timestamp);
@@ -135,6 +150,11 @@ const Navbar = () => {
     }
     return "Just now";
   }
+
+  const stripHtml = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent;
+  };
 
 
   return (
@@ -368,20 +388,69 @@ const Navbar = () => {
       {
         notification && (
           <section className='absolute py-1 top-14 right-20 text-xs rounded-lg  bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-          <div className="max-h-60 w-60 overflow-y-auto">
-            {displayAnnouncement.map((announcement) => (
-              <div
-                key={announcement.id}
-                onClick={() => {
-                  setNotification(false)
-                  handleAnnouncementClick(announcement)
-                }}
-                className="text-sm w-full border-b cursor-pointer border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-gray-100"
+            <div className=''>
+              <h3 className='text-base py-2 px-4  '>Notifications</h3>
+            </div>
+            <div className='font-bold flex flex-row justify-between '>
+              <button
+                onClick={() => setSelectedFilter('today')}
+                className={`py-2 px-4 w-full border-b-4 ${selectedFilter === 'today' && 'border-red-800'}`}
               >
-                <h2 className=" truncate line-clamp-1">{announcement.title}</h2>
-              </div>
-            ))}
-          </div>
+                Today
+              </button>
+              <button
+                onClick={() => setSelectedFilter('all')}
+                className={`py-2 px-4 w-full border-b-4 ${selectedFilter === 'all' && 'border-red-800'}`}
+              >
+                All
+              </button>
+            </div>
+            <div className="max-h-60 min-h-60 w-72 overflow-y-auto mt-1">
+              {filteredAnnouncements.length > 0 ? (
+                filteredAnnouncements.map((announcement, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      setNotification(false)
+                      handleAnnouncementClick(announcement)
+                    }}
+                    className=" w-full border-b cursor-pointer border-gray-300 flex flex-row items-center gap-4 py-2 px-4 group hover:bg-gray-100"
+                  >
+                    {announcement?.image ? (
+                      <img
+                        src={announcement?.image}
+                        className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                        alt="Profile Picture"
+                      />
+                    ) : (
+                      <AccountCircleIcon
+                        style={{
+                          width: '2.5rem',
+                          height: '2.5rem',
+                          color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                        }}
+                      />
+                    )}
+                    <div className="text-xs">
+                      <div className='flex flex-row flex-wrap gap-1'>
+                        <p className="font-bold truncate line-clamp-1">
+                          {announcement.name ? announcement.name : announcement.email}
+                        </p>
+                        <p className='text-gray-500'>•</p>
+                        <p className=" text-gray-500 text-[0.6rem] truncate line-clamp-1">
+                          {selectedFilter === 'today' ? timeAgo(announcement.date) : formatDate(announcement.date)}
+                        </p>
+                      </div>
+                      <p className="w-36 break-words line-clamp-1  text-sm">{announcement.title}</p>
+                      <p className="w-48 line-clamp-3 text-[0.7rem] text-gray-500 leading-tight">
+                        {stripHtml(announcement.description ?? "No description available")}
+                      </p>
+                    </div>
+                  </div>
+                ))) : (
+                <p className="text-gray-500 p-4">No announcements today.</p>
+              )}
+            </div>
           </section>
         )
       }
@@ -389,8 +458,8 @@ const Navbar = () => {
       {
         isModalOpen && (
           <MaxWidthWrapper className=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
-            <div className="h-[42rem] lg:w-[80vw] w-full bg-white  rounded-lg shadow-lg  ">
-              <section className='flex flex-row justify-between border-b px-6 py-2 pt-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]'>
+            <div className="h-[42rem] lg:w-[80vw] w-full rounded-lg shadow-lg bg-gray-100 overflow-hidden">
+              <section className='flex flex-row justify-between bg-white border-b px-6 py-2 pt-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]'>
                 <h3 className='text-xl font-bold tracking-wide text-red-900'>Notification</h3>
                 <button
                   onClick={closeModal}
@@ -399,71 +468,111 @@ const Navbar = () => {
                   <CloseIcon />
                 </button>
               </section>
-              <section className='h-full w-full flex md:flex-row flex-col md:py-4 px-2 py-1 gap-2'>
+              <section className='h-full w-full flex md:flex-row flex-col md:py-2 px-2 py-1 gap-2'>
                 <div className="relative ">
-
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="md:hidden w-full flex justify-between items-center mb-2 p-3 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                    className="md:hidden w-full flex justify-between items-center mb-1 p-3 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                   >
-                    <span>{selectedAnnouncement?.title? selectedAnnouncement.title: "Announcement"}</span>
+                    <span>{selectedAnnouncement?.title ? selectedAnnouncement.title : "Announcement"}</span>
                     {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
                   </button>
 
-                  <div className={`md:h-[90%] h-[70%] overflow-y-scroll overflow-hidden pr-3 md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
-                    {displayAnnouncement.map((announcement) => (
+                  <div className={`md:h-[90%] h-[70%] border bg-white rounded-sm py-2 overflow-y-scroll overflow-hidden md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
+                    {displayAnnouncement.map((announcement, index) => (
                       <div
-                        key={announcement.id}
+                        key={index}
                         onClick={() => {
                           setIsOpen(!isOpen)
                           handleAnnouncementClick(announcement)
                         }}
-                        className="md:w-56 w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row justify-between gap-2 items-center py-2 px-4 group hover:bg-red-900"
+                        className={`md:w-56 w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row  gap-4 items-center py-2 px-4  ${selectedAnnouncement?.announcementsid == announcement.announcementsid ? "bg-gray-200" : "hover:bg-gray-100 "} `}
                       >
-                        <div className="flex flex-row gap-2 items-center">
-                          {announcement?.image ? (
-                            <img
-                              src={announcement?.image}
-                              className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                              alt="Profile Picture"
-                            />
-                          ) : (
-                            <AccountCircleIcon
-                              style={{
-                                width: '2.5rem',
-                                height: '2.5rem',
-                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                              }}
-                            />
-                          )}
-                          <div className="text-xs">
-                            <p className="group-hover:text-white font-bold truncate line-clamp-1">
+                        {announcement?.image ? (
+                          <img
+                            src={announcement?.image}
+                            className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                            alt="Profile Picture"
+                          />
+                        ) : (
+                          <AccountCircleIcon
+                            style={{
+                              width: '2.5rem',
+                              height: '2.5rem',
+                              color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                            }}
+                          />
+                        )}
+                        <div className="text-xs">
+                          <div className='flex flex-row flex-wrap gap-1'>
+                            <p className="font-bold truncate line-clamp-1">
                               {announcement.name ? announcement.name : announcement.email}
                             </p>
-                            <p className="group-hover:text-white break-words line-clamp-1">{announcement.title}</p>
-                            <p className="group-hover:text-white text-gray-500 text-[0.7rem] truncate line-clamp-1">
+                            <p className='text-gray-500'>•</p>
+                            <p className=" text-gray-500 text-[0.6rem] truncate line-clamp-1">
                               {timeAgo(announcement.date)}
                             </p>
                           </div>
+                          <p className="w-28 break-words line-clamp-1  text-sm">{announcement.title}</p>
+                          <p className="w-28 line-clamp-2 text-[0.7rem] text-gray-500 leading-tight">
+                            {stripHtml(announcement.description ?? "No description available")}
+                          </p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className='h-full w-full py-4'>
-                  <div className="md:h-[90%] h-[80%]  w-full flex-1 px-2 overflow-y-auto">
+                <div className='md:h-[90%] h-[80%] flex flex-col w-full '>
+                  <div className='w-full py-2 px-4 bg-white  rounded line-clamp-1 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]'>
+                    <h2 className="font-bold text-gray-900">
+                      {selectedAnnouncement?.title}
+                    </h2>
+                  </div>
+                  <div className=" bg-white mt-3  w-full rounded flex-1 md:px-4 px-2 overflow-y-auto shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
                     {selectedAnnouncement ? (
-                      <>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                      <div>
+                        <div
+                        className={` w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row  gap-4 items-center py-2 `}
+                      >
+                        {selectedAnnouncement?.image ? (
+                          <img
+                            src={selectedAnnouncement?.image}
+                            className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                            alt="Profile Picture"
+                          />
+                        ) : (
+                          <AccountCircleIcon
+                            style={{
+                              width: '2.5rem',
+                              height: '2.5rem',
+                              color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                            }}
+                          />
+                        )}
+                        <div className="text-xs">
+                          <div className='flex flex-row flex-wrap gap-1'>
+                            <p className="font-bold truncate line-clamp-1">
+                              {selectedAnnouncement.name ? selectedAnnouncement.name : selectedAnnouncement.email}
+                            </p>
+                            <p className='text-gray-500'>•</p>
+                            <p className=" text-gray-500 text-[0.6rem] truncate line-clamp-1">
+                              {timeAgo(selectedAnnouncement.date)}
+                            </p>
+                          </div>
+                          <p className="w-28 break-words line-clamp-1  text-sm">{selectedAnnouncement.title}</p>
+                        </div>
+                      </div>
+
+                        <h2 className="text-xl font-bold text-gray-900  my-4 mb-2">
                           {selectedAnnouncement.title}
                         </h2>
                         <div
-                          className="prose text-gray-700"
+                          className="prose text-gray-700 py-2"
                           dangerouslySetInnerHTML={{
                             __html: selectedAnnouncement.description,
                           }}
                         ></div>
-                      </>
+                      </div>
                     ) : (
                       <div className="flex items-center justify-center h-full">
                         <p className="text-gray-500">Select a notification to view details.</p>

@@ -11,10 +11,11 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AnnouncementsDashboard() {
     const [announcements, setAnnouncements] = useState([]);
+    const [checkUser, setCheckUser] = useState()
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
-    const [editingRow, setEditingRow] = useState(null);  // To track the row being edited
-    const [openDialog, setOpenDialog] = useState(false);  // To control dialog visibility
+    const [editingRow, setEditingRow] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const navigate = useNavigate()
 
@@ -25,10 +26,20 @@ export default function AnnouncementsDashboard() {
                     method: "GET",
                     credentials: "include",
                 });
+
                 if (!res.ok) {
                     navigate("/user/login");
                     return;
                 }
+                const data = await res.json();
+
+                if (data.role === "client") {
+                    navigate("/");
+                    return;
+                }
+
+                setCheckUser(data)
+
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -72,48 +83,61 @@ export default function AnnouncementsDashboard() {
     };
 
     const handleEditClick = (row) => {
-        setEditingRow(row);
+        setEditingRow(row); 
         setOpenDialog(true);
     };
-
+    
     const handleDialogClose = () => {
         setOpenDialog(false);
-        setEditingRow(null);  // Reset editingRow when dialog is closed
+        setEditingRow(null);  
     };
 
-    const handleSaveEdit = () => {
-        fetch(`${API_URL}/api/announcement/editAnnouncement`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editingRow),
-        })
-            .then(() => {
-                setAnnouncements((prev) =>
-                    prev.map((ann) => (ann.id === editingRow.id ? { ...ann, ...editingRow } : ann))
-                );
-                handleDialogClose(); // Close dialog after saving
-            })
-            .catch((error) => console.error("Error updating announcement:", error));
-    };
 
-    const handleFieldChange = (field, value) => {
-        setEditingRow((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
 
-    const filteredAnnouncements = announcements.filter(
-        (ann) =>
-            ann.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            ann.publisher.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSaveEdit = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_URL}/api/announcement/editAnnouncement`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editingRow),
+            });
+    
+            if (!response.ok) throw new Error("Failed to update announcement");
+    
+            const updatedResponse = await fetch(`${API_URL}/api/announcement/allAnnouncements`);
+            const data = await updatedResponse.json();
+            setAnnouncements(data.announcement);
+    
+            alert("Announcement updated successfully!");
+            handleDialogClose();
+        } catch (error) {
+            console.error(error);
+            alert("Failed to update announcement.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    
+    
+
+    const filteredAnnouncements = announcements.filter((announcement) => {
+
+        return (
+            announcement?.title?.toLowerCase().includes(searchTerm) ||
+            announcement?.email?.toLowerCase().includes(searchTerm) ||
+            announcement?.description?.toLowerCase().includes(searchTerm) ||
+            announcement?.date?.toString().toLowerCase().includes(searchTerm)
+        );
+    });
 
     const columns = [
-        { field: "id", headerName: "ID", width: 90 },
+        { field: "announcementsid", headerName: "ID", width: 90 },
         { field: "title", headerName: "Title", width: 150 },
-        { field: "publisher", headerName: "Publisher", width: 150 },
-        { field: "description", headerName: "Description", width: 250 },
+        { field: "email", headerName: "Publisher", width: 150 },
         { field: "date", headerName: "Date", width: 150 },
         {
             field: "edit",
@@ -138,7 +162,7 @@ export default function AnnouncementsDashboard() {
                 <Button
                     variant="contained"
                     size="small"
-                    onClick={() => handleDelete(params.row.id)}
+                    onClick={() => handleDelete(params.row.announcementsid)}
                     sx={{ backgroundColor: '#b91c1c', '&:hover': { backgroundColor: '#991b1b' } }}
                 >
                     Delete
@@ -146,6 +170,12 @@ export default function AnnouncementsDashboard() {
             ),
         },
     ];
+
+    const normalizedAnnouncements = filteredAnnouncements.map((ann, index) => ({
+        ...ann,
+        id: ann.announcementsid || index,
+    }));
+
 
     return (
         <div className="mt-14 h-screen text-sm">
@@ -164,10 +194,10 @@ export default function AnnouncementsDashboard() {
                     </Box>
                     <div className="w-full">
                         <DataGrid
-                            rows={filteredAnnouncements}
+                            rows={normalizedAnnouncements}
                             columns={columns}
                             pageSize={10}
-                            rowsPerPageOptions={[10, 20, 50]}
+                            rowsPerPageOptions={[5, 10, 20]}
                             autoHeight
                             loading={loading}
                         />
@@ -183,14 +213,7 @@ export default function AnnouncementsDashboard() {
                         <TextField
                             label="Title"
                             value={editingRow?.title || ''}
-                            onChange={(e) => handleFieldChange("title", e.target.value)}
-                            fullWidth
-                            margin="dense"
-                        />
-                        <TextField
-                            label="Publisher"
-                            value={editingRow?.publisher || ''}
-                            onChange={(e) => handleFieldChange("publisher", e.target.value)}
+                            onChange={(e) => setEditingRow({...editingRow , title: e.target.value})}
                             fullWidth
                             margin="dense"
                         />
@@ -198,8 +221,8 @@ export default function AnnouncementsDashboard() {
                             <EditorToolbar toolbarId="t3" />
                             <ReactQuill
                                 theme="snow"
-                                value={editingRow?.description || ''}  
-                                onChange={(value) => handleFieldChange("description", value)} 
+                                value={editingRow?.description || ''}
+                                onChange={(value) => setEditingRow({ ...editingRow, description: value })}
                                 placeholder="Write something..."
                                 modules={modules("t3")}
                                 formats={formats}
