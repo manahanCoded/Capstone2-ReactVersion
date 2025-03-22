@@ -167,12 +167,14 @@ const Navbar = () => {
               onClick={() => setMenu(!menu)} />
             <div className={`${menu ? "block" : "hidden"} w-36 absolute top-11 left-0 z-30 flex flex-col  rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]`}>
               <Link
+                onClick={() => setMenu(!menu)}
                 to="/modules"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
               >
                 Modules
               </Link>
               <Link
+                onClick={() => setMenu(!menu)}
                 to="/games"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
               >
@@ -185,12 +187,14 @@ const Navbar = () => {
                 Demo
               </a>
               <Link
+                onClick={() => setMenu(!menu)}
                 to="/jobs-home"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
               >
                 Jobs
               </Link>
               <Link
+                onClick={() => setMenu(!menu)}
                 to="/forum"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
               >
@@ -472,11 +476,12 @@ const Navbar = () => {
                 <div className="relative ">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="md:hidden w-full flex justify-between items-center mb-1 p-3 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                    className="md:hidden w-full flex justify-between items-center overflow-hidden  mb-1 p-3 bg-white rounded-lg  shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                   >
-                    <span>{selectedAnnouncement?.title ? selectedAnnouncement.title : "Announcement"}</span>
+                    <span className="truncate">{selectedAnnouncement?.title || "Announcement"}</span>
                     {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
                   </button>
+
 
                   <div className={`md:h-[90%] h-[70%] border bg-white rounded-sm py-2 overflow-y-scroll overflow-hidden md:block w-full ${isOpen ? 'block' : 'hidden'}`}>
                     {displayAnnouncement.map((announcement, index) => (
@@ -523,8 +528,8 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className='md:h-[90%] h-[80%] flex flex-col w-full '>
-                  <div className='w-full py-2 px-4 bg-white  rounded line-clamp-1 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]'>
-                    <h2 className="font-bold text-gray-900">
+                  <div className='md:block hidden w-full py-2 px-4 bg-white  rounded line-clamp-1 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]'>
+                    <h2 className="font-bold text-gray-900 ">
                       {selectedAnnouncement?.title}
                     </h2>
                   </div>
@@ -532,36 +537,36 @@ const Navbar = () => {
                     {selectedAnnouncement ? (
                       <div>
                         <div
-                        className={` w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row  gap-4 items-center py-2 `}
-                      >
-                        {selectedAnnouncement?.image ? (
-                          <img
-                            src={selectedAnnouncement?.image}
-                            className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                            alt="Profile Picture"
-                          />
-                        ) : (
-                          <AccountCircleIcon
-                            style={{
-                              width: '2.5rem',
-                              height: '2.5rem',
-                              color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                            }}
-                          />
-                        )}
-                        <div className="text-xs">
-                          <div className='flex flex-row flex-wrap gap-1'>
-                            <p className="font-bold truncate line-clamp-1">
-                              {selectedAnnouncement.name ? selectedAnnouncement.name : selectedAnnouncement.email}
-                            </p>
-                            <p className='text-gray-500'>•</p>
-                            <p className=" text-gray-500 text-[0.6rem] truncate line-clamp-1">
-                              {timeAgo(selectedAnnouncement.date)}
-                            </p>
+                          className={` w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row  gap-4 items-center py-2 `}
+                        >
+                          {selectedAnnouncement?.image ? (
+                            <img
+                              src={selectedAnnouncement?.image}
+                              className="h-11 w-11 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                              alt="Profile Picture"
+                            />
+                          ) : (
+                            <AccountCircleIcon
+                              style={{
+                                width: '2.5rem',
+                                height: '2.5rem',
+                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                              }}
+                            />
+                          )}
+                          <div className="text-xs">
+                            <div className='flex flex-row flex-wrap gap-1'>
+                              <p className="font-bold truncate line-clamp-1">
+                                {selectedAnnouncement.name ? selectedAnnouncement.name : selectedAnnouncement.email}
+                              </p>
+                              <p className='text-gray-500'>•</p>
+                              <p className=" text-gray-500 text-[0.6rem] truncate line-clamp-1">
+                                {timeAgo(selectedAnnouncement.date)}
+                              </p>
+                            </div>
+                            <p className="w-28 break-words line-clamp-1  text-sm">{selectedAnnouncement.title}</p>
                           </div>
-                          <p className="w-28 break-words line-clamp-1  text-sm">{selectedAnnouncement.title}</p>
                         </div>
-                      </div>
 
                         <h2 className="text-xl font-bold text-gray-900  my-4 mb-2">
                           {selectedAnnouncement.title}

@@ -104,6 +104,7 @@ CREATE TABLE jobs(
 	description text,
 	moreInfo text,
 	date date,
+    update_date TIMESTAMP,
     file_name TEXT,
     file_data BYTEA,
     file_mime_type TEXT

@@ -28,6 +28,7 @@ export default function JobsPage() {
   const [selectedSalary, setSelectedSalary] = useState("");
   const [selectedJobTypes, setSelectedJobTypes] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [filterBookmarked, setFilterBookmarked] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -134,8 +135,8 @@ export default function JobsPage() {
 
 
   useEffect(() => {
-    handleFilters(searchQuery, selectedJobTypes, selectedLocations, selectedSalary);
-  }, [searchQuery, selectedJobTypes, selectedLocations, selectedSalary]);
+    handleFilters(searchQuery, selectedJobTypes, selectedLocations, selectedSalary, filterBookmarked);
+  }, [searchQuery, selectedJobTypes, selectedLocations, selectedSalary, filterBookmarked]);
 
   const parseSalary = (salary) => {
     if (!salary) return 0;
@@ -143,10 +144,14 @@ export default function JobsPage() {
     return isNaN(numericValue) ? 0 : numericValue;
   };
 
-  const handleFilters = (query, jobTypes, locations, salary) => {
+  const handleFilters = (query, jobTypes, locations, salary, bookmarkedOnly) => {
     const lowerCaseQuery = query.toLowerCase();
 
     const filteredJobs = displayJobs.filter((job) => {
+      if (bookmarkedOnly && !bookmarkedJobs.includes(job.id)) {
+        return false; 
+      }
+
       const matchesSearchTerm =
         job.title?.toLowerCase().includes(lowerCaseQuery) ||
         job.applicants?.toString().includes(lowerCaseQuery) ||
@@ -206,11 +211,11 @@ export default function JobsPage() {
   return (
     <div className="mt-14">
       <MaxWidthWrapper className="flex lg:flex-row flex-col justify-between w-full gap-6 lg:py-10 pb-10">
-        <section className="xl:sticky top-20 xl:w-64 xl:h-screen h-14 flex border-b-[1px] xl:text-sm text-xs ">
-          <section className=" flex xl:flex-col flex-row gap-6">
-            <div className="flex lg:flex-col items-center flex-row md:gap-4 gap-2">
+        <section className="xl:sticky top-20 xl:w-64 xl:h-screen h-fit py-1 flex border-b-[1px] xl:text-sm text-xs ">
+          <section className=" flex xl:flex-col flex-row ">
+            <div className="flex lg:flex-col items-center flex-row flex-wrap md:gap-4 gap-2">
               {/* Job Type Filter */}
-              <div className="lg:hidden block relative w-full ">
+              <div className="lg:hidden block relative  w-[46%]">
                 <button
                   onClick={() => setJobTypeOpen(!isJobTypeOpen)}
                   className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
@@ -245,7 +250,7 @@ export default function JobsPage() {
                 )}
               </div>
               {/* Location Filter */}
-              <div className="lg:hidden block relative  w-full">
+              <div className="lg:hidden block relative w-[46%] ">
                 <button
                   onClick={() => setLocationOpen(!isLocationOpen)}
                   className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
@@ -281,7 +286,7 @@ export default function JobsPage() {
               </div>
 
               {/* Salary Filter */}
-              <div className="relative  w-full">
+              <div className="relative lg:w-full  w-[46%] ">
                 <button
                   onClick={() => setSalaryOpen(!isSalaryOpen)}
                   className="w-full lg:h-11 h-9 py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
@@ -315,7 +320,12 @@ export default function JobsPage() {
                   </ul>
                 )}
               </div>
-
+              {/* Bookmarked Filter */}
+              <div className="lg:hidden block relative  w-[46%]">
+                <button onClick={() => setFilterBookmarked((prev) => !prev)} className={`"w-full lg:h-11 h-9 py-2 px-4 w-full p-4 ${filterBookmarked ? 'text-white bg-red-700 ' : 'bg-white '} border border-gray-300 rounded-xl `}>
+                  {filterBookmarked ? 'Show All' : 'Show Bookmarked'}
+                </button>
+              </div>
               {/* Checkbox section */}
               {/* Job type */}
               <div className="lg:block hidden w-full p-4 bg-white border border-gray-300 rounded-xl shadow-md">
@@ -357,6 +367,11 @@ export default function JobsPage() {
                   ))}
                 </ul>
               </div>
+            </div>
+            <div>
+              <button onClick={() => setFilterBookmarked((prev) => !prev)} className={`lg:block hidden text-sm w-full p-4 font-semibold ${filterBookmarked ? 'text-white bg-red-700 ' : 'text-gray-700 bg-white '} border border-gray-300 rounded-xl shadow-md mt-4`}>
+                {filterBookmarked ? 'Show All' : 'Show Bookmarked'}
+              </button>
             </div>
           </section>
         </section>

@@ -153,7 +153,7 @@ const upload_appointment = async (req, res) => {
       [jobId, currentApplicants, name, email, date, application, req.file.buffer, req.file.mimetype]
     );
 
-    // Update applicants count for the job
+
     await db.query("UPDATE jobs SET applicants = applicants + 1 WHERE id = $1", [jobId]);
 
     res.status(200).send("File uploaded and applicants count updated.");
@@ -320,7 +320,7 @@ const updateJob = async (req, res) => {
       UPDATE jobs SET 
         name = $1, phone = $2, email = $3, title = $4, jobtype = $5, remote = $6,
         experience = $7, salary = $8, state = $9, city = $10, street = $11,
-        description = $12, moreinfo = $13`;
+        description = $12, moreinfo = $13, update_date = CURRENT_TIMESTAMP`;
     
     let values = [
       name,

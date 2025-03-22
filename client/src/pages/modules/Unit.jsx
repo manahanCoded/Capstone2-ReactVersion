@@ -98,7 +98,7 @@ export default function Unit() {
                         </div>
                     </div>
                     <div className=" lg:w-4/6  top-20">
-                        <div className="h-[30rem] w-full relative">
+                        <div className="md:h-[30rem] w-full relative">
                             {moduleName.file_url &&
                             <img className="absolute inset-0 aspect-[20/13] h-full z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                                 src={moduleName.file_url} alt="" />
@@ -110,14 +110,14 @@ export default function Unit() {
             <MaxWidthWrapper className="md:pr-0 ">
                 <section className=" flex md:flex-row flex-col justify-center lg:ml-20  gap-6 ">
                     <div className="relative w-full">
-                        <div className="absolute -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+                        <div className="md:absolute my-4 -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
                             <h3 className="w-fit text-lg font-semibold text-[#333333] p-2 border-b-4 border-red-900">Description</h3>
                             <p className="my-8 text-sm text-gray-600 line-clamp-4">{moduleName.description}</p>
                             <div className=" px-10 w-ful flex justify-end self-center">
                                 <a className="px-4 py-2 text-white rounded-3xl text-sm bg-red-900 hover:bg-red-700 w-ful flex justify-end self-center" href="#start">Get Started</a>
                             </div>
                         </div>
-                        <h4 id="start" className="mt-32 mb-8 text-4xl font-extralight">Insights you'll uncover.</h4>
+                        <h4 id="start" className="md:mt-32 mb-8 text-4xl font-extralight">Insights you'll uncover.</h4>
                         {units.length > 0 ? (
                             <div className="flex flex-col gap-5 pb-8">
                                 {units.map((unit, index) => {
