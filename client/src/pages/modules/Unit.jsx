@@ -91,7 +91,7 @@ export default function Unit() {
                                 </Link>
                             )}
                             </div>
-                            <h1 className="text-[2.5rem] text-red-900 font-light mt-1">{moduleName.name}</h1>
+                            <h1 className="text-[2.5rem]  text-red-900 break-words font-light mt-1">{moduleName.name}</h1>
                             <p className="mt-4 text-sm">🛠️ Blockchain may seem tough now, but soon it'll click!</p>
                             <p className="mt-4 text-">Web3 is the next evolution of the internet, leveraging
                                 decentralization, blockchain, and smart contracts to empower users with transparency, security, and digital ownership.</p>
@@ -110,9 +110,9 @@ export default function Unit() {
             <MaxWidthWrapper className="md:pr-0 ">
                 <section className=" flex md:flex-row flex-col justify-center lg:ml-20  gap-6 ">
                     <div className="relative w-full">
-                        <div className="md:absolute my-4 -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+                        <div className="md:absolute overflow-hidden my-4 -top-40 inset-0 w-full h-64 rounded p-4 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
                             <h3 className="w-fit text-lg font-semibold text-[#333333] p-2 border-b-4 border-red-900">Description</h3>
-                            <p className="my-8 text-sm text-gray-600 line-clamp-4">{moduleName.description}</p>
+                            <p className="h-24 overflow-y-auto  my-6 text-sm text-gray-600 break-words ">{moduleName.description}</p>
                             <div className=" px-10 w-ful flex justify-end self-center">
                                 <a className="px-4 py-2 text-white rounded-3xl text-sm bg-red-900 hover:bg-red-700 w-ful flex justify-end self-center" href="#start">Get Started</a>
                             </div>

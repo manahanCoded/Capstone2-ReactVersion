@@ -8,7 +8,7 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function ModulesPage() {
-  const [checkUser ,setCheckUser] = useState([])
+  const [checkUser, setCheckUser] = useState([])
   const [modules, setModules] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState(new Set());
@@ -44,7 +44,7 @@ export default function ModulesPage() {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-      setLoading(false); 
+      setLoading(false);
     }
 
     fetchModulesAndUser();
@@ -149,51 +149,61 @@ export default function ModulesPage() {
               </div>
             ) : filteredModules.length > 0 ? (
               filteredModules.map((module, index) => (
-                <section
+                <Link
+                  to={`units/${module.id}`}
                   key={index}
-                  className="h-[24rem] flex flex-col justify-between xl:w-[19rem] md:w-52 sm:w-80 w-56 rounded-md border-[1px] bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  className="md:h-[24rem] h-[16rem]  flex flex-col justify-between xl:w-[19rem] sm:w-72  w-44  border border-b-2 border-b-red-800 rounded-xl bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 shadow-[1px_0px_20px_2px_rgba(0,_0,_0,_0.1)]"
                 >
                   <div
-                    className={`relative flex w-full min-h-40 p-3 text-white transition-all duration-300 ${!module.file_url && "bg-red-950"
+                    className={`relative flex w-full md:min-h-56 h-80 p-2 overflow-hidden rounded-xl text-white transition-all duration-300 ${!module.file_url && "bg-red-950 "
                       }`}
                   >
                     {module.file_url && (
                       <img
-                        className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-300 group-hover:scale-105"
+                        className=" w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                         src={module.file_url}
                         alt={module.name}
                       />
                     )}
                     {module.file_url && (
-                      <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>
+                      <p
+                        className={`md:text-sm text-xs absolute right-3 top-3 text-white px-3 py-1 rounded z-10 capitalize  ${module?.difficulty_level === 'easy'
+                          ? 'bg-green-600'
+                          : module?.difficulty_level === 'medium'
+                            ? 'bg-yellow-500'
+                            : module?.difficulty_level === 'hard'
+                            && 'bg-red-600'
+                          }`}
+                      >
+                        {module?.difficulty_level}
+                      </p>
+
                     )}
-                    <h2 className="text-lg font-medium line-clamp-3 z-10">{module.name}</h2>
+                    {!module.file_url && (
+                      <img
+                        className=" w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                        src="/IMG_Modules/LOGO_white.png"
+                        alt={module.name}
+                      />
+                    )}
                   </div>
-                  <div className="h-full p-3">
-                    <img className="h-4 w-20 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
-                    <div className="w-full h-14 flex flex-row flex-wrap gap-1 overflow-hidden my-2">
+                  <div className="h-full p-2 px-3">
+                    <img className="md:h-4 md:w-20 h-3 w-18 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
+                    <h2 className="md:h-12 overflow-hidden md:text-base text-sm font-medium break-words line-clamp-2 z-10 text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {module.name}
+                    </h2>
+                    <div className=" w-full md:h-14 h-6 flex flex-row flex-wrap  gap-1 overflow-hidden my-2">
                       {module.tags.map((tag, index) => (
                         <p
                           key={index}
-                          className="h-fit border px-2 py-1 rounded-lg lg:text-[0.6rem] text-[0.45rem] tracking-wide transition-all duration-300 hover:bg-gray-200"
+                          className="h-fit border px-2 py-1 rounded-lg md:text-[0.6rem] text-[0.45rem] tracking-wide transition-all duration-300 hover:bg-gray-200"
                         >
                           {tag}
                         </p>
                       ))}
                     </div>
-                    <p className="text-sm line-clamp-3">{module.description}</p>
                   </div>
-                  <section className="w-full h-12 p-3 mb-3 flex justify-end items-center text-xs">
-                    <div className="group">
-                      <Link
-                        to={`units/${module.id}`}
-                        className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white transition-all duration-300"
-                      >
-                        Start
-                      </Link>
-                    </div>
-                  </section>
-                </section>
+                </Link>
 
               ))
             ) : (

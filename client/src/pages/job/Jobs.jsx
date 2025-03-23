@@ -425,7 +425,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                       <div className="md:h-32 pr-10">
-                        <h3 className="mt-2 font-medium md:text-3xl text-2xl line-clamp-2 text-white">
+                        <h3 className="mt-2 font-medium md:text-3xl text-2xl break-words line-clamp-2 text-white">
                           {job.title}
                         </h3>
                       </div>

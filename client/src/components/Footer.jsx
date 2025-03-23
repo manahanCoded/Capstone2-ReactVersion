@@ -3,14 +3,14 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 export default function Footer() {
     return (
       <div className="text-sm bg-gray-100">
-        <MaxWidthWrapper className="w-full mx-auto">
+        <MaxWidthWrapper className="">
           <section className="pt-12 pb-8 flex justify-center items-center ">
             
           </section>
   
           <div className="h-14 flex flex-row justify-between items-center bg-gray-100 md:text-sm text-xs">
             <a href="/" className="">
-              <p>&copy;2024 cryptowarriors.com</p>
+              <p>&copy;2025 cryptowarriors.com</p>
             </a>
   
             <div className="flex flex-row items-center md:gap-8 gap-2">

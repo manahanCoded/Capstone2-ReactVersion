@@ -446,7 +446,7 @@ const Navbar = () => {
                         </p>
                       </div>
                       <p className="w-36 break-words line-clamp-1  text-sm">{announcement.title}</p>
-                      <p className="w-48 line-clamp-3 text-[0.7rem] text-gray-500 leading-tight">
+                      <p className="w-48 break-words  line-clamp-3 text-[0.7rem] text-gray-500 leading-tight">
                         {stripHtml(announcement.description ?? "No description available")}
                       </p>
                     </div>
@@ -568,7 +568,7 @@ const Navbar = () => {
                           </div>
                         </div>
 
-                        <h2 className="text-xl font-bold text-gray-900  my-4 mb-2">
+                        <h2 className="text-xl break-words  font-bold text-gray-900  my-4 mb-2">
                           {selectedAnnouncement.title}
                         </h2>
                         <div

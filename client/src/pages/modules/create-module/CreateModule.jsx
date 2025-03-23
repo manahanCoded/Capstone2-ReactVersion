@@ -433,7 +433,7 @@ export default function CreateModulePage() {
                                         />
                                     )}
                                     {module.file_url && <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>}
-                                    <h2 className="text-lg font-medium line-clamp-3 z-10">
+                                    <h2 className="h-fit break-words overflow-hidden text-lg font-medium line-clamp-3 z-10">
                                         {module.name}
                                     </h2>
                                 </div>

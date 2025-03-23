@@ -1,156 +1,210 @@
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-  const [findModules, setFindModules] = useState([])
-  const [checkUser, setCheckUser] = useState(null);
-  const [moduleScores, setModuleScores] = useState([])
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import Footer from "@/components/Footer";
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 
-   const Find_modulesRes = await fetch("http://localhost:5000/api/module/allModule");
-        const Find_modulesData = await Find_modulesRes.json();
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-        if (Array.isArray(Find_modulesData.listall)) {
-          setFindModules(Find_modulesData.listall);
+export default function ModulesPage() {
+  const [checkUser ,setCheckUser] = useState([])
+  const [modules, setModules] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState(new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchModulesAndUser() {
+      setLoading(true);
+      try {
+
+        const modulesRes = await fetch(`${API_URL}/api/module/allModule-storage`);
+        const modulesData = await modulesRes.json();
+
+        if (modulesData.listall) {
+          const updatedModules = modulesData.listall.map((module) => ({
+            ...module,
+            file_url: module.file_data ? `data:${module.file_mime_type};base64,${module.file_data}` : null,
+          }));
+
+          setModules(updatedModules);
         } else {
-          setFindModules([]);
+          setModules([]);
         }
 
-            if (userData?.id) {
-          const userScoreRes = await fetch(`http://localhost:5000/api/module/get-user-score/${userData.id}`);
-          if (userScoreRes.ok) {
-            const userScoresData = await userScoreRes.json();
-            if (Array.isArray(userScoresData)) {
-              setModuleScores(userScoresData);
-            } else {
-              console.error("No user scores found");
-              setModuleScores([]);
-            }
-          } else {
-            console.error("Failed to fetch user scores");
-            setModuleScores([]);
-          }
-        } else {
-          console.error("User ID is missing");
-        }
+        const userRes = await fetch(`${API_URL}/api/user/profile`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const userData = await userRes.json();
+        setCheckUser(userData);
 
-{/* Scores */}
-          <div className="h-[70vh] lg:w-1/3 sticky top-20">
-            <p className="font-medium mb-2">Recent Feedback</p>
-            <div className="h-[60vh] mb-4 flex flex-col gap-4 border-y-2 py-4 border-gray-600 overflow-y-auto">
-              {Array.isArray(moduleScores) && moduleScores.length > 0 ? (
-                moduleScores.map((scores, index) => {
-                  const module = findModules.find((mod) => mod.id === scores.module_id);
-                  return (
-                    <Link to={`units/docs/${module.id}`}
-                      className="flex flex-col p-4 rounded-md gap-2 text-[.8rem] text-gray-500 bg-slate-50 hover:bg-slate-100 hover:border-slate-600 border-[1px] "
-                      key={index}>
-                      <h3 className="text-[.82rem] text-red-950">{module?.title || "Unknown Module"}</h3>
-                      {scores.passed ?
-                        <p className="flex items-center bg-green-600 text-white w-fit px-2"><CheckIcon className="mr-1" /> Passed</p>
-                        :
-                        <p className="flex items-center bg-red-600 text-white w-fit px-2"><CloseIcon className="mr-1" /> Failed</p>
-                      }
-                      <div className="flex flex-row justify-between items-center">
-                        <p>{scores.score} out of {scores.perfect_score}</p>
-                        {scores.completion_date ? <p>{new Date(scores.completion_date).toLocaleDateString()}</p>
-                          : <p>No Date</p>}
-                      </div>
-                    </Link>
-                  );
-                })
-              ) : (
-                <p>No Quizzes</p>
-              )}
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setLoading(false); 
+    }
+
+    fetchModulesAndUser();
+  }, []);
+
+  const uniqueTags = [...new Set(modules.flatMap((module) => module.tags))];
+
+  // Handle checkbox selection
+  const handleTagChange = (tag) => {
+    setSelectedTags((prevTags) => {
+      const newTags = new Set(prevTags);
+      if (newTags.has(tag)) {
+        newTags.delete(tag);
+      } else {
+        newTags.add(tag);
+      }
+      return newTags;
+    });
+  };
+
+  // Filter modules based on searchQuery and selectedTags
+  const filteredModules = modules.filter((module) =>
+    (module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      module.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))) &&
+    (selectedTags.size === 0 || module.tags.some(tag => selectedTags.has(tag))) // Filter by selected tags
+  );
+
+  const [showAllTags, setShowAllTags] = useState(false);
+  const visibleTags = showAllTags ? uniqueTags : uniqueTags.slice(0, 5);
+
+  return (
+    <div className="h-screen mt-14 ">
+      <MaxWidthWrapper >
+        <section className="flex md:flex-row flex-col justify-center lg:mx-20 py-8 gap-6 ">
+
+          {/* Search Filter section */}
+          <div className="lg:block hidden h-[70vh] lg:w-1/3 sticky top-20">
+            <div className="flex flex-row items-center gap-3 text-3xl mb-4 pb-4 border-b">
+              <DashboardOutlinedIcon />
+              <h2 className="">Modules</h2>
             </div>
-            <Link to={"/profile"} className="text-sm py-2 px-4 rounded-sm text-white bg-red-900 hover:bg-red-700">Reviewer</Link>
+            <section className=" w-full flex flex-row px-4 py-3 mb-4 justify-between items-center border-[1px] rounded-lg ">
+              <input
+                type="text"
+                placeholder="Search modules..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full outline-none"
+              />
+              <SearchOutlinedIcon />
+            </section>
+
+            {/* Filter section */}
+            <section className="mb-4 px-4">
+              <p className="font-semibold mb-2">Filter by Tags:</p>
+              <div className="h-[50vh] flex flex-col items-start gap-3 overflow-y-auto">
+                {visibleTags.map((tag, index) => (
+                  <label key={index} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedTags.has(tag)}
+                      onChange={() => handleTagChange(tag)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-base first-letter:uppercase  text-gray-500">{tag}</span>
+                  </label>
+                ))}
+                {uniqueTags.length > 5 && (
+                  <button
+                    onClick={() => setShowAllTags(!showAllTags)}
+                    className="text-red-500 text-sm font-medium"
+                  >
+                    {showAllTags ? "See Less" : "See More"}
+                  </button>
+                )}
+              </div>
+            </section>
           </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-           <div className="h-screen mt-14 px-4">
-            <MaxWidthWrapper className="py-8 w-[60%]">
-                {error && <p className="text-red-500">{error}</p>}
-                {moduleName.length > 0 && (
-                    <h1 className="text-3xl font-bold mb-4">{moduleName[0].name}</h1>
-                )}
-                 <img
-                        className="absolute inset-0 w-full h-full object-cover z-10"
+          <div className="w-full flex flex-wrap gap-4 md:justify-start justify-evenly">
+            {/* Search */}
+            <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center  gap-6 text-xs border-b-[1px] bg-white">
+              <div>
+                <p className="text-xl font-medium mb-4">🌟 Stay Inspired & Keep Learning! 🌟</p>
+                <p className="">💡Every expert was once a beginner. Web3 is
+                  still evolving, and you have the chance to grow with it. Keep learning, keep building!</p>
+              </div>
+              <div className="lg:hidden w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
+                <input
+                  placeholder="Search Module"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-9 w-full py-2 pl-4 outline-none bg-slate-100"
+                />
+                <SearchOutlinedIcon className="mr-2" />
+              </div>
+            </section>
+            {loading ? (
+              <div className="w-full flex justify-center items-center">
+                <p className="text-lg font-medium animate-pulse">Loading modules...</p>
+              </div>
+            ) : filteredModules.length > 0 ? (
+              filteredModules.map((module, index) => (
+                <Link
+                to={`units/${module.id}`}
+                  key={index}
+                  className="h-[24rem] flex flex-col justify-between xl:w-[19rem] md:w-52 sm:w-80 w-56 rounded-md border-[1px] bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                >
+                  <div
+                    className={`relative flex w-full min-h-40 p-3 text-white transition-all duration-300 ${!module.file_url && "bg-red-950"
+                      }`}
+                  >
+                    {module.file_url && (
+                      <img
+                        className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-300 group-hover:scale-105"
                         src={module.file_url}
                         alt={module.name}
                       />
-                <h1>{moduleName.name}</h1>
-                <h1 className="text-3xl font-bold mb-4">Units</h1>
-
-                {checkUser?.role === "admin" && (
-                    <Link
-                        to={`/modules/create-unit/${id}`}
-                        className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
-                    >
-                        Create Unit
-                    </Link>
-                )}
-
-                {units.length > 0 ? (
-                    <div className="space-y-4">
-                        {units.map((unit, index) => {
-                            const userScore = userScores.find((score) => score.module_id === unit.id);
-                            const isCompleted = userScore?.completed;
-                            const score = userScore?.score || 0;
-                            const passed = userScore?.passed ? "Passed" : "Not Passed";
-
-                            return (
-                                <div key={unit.id} className="border-b border-gray-200 py-2 text-sm">
-                                    <p className="text-lg font-semibold">{unit?.title}</p>
-                                    {isCompleted ? (
-                                        <div className="text-gray-500 mt-2">
-                                            <p>Score: {score}</p>
-                                            <p>{passed}</p>
-                                        </div>
-                                    ) : (
-                                        <div className="text-red-500 mt-2">
-                                            <p>Not completed yet</p>
-                                        </div>
-                                    )}
-                                    <div className="flex flex-row items-center justify-end">
-                                        {checkUser?.role === "admin" && (
-                                            <Link
-                                                to={`/modules/units/edit/${unit.id}`}
-                                                className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
-                                            >
-                                                Edit
-                                            </Link>
-                                        )}
-                                        <div className="group">
-                                            <Link
-                                                to={`/modules/units/docs/${unit.id}`}
-                                                className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white"
-                                            >
-                                                Start
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    )}
+                    {module.file_url && (
+                      <div className="absolute inset-0 bg-black bg-opacity-75 z-10"></div>
+                    )}
+                    <h2 className="h-fit overflow-hidden text-lg font-medium break-words line-clamp-3 z-10">{module.name}</h2>
+                  </div>
+                  <div className="h-full p-3">
+                    <img className="h-4 w-20 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
+                    <div className="w-full h-14 flex flex-row flex-wrap gap-1 overflow-hidden my-2">
+                      {module.tags.map((tag, index) => (
+                        <p
+                          key={index}
+                          className="h-fit border px-2 py-1 rounded-lg lg:text-[0.6rem] text-[0.45rem] tracking-wide transition-all duration-300 hover:bg-gray-200"
+                        >
+                          {tag}
+                        </p>
+                      ))}
                     </div>
-                ) : (
-                    <div className="text-center text-gray-500">No units found.</div>
-                )}
-            </MaxWidthWrapper>
-        </div>
+                    <p className="text-sm break-words line-clamp-3">{module.description}</p>
+                  </div>
+                  <section className="w-full h-12 p-3 mb-3 flex justify-end items-center text-xs">
+                    <div className="group">
+                      <Link
+                        to={`units/${module.id}`}
+                        className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white transition-all duration-300"
+                      >
+                        Start
+                      </Link>
+                    </div>
+                  </section>
+                </Link>
+
+              ))
+            ) : (
+              <p>No modules available</p>
+            )}
+          </div>
+
+        </section>
+      </MaxWidthWrapper>
+      <Footer />
+    </div>
+  );
+}
