@@ -2,7 +2,61 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import Footer from '@/components/Footer'
 import './home.css'
+import { useEffect, useState } from 'react';
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+
 export default function Home() {
+  const [modules, setModules] = useState([]);
+  const [displayJobs, setDisplayJobs] = useState([]);
+  const [displayOptions, setDisplayOptions] = useState([]);
+
+  useEffect(() => {
+    async function fetchModulesAndUser() {
+      try {
+
+        const modulesRes = await fetch(`${API_URL}/api/module/allModule-storage`);
+        const modulesData = await modulesRes.json();
+
+        if (modulesData.listall) {
+          const updatedModules = modulesData.listall.map((module) => ({
+            ...module,
+            file_url: module.file_data ? `data:${module.file_mime_type};base64,${module.file_data}` : null,
+          }));
+
+          setModules(updatedModules);
+        } else {
+          setModules([]);
+        }
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchModulesAndUser();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchAllJobs = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/job/display`);
+
+        if (res.status === 200) {
+          setDisplayJobs(res.data);
+          setDisplayOptions(res.data);
+        } else {
+          console.error("Failed to fetch all jobs");
+        }
+      } catch (error) {
+        console.error("Error fetching all jobs:", error);
+      }
+    };
+    fetchAllJobs()
+  }, []);
+
   return (
     <>
       <div className="mt-14 max-sm:overflow-x-hidden">
@@ -185,14 +239,93 @@ export default function Home() {
             </div>
           </MaxWidthWrapper>
         </section>
+        {/* PAGE 3 */}
+
+          <MaxWidthWrapper className="flex lg:flex-row flex-col  justify-between gap-4 rounded-2xl bg-gray-100 py-14 xl:px-20 lg:px-14 lg:mx-8 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+            <h3 className='text-3xl font-light'>New <span className='decoration-red-800 font-normal underline decoration-4 '>free</span> online courses</h3>
+            <div>
+              <div className="flex sm:flex-row flex-col items-center gap-4 mb-6">
+                {
+                  modules.length > 0 ? (
+                    modules.slice(0, 3).map((module, index) => (
+                      <Link
+                        to={`/modules/units/${module.id}`}
+                        key={index}
+                        className="md:h-[24rem] h-[16rem]  flex flex-col justify-between xl:w-[19rem] md:w-64 sm:w-96  w-96   border border-b-2 border-b-red-800 rounded-xl bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 shadow-[1px_0px_20px_2px_rgba(0,_0,_0,_0.1)]"
+                      >
+                        <div
+                          className={`relative flex w-full md:min-h-56 h-80 p-2 overflow-hidden rounded-xl text-white transition-all duration-300  "
+                                  }`}
+                        >
+                          {module.file_url && (
+                            <img
+                              className=" w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                              src={module.file_url}
+                              alt={module.name}
+                            />
+                          )}
+                          {module.file_url && (
+                            <p
+                              className={`md:text-sm text-xs absolute right-3 top-3 text-white px-3 py-1 rounded z-10 capitalize  ${module?.difficulty_level === 'easy'
+                                ? 'bg-green-600'
+                                : module?.difficulty_level === 'medium'
+                                  ? 'bg-yellow-500'
+                                  : module?.difficulty_level === 'hard'
+                                  && 'bg-red-600'
+                                }`}
+                            >
+                              {module?.difficulty_level}
+                            </p>
+
+                          )}
+                          {!module.file_url && (
+                            <img
+                              className={`w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 ${!module.file_url && "bg-red-950 "}shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]`}
+                              src="/IMG_Modules/LOGO_white.png"
+                              alt={module.name}
+                            />
+                          )}
+                        </div>
+                        <div className="h-full p-2 px-3">
+                          <img className="md:h-4 md:w-20 h-3 w-18 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
+                          <h2 className="md:h-12 overflow-hidden leading-snug md:font-bold break-words line-clamp-2 z-10 text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {module.name}
+                          </h2>
+                          <div className=" w-full md:h-14 h-6 flex flex-row flex-wrap  gap-1 overflow-hidden my-2">
+                            {module.tags.map((tag, index) => (
+                              <p
+                                key={index}
+                                className="h-fit border px-2 py-1 rounded-lg md:text-[0.6rem] text-[0.45rem] tracking-wide transition-all duration-300 hover:bg-gray-200"
+                              >
+                                {tag}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      </Link>
+
+                    ))
+                  ) : (
+                    <p>No modules available</p>
+                  )}
+              </div>
+              <Link
+                onClick={() => setMenu(!menu)}
+                to="/modules"
+                className=" border text-xs font-medium border-red-700 rounded-md bg-white py-2 px-4"
+              >
+                More...
+              </Link>
+            </div>
+        </MaxWidthWrapper>
         {/* Partners Section */}
-        <section className="relative -top-8 pt-14 pb-24 inline-block w-screen overflow-hidden bg-gray-100 max-sm:py-4 max-sm:static">
+        <section className="relative -top-8 pt-14 pb-24 inline-block w-screen overflow-hidden  max-sm:py-4 max-sm:static">
           <MaxWidthWrapper>
             <div className="flex flex-col justify-center items-center max-w-screen max-sm:w-[96vw] max-sm:overflow-hidden max-sm:h-40">
               <h3 className="w-fit py-3 px-6 z-10 rounded-2xl text-red-900 font-bold text-4xl mb-4 max-sm:text-xl">
                 Great Minds <span className="text-[#333333]">We Work With</span>
               </h3>
-              <section className="partners-container relative top-3 bg-gray-100 rounded-2xl  flex w-screen max-sm:gap-2 ">
+              <section className="partners-container relative top-3 rounded-2xl  flex w-screen max-sm:gap-2 ">
                 <div className="flex flex-row justify-between items-center rounded-2xl animate-slide max-sm:gap-2 mx-0">
                   <PartnerCard
                     name="Coins PH"
@@ -251,7 +384,7 @@ export default function Home() {
             </div>
           </MaxWidthWrapper>
         </section>
-        {/* PAGE 4 */}
+        {/* PAGE 5 */}
         <section className="pt-24 pb-24 -mt-10 bg-white">
           <MaxWidthWrapper className="mb-10 text-center">
             <h2 className="md:text-4xl text-2xl font-semibold text-[#333333] max-sm:text-xl">

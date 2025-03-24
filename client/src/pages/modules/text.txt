@@ -1,4 +1,163 @@
-import React, { useEffect, useState } from "react";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+  const [findModules, setFindModules] = useState([])
+  const [checkUser, setCheckUser] = useState(null);
+  const [moduleScores, setModuleScores] = useState([])
+
+   const Find_modulesRes = await fetch("http://localhost:5000/api/module/allModule");
+        const Find_modulesData = await Find_modulesRes.json();
+
+        if (Array.isArray(Find_modulesData.listall)) {
+          setFindModules(Find_modulesData.listall);
+        } else {
+          setFindModules([]);
+        }
+
+            if (userData?.id) {
+          const userScoreRes = await fetch(`http://localhost:5000/api/module/get-user-score/${userData.id}`);
+          if (userScoreRes.ok) {
+            const userScoresData = await userScoreRes.json();
+            if (Array.isArray(userScoresData)) {
+              setModuleScores(userScoresData);
+            } else {
+              console.error("No user scores found");
+              setModuleScores([]);
+            }
+          } else {
+            console.error("Failed to fetch user scores");
+            setModuleScores([]);
+          }
+        } else {
+          console.error("User ID is missing");
+        }
+
+{/* Scores */}
+          <div className="h-[70vh] lg:w-1/3 sticky top-20">
+            <p className="font-medium mb-2">Recent Feedback</p>
+            <div className="h-[60vh] mb-4 flex flex-col gap-4 border-y-2 py-4 border-gray-600 overflow-y-auto">
+              {Array.isArray(moduleScores) && moduleScores.length > 0 ? (
+                moduleScores.map((scores, index) => {
+                  const module = findModules.find((mod) => mod.id === scores.module_id);
+                  return (
+                    <Link to={`units/docs/${module.id}`}
+                      className="flex flex-col p-4 rounded-md gap-2 text-[.8rem] text-gray-500 bg-slate-50 hover:bg-slate-100 hover:border-slate-600 border-[1px] "
+                      key={index}>
+                      <h3 className="text-[.82rem] text-red-950">{module?.title || "Unknown Module"}</h3>
+                      {scores.passed ?
+                        <p className="flex items-center bg-green-600 text-white w-fit px-2"><CheckIcon className="mr-1" /> Passed</p>
+                        :
+                        <p className="flex items-center bg-red-600 text-white w-fit px-2"><CloseIcon className="mr-1" /> Failed</p>
+                      }
+                      <div className="flex flex-row justify-between items-center">
+                        <p>{scores.score} out of {scores.perfect_score}</p>
+                        {scores.completion_date ? <p>{new Date(scores.completion_date).toLocaleDateString()}</p>
+                          : <p>No Date</p>}
+                      </div>
+                    </Link>
+                  );
+                })
+              ) : (
+                <p>No Quizzes</p>
+              )}
+            </div>
+            <Link to={"/profile"} className="text-sm py-2 px-4 rounded-sm text-white bg-red-900 hover:bg-red-700">Reviewer</Link>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           <div className="h-screen mt-14 px-4">
+            <MaxWidthWrapper className="py-8 w-[60%]">
+                {error && <p className="text-red-500">{error}</p>}
+                {moduleName.length > 0 && (
+                    <h1 className="text-3xl font-bold mb-4">{moduleName[0].name}</h1>
+                )}
+                 <img
+                        className="absolute inset-0 w-full h-full object-cover z-10"
+                        src={module.file_url}
+                        alt={module.name}
+                      />
+                <h1>{moduleName.name}</h1>
+                <h1 className="text-3xl font-bold mb-4">Units</h1>
+
+                {checkUser?.role === "admin" && (
+                    <Link
+                        to={`/modules/create-unit/${id}`}
+                        className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
+                    >
+                        Create Unit
+                    </Link>
+                )}
+
+                {units.length > 0 ? (
+                    <div className="space-y-4">
+                        {units.map((unit, index) => {
+                            const userScore = userScores.find((score) => score.module_id === unit.id);
+                            const isCompleted = userScore?.completed;
+                            const score = userScore?.score || 0;
+                            const passed = userScore?.passed ? "Passed" : "Not Passed";
+
+                            return (
+                                <div key={unit.id} className="border-b border-gray-200 py-2 text-sm">
+                                    <p className="text-lg font-semibold">{unit?.title}</p>
+                                    {isCompleted ? (
+                                        <div className="text-gray-500 mt-2">
+                                            <p>Score: {score}</p>
+                                            <p>{passed}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="text-red-500 mt-2">
+                                            <p>Not completed yet</p>
+                                        </div>
+                                    )}
+                                    <div className="flex flex-row items-center justify-end">
+                                        {checkUser?.role === "admin" && (
+                                            <Link
+                                                to={`/modules/units/edit/${unit.id}`}
+                                                className="rounded-sm py-2 px-4 font-medium mr-2 border-[1px] border-gray-300 hover:bg-[#333333] hover:text-white"
+                                            >
+                                                Edit
+                                            </Link>
+                                        )}
+                                        <div className="group">
+                                            <Link
+                                                to={`/modules/units/docs/${unit.id}`}
+                                                className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white"
+                                            >
+                                                Start
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="text-center text-gray-500">No units found.</div>
+                )}
+            </MaxWidthWrapper>
+        </div>
+
+
+
+        import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
