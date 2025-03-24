@@ -293,7 +293,7 @@ export default function Home() {
                 <img
                   src={`/Game_images/falling-stickman.gif`}
                   alt="hangman-img"
-                  className={`max-w-60 max-h-32 -mb-16 z-0 ${
+                  className={`max-w-60 max-h-32 -mb-8 z-0 ${
                     wrongGuessCount === maxGuesses
                       ? 'motion-preset-confetti'
                       : ''

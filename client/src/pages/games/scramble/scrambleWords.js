@@ -338,7 +338,7 @@ export const blockchainWords = [
   },
   {
     word: 'one',
-    hint: 'Layer-_____, Base blockchain protocol (e.g., Bitcoin, Ethereum).',
+    hint: 'Layer-_____, base blockchain protocol (e.g., Bitcoin, Ethereum).',
   },
   {
     word: 'two',
