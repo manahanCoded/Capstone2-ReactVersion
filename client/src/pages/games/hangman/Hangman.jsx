@@ -387,7 +387,7 @@ export default function Home() {
             <h4 className="hint-text text-2xl">
               Hint
               <span className="font-sans text-2xl font-bold"> : </span>
-              <b className="text-xl"> {hint}</b>
+              <b className="text-2xl font-sans font-bold"> {hint}</b>
             </h4>
             <h4
               className={`guesses-tex text-xl 

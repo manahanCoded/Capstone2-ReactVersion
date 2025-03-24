@@ -77,6 +77,7 @@ export default function GuessingGame() {
     e.target.value = ''
   }
 
+  console.log('This is the Hint: ', hint)
   const uniqueSet = new Set(guessWord)
   const uniqueArray = Array.from(uniqueSet)
 
@@ -328,7 +329,7 @@ export default function GuessingGame() {
             <p className="hint mt-16 mb-4">
               <span className="text-3xl">Hint</span>
               <span className="font-sans text-4xl font-bold">: </span>
-              <span className="text-2xl">{hint}</span>
+              <span className="text-3xl font-sans font-bold">{hint}</span>
             </p>
             <p className="guess-left text-2xl mb-4">
               <span className="text-3xl">Remaining Guesses</span>

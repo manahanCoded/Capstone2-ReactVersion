@@ -388,7 +388,7 @@ export default function Scramble() {
               <span className="text-2xl my-5">
                 Hint
                 <span className="font-sans text-3xl font-bold"> : </span>
-                <span className="text-xl"> {hint}</span>
+                <span className="text-2xl font-sans font-bold"> {hint}</span>
               </span>
             </p>
 

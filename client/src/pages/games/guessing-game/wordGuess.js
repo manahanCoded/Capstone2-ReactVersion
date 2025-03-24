@@ -1,5 +1,33 @@
 export const blockchainGuess = [
   {
+    word: 'smart contract',
+    hint: '_____ Contract, self-executing code enforcing agreements.',
+  },
+  {
+    word: 'unbonding',
+    hint: 'Waiting period to withdraw staked funds.',
+  },
+  {
+    word: 'delegation',
+    hint: 'Assigning staking rights to another validator.',
+  },
+  {
+    word: 'solidity',
+    hint: 'Programming language for Ethereum smart contracts.',
+  },
+  {
+    word: 'asic',
+    hint: 'Specialized hardware for efficient mining.',
+  },
+  {
+    word: 'chainlink',
+    hint: 'A decentralized oracle network.',
+  },
+  {
+    word: 'miner',
+    hint: 'A participant who validates PoW transactions.',
+  },
+  {
     word: 'blockchain',
     hint: 'A decentralized ledger that records transactions across multiple computers.',
   },
@@ -15,6 +43,43 @@ export const blockchainGuess = [
     word: 'bitcoin',
     hint: 'The first decentralized cryptocurrency, created in 2009 by Satoshi Nakamoto.',
   },
+  {
+    word: 'work',
+    hint: 'Proof-of-____, mining based validation requiring computation effort.',
+  },
+  {
+    word: 'stake',
+    hint: 'Proof-of-____, validators chosen based on stake ownership',
+  },
+  {
+    word: 'history',
+    hint: 'Proof-of-____, time-based verification for efficiency',
+  },
+  {
+    word: 'authority',
+    hint: 'Proof-of-____, identity-based validation by approved nodes.',
+  },
+  {
+    word: 'space',
+    hint: 'Proof-of-____, validators use storage space instead of computation.',
+  },
+  {
+    word: 'burn',
+    hint: 'Proof-of-____, coins are destroyed to gain mining rights.',
+  },
+  {
+    word: 'capacity',
+    hint: 'Proof-of-____, uses hard drive space for validation.',
+  },
+  {
+    word: 'byzantine',
+    hint: 'Refers to fault tolerance in distributed systems.',
+  },
+  {
+    word: 'finality',
+    hint: 'Irreversible confirmation of a transaction.',
+  },
+
   {
     word: 'mining',
     hint: 'The process of validating transactions and adding them to the blockchain.',
@@ -92,12 +157,12 @@ export const blockchainGuess = [
   },
 
   {
-    word: 'hardfork',
-    hint: 'A permanent divergence in a blockchain, creating two separate chains.',
+    word: 'hard',
+    hint: '_____ fork, a permanent divergence in a blockchain, creating two separate chains.',
   },
   {
-    word: 'softfork',
-    hint: 'A backward-compatible update to a blockchain protocol.',
+    word: 'soft',
+    hint: '______ fork, a backward-compatible update to a blockchain protocol.',
   },
 
   {
@@ -191,10 +256,6 @@ export const blockchainGuess = [
     word: 'epoch',
     hint: 'A fixed period of time in a blockchain’s consensus mechanism.',
   },
-  {
-    word: 'finality',
-    hint: 'The point at which a transaction cannot be reversed.',
-  },
 
   {
     word: 'jail',
@@ -231,10 +292,129 @@ export const blockchainGuess = [
     word: 'utxo',
     hint: 'Unspent Transaction Output, a model used in Bitcoin to track funds.',
   },
-
   {
     word: 'zether',
     hint: 'A privacy-focused protocol for confidential transactions.',
+  },
+  {
+    word: 'cold',
+    hint: '_____ wallet, offline storage for enhanced security.',
+  },
+  {
+    word: 'hot',
+    hint: '_____ wallet, online-connected wallet for easy access.',
+  },
+  {
+    word: 'custodial',
+    hint: 'Wallet managed by a third party.',
+  },
+  {
+    word: 'phishing',
+    hint: 'Scams tricking users into revealing keys.',
+  },
+  {
+    word: 'transaction',
+    hint: 'Movement of crypto between addresses.',
+  },
+  {
+    word: 'fee',
+    hint: 'Cost paid to process blockchain transactions.',
+  },
+  {
+    word: 'limit',
+    hint: 'gas ____, max gas a user is willing to spend',
+  },
+  {
+    word: 'price',
+    hint: 'gas _____, cost per unit of gas in Ethereum.',
+  },
+  {
+    word: 'spend',
+    hint: 'double-_____, attempting to spend the same funds twice.',
+  },
+  {
+    word: 'swap',
+    hint: 'atomic ______, trustless cross-chain crypto exchange.',
+  },
+  {
+    word: 'one',
+    hint: 'Layer-_____, Base blockchain protocol (e.g., Bitcoin, Ethereum).',
+  },
+  {
+    word: 'two',
+    hint: 'Layer-______, Scaling solutions built atop Layer-1 (e.g., Lightning).',
+  },
+  {
+    word: 'rollup',
+    hint: 'Bundling transactions for efficiency.',
+  },
+  {
+    word: 'zk',
+    hint: '_____-Rollup, zero-knowledge proof-based rollup.',
+  },
+  {
+    word: 'optimistic',
+    hint: '_____-Rollup, fraud-proof-based scaling solution.',
+  },
+  {
+    word: 'plasma',
+    hint: 'Framework for scalable Ethereum transactions.',
+  },
+  {
+    word: 'state',
+    hint: '______ channels, off-chain transaction channels.',
+  },
+  {
+    word: 'lightning',
+    hint: '______ Network, Bitcoin’s Layer-2 payment solution.',
+  },
+  {
+    word: 'dao',
+    hint: '______ fork, community-driven decision to reverse transactions.',
+  },
+  {
+    word: 'proposal',
+    hint: 'A suggested change in blockchain governance.',
+  },
+  {
+    word: 'voting',
+    hint: 'Stakeholders deciding on protocol changes.',
+  },
+  {
+    word: 'privacy',
+    hint: 'Concealing transaction details.',
+  },
+  {
+    word: 'anonymity',
+    hint: 'Untraceable user identity.',
+  },
+  {
+    word: 'mixer',
+    hint: 'Service obscuring transaction trails.',
+  },
+  {
+    word: 'ring',
+    hint: '______ Signature, hides sender among multiple signers.',
+  },
+  {
+    word: 'stealth',
+    hint: '______ address, one-time addresses for privacy.',
+  },
+  {
+    word: 'hack',
+    hint: 'Unauthorized access to blockchain systems.',
+  },
+  {
+    word: 'flash',
+    hint: '______ loan, a loan that must be repaid in one transaction',
+  },
+  {
+    word: 'bear',
+    hint: '______ market, a period of declining prices.',
+  },
+  {
+    word: 'bull',
+    hint: '______ market, a period of rising prices',
   },
 ]
 export const cryptoGuess = [
@@ -275,19 +455,19 @@ export const cryptoGuess = [
     hint: 'A fee paid for executing transactions on a blockchain network.',
   },
   {
-    word: 'privatekey',
-    hint: 'A secret key used to sign transactions and access a cryptocurrency wallet.',
+    word: 'private',
+    hint: '_______ key, a secret key used to sign transactions and access a cryptocurrency wallet.',
   },
   {
-    word: 'publickey',
-    hint: 'A cryptographic key used to receive funds in a blockchain network.',
+    word: 'public',
+    hint: '_______ key, a cryptographic key used to receive funds in a blockchain network.',
   },
   {
     word: 'whale',
     hint: 'An individual or entity holding a large amount of cryptocurrency.',
   },
   {
-    word: 'airdrops',
+    word: 'airdrop',
     hint: 'Free distribution of cryptocurrency tokens to wallet addresses.',
   },
 
@@ -338,8 +518,8 @@ export const cryptoGuess = [
     hint: 'Promoting a cryptocurrency with exaggerated claims.',
   },
   {
-    word: 'tokensale',
-    hint: 'A sale of cryptocurrency tokens to raise funds.',
+    word: 'token',
+    hint: '_____ sale,a sale of cryptocurrency tokens to raise funds.',
   },
   {
     word: 'volatility',
@@ -356,8 +536,8 @@ export const cryptoGuess = [
   },
 
   {
-    word: 'memecoin',
-    hint: 'A cryptocurrency created as a joke or meme, often with no utility.',
+    word: 'meme',
+    hint: '_____ coin, a cryptocurrency created as a joke or meme, often with no utility.',
   },
   {
     word: 'metaverse',
@@ -368,26 +548,23 @@ export const cryptoGuess = [
     hint: 'Slang for a cryptocurrency experiencing a rapid price increase.',
   },
   {
-    word: 'rugpull',
-    hint: 'A scam where developers abandon a project and take investors’ funds.',
+    word: 'rug',
+    hint: '____ pull, a scam where developers abandon a project and take investors’ funds.',
   },
   {
     word: 'satoshi',
     hint: 'The smallest unit of Bitcoin, equal to 0.00000001 BTC.',
   },
   {
-    word: 'seedphrase',
-    hint: 'A series of words used to recover a cryptocurrency wallet.',
+    word: 'seed',
+    hint: '______ phrase, a series of words used to recover a cryptocurrency wallet.',
   },
 
   {
     word: 'tokenomics',
     hint: 'The economic model and structure of a cryptocurrency token.',
   },
-  {
-    word: 'whitelist',
-    hint: 'A list of approved participants for a token sale or event.',
-  },
+
   {
     word: 'zksnark',
     hint: 'A form of zero-knowledge proof used in blockchain.',
@@ -396,10 +573,6 @@ export const cryptoGuess = [
   {
     word: 'dust',
     hint: 'A small amount of cryptocurrency, often too small to transact.',
-  },
-  {
-    word: 'governance',
-    hint: 'The process of managing and making decisions in a blockchain network.',
   },
   {
     word: 'interoperability',
@@ -414,12 +587,6 @@ export const cryptoGuess = [
     word: 'onchain',
     hint: 'Transactions or processes occurring directly on the blockchain.',
   },
-
-  {
-    word: 'segwit',
-    hint: 'Segregated Witness, a Bitcoin protocol upgrade to improve scalability.',
-  },
-
   {
     word: 'unconfirmed',
     hint: 'A transaction that has not yet been added to a block.',
@@ -438,27 +605,12 @@ export const cryptoGuess = [
     hint: 'A fixed period of time in a blockchain’s consensus mechanism.',
   },
   {
-    word: 'finality',
-    hint: 'The point at which a transaction cannot be reversed.',
-  },
-
-  {
     word: 'jail',
     hint: 'A penalty for validators who act maliciously in a proof-of-stake system.',
   },
-
-  {
-    word: 'mempool',
-    hint: 'A pool of unconfirmed transactions waiting to be added to a block.',
-  },
-
   {
     word: 'opcode',
     hint: 'A code used in smart contracts to perform specific operations.',
-  },
-  {
-    word: 'parachain',
-    hint: 'A parallel blockchain connected to a main blockchain network.',
   },
 
   {
@@ -478,10 +630,6 @@ export const cryptoGuess = [
     hint: 'Unspent Transaction Output, a model used in Bitcoin to track funds.',
   },
 
-  {
-    word: 'zether',
-    hint: 'A privacy-focused protocol for confidential transactions.',
-  },
   {
     word: 'address',
     hint: 'A unique identifier for sending and receiving cryptocurrency.',
@@ -520,6 +668,174 @@ export const cryptoGuess = [
   {
     word: 'xlm',
     hint: 'The ticker symbol for Stellar Lumens, a cryptocurrency for cross-border payments.',
+  },
+  {
+    word: 'circulating',
+    hint: '_________ supply, coins currently available for trading.',
+  },
+  {
+    word: 'max',
+    hint: '_________ supply, maximum coins that will ever exist.',
+  },
+  {
+    word: 'diluted',
+    hint: 'Fully ______, market cap if max supply were circulating',
+  },
+  {
+    word: 'premining',
+    hint: 'Coins mined before public launch.',
+  },
+  {
+    word: 'fair',
+    hint: '_____ Launch, no premined or reserved coins.',
+  },
+  {
+    word: 'rewards',
+    hint: 'Block ______, new coins awarded to miners/validators',
+  },
+  {
+    word: 'lamport',
+    hint: 'Smallest Solana unit',
+  },
+  {
+    word: 'orphan',
+    hint: '______ Block, valid but unconfirmed block.',
+  },
+  {
+    word: 'book',
+    hint: 'Order _____, list of buy/sell orders',
+  },
+  {
+    word: 'spread',
+    hint: 'Difference between bid/ask prices.',
+  },
+  {
+    word: 'liquidity',
+    hint: '______ pool, funds locked for decentralized trading.',
+  },
+  {
+    word: 'impermanent',
+    hint: '_________ loss, temporary loss from liquidity provision.',
+  },
+  {
+    word: 'slippage',
+    hint: 'Price change between order and execution.',
+  },
+  {
+    word: 'arbitrage',
+    hint: 'Profiting from price differences across exchanges.',
+  },
+  {
+    word: 'scalping',
+    hint: 'Quick small-profit trades.',
+  },
+  {
+    word: 'swing',
+    hint: 'Medium-term trading strategy.',
+  },
+  {
+    word: 'day',
+    hint: 'Buying/selling within one day.',
+  },
+  {
+    word: 'position',
+    hint: 'Trader’s market exposure.',
+  },
+  {
+    word: 'leverage',
+    hint: 'Borrowed funds amplifying trades.',
+  },
+  {
+    word: 'margin',
+    hint: 'Collateral for leveraged positions.',
+  },
+  {
+    word: 'liquidation',
+    hint: 'Forced closure of leveraged positions.',
+  },
+  {
+    word: 'shorting',
+    hint: 'Profiting from price declines.',
+  },
+  {
+    word: 'longing',
+    hint: 'Profiting from price increases.',
+  },
+  {
+    word: 'loss',
+    hint: 'Stop _____, automatic sell at set price.',
+  },
+  {
+    word: 'take',
+    hint: '______ Profit, automatic sell at target price.',
+  },
+  {
+    word: 'resistance',
+    hint: 'Price level where selling increases.',
+  },
+  {
+    word: 'support',
+    hint: 'Price level where buying increases.',
+  },
+  {
+    word: 'breakout',
+    hint: 'Price moving beyond resistance/support.',
+  },
+  {
+    word: 'consolidation',
+    hint: 'Period of stable prices.',
+  },
+  {
+    word: 'correction',
+    hint: 'Temporary price reversal.',
+  },
+  {
+    word: 'capitulation',
+    hint: 'Mass panic selling.',
+  },
+  {
+    word: 'bear',
+    hint: 'False signal suggesting price drop reversal.',
+  },
+  {
+    word: 'bull',
+    hint: 'False signal suggesting price rise reversal.',
+  },
+  {
+    word: 'bounce',
+    hint: 'Dead Cat ______, temporary recovery before further decline.',
+  },
+  {
+    word: 'watching',
+    hint: 'Whale ______, tracking large holders’ transactions.',
+  },
+  {
+    word: 'paper',
+    hint: '_______ Wallet, physical private key record.',
+  },
+  {
+    word: 'hardware',
+    hint: '_______ Wallet, physical device for secure storage.',
+  },
+  {
+    word: 'vanity',
+    hint: '_______ Address, customized wallet address.',
+  },
+  {
+    word: 'change',
+    hint: '_______ Address, receives leftover transaction funds.',
+  },
+  {
+    word: 'blacklist',
+    hint: 'Blocked addresses.',
+  },
+  {
+    word: 'dusting',
+    hint: 'Small amounts sent to de-anonymize.',
+  },
+  {
+    word: 'spoofing',
+    hint: 'Fake websites mimicking real ones.',
   },
 ]
 export const nftGuess = [
@@ -594,8 +910,8 @@ export const nftGuess = [
     hint: 'Profile Picture, a type of NFT used as a social media avatar.',
   },
   {
-    word: 'gaswar',
-    hint: 'A situation where users compete to pay higher gas fees to mint NFTs.',
+    word: 'war',
+    hint: 'Gas _____, a situation where users compete to pay higher gas fees to mint NFTs.',
   },
   {
     word: 'bluechip',
@@ -618,8 +934,8 @@ export const nftGuess = [
     hint: 'A popular NFT collection featuring pixelated owl artwork.',
   },
   {
-    word: 'boredape',
-    hint: 'A highly sought-after NFT collection featuring cartoon apes.',
+    word: 'bored',
+    hint: '_______ ape, A highly sought-after NFT collection featuring cartoon apes.',
   },
   {
     word: 'cryptopunks',
@@ -636,10 +952,6 @@ export const nftGuess = [
   {
     word: 'playtoearn',
     hint: 'Games where players earn NFTs or cryptocurrency as rewards.',
-  },
-  {
-    word: 'metaverse',
-    hint: 'A virtual reality space where NFTs are used for ownership and interaction.',
   },
   {
     word: 'avatar',
@@ -665,10 +977,7 @@ export const nftGuess = [
     word: 'nftfi',
     hint: 'Decentralized finance (DeFi) services built around NFTs.',
   },
-  {
-    word: 'staking',
-    hint: 'Locking up NFTs to earn rewards or benefits.',
-  },
+
   {
     word: 'fractional',
     hint: 'Splitting an NFT into smaller, tradable shares.',
@@ -686,8 +995,8 @@ export const nftGuess = [
     hint: 'Protection against loss or damage to NFTs.',
   },
   {
-    word: 'artgallery',
-    hint: 'A virtual or physical space showcasing NFT artwork.',
+    word: 'gallery',
+    hint: '_____ Gallery, a virtual or physical space showcasing NFT artwork.',
   },
   {
     word: 'auction',
@@ -774,15 +1083,6 @@ export const nftGuess = [
     hint: 'A tool for transferring NFTs between blockchains.',
   },
   {
-    word: 'oracle',
-    hint: 'A service providing external data to NFT smart contracts.',
-  },
-
-  {
-    word: 'governance',
-    hint: 'The process of managing and making decisions in an NFT community.',
-  },
-  {
     word: 'identity',
     hint: 'Using NFTs to represent digital or real-world identities.',
   },
@@ -797,5 +1097,149 @@ export const nftGuess = [
   {
     word: 'verification',
     hint: 'Confirming the authenticity and ownership of an NFT.',
+  },
+  {
+    word: 'creator',
+    hint: 'Artist/entity issuing the NFT.',
+  },
+  {
+    word: 'collector',
+    hint: 'Person acquiring NFTs for ownership.',
+  },
+  {
+    word: 'drop',
+    hint: 'Scheduled NFT release event.',
+  },
+  {
+    word: 'generative',
+    hint: 'Algorithmically created NFT art.',
+  },
+  {
+    word: 'reveal',
+    hint: 'Post-mint trait display.',
+  },
+  {
+    word: 'premint',
+    hint: 'Allowlist-based minting access.',
+  },
+  {
+    word: 'alpha',
+    hint: 'Exclusive market insights.',
+  },
+  {
+    word: 'paper',
+    hint: '______ Hands, selling NFTs prematurely.',
+  },
+  {
+    word: 'diamond',
+    hint: '______ Hands, holding NFTs despite volatility.',
+  },
+  {
+    word: 'allowlist',
+    hint: 'Priority minting permission.',
+  },
+  {
+    word: 'dutch',
+    hint: '______ Auction, price-decreasing sale model.',
+  },
+  {
+    word: 'english',
+    hint: '______ Auction, price-increasing bidding.',
+  },
+  {
+    word: 'nifty',
+    hint: '______ gateway, mainstream NFT platform.',
+  },
+  {
+    word: 'async',
+    hint: '______ art, programmable NFT art.',
+  },
+  {
+    word: 'known',
+    hint: '______ origin, digital art NFT gallery.',
+  },
+  {
+    word: 'verse',
+    hint: 'NFT platform for musicians',
+  },
+  {
+    word: 'catalog',
+    hint: 'Music NFT marketplace.',
+  },
+  {
+    word: 'audius',
+    hint: 'Decentralized music NFTs.',
+  },
+  {
+    word: 'pixel',
+    hint: '______ Art, low-resolution digital art style.',
+  },
+  {
+    word: 'glitch',
+    hint: '______ Art, aesthetic digital errors in NFTs.',
+  },
+  {
+    word: 'wearable',
+    hint: 'Digital clothing NFTs.',
+  },
+  {
+    word: 'landscape',
+    hint: 'Environmental NFTs.',
+  },
+  {
+    word: 'virtual',
+    hint: '_______ Land, digital real estate NFTs.',
+  },
+  {
+    word: 'quest',
+    hint: 'Mission NFT rewards.',
+  },
+  {
+    word: 'lootbox',
+    hint: 'Randomized reward NFTs.',
+  },
+  {
+    word: 'licensing',
+    hint: 'NFT usage permissions.',
+  },
+  {
+    word: 'derivative',
+    hint: 'Adapted NFT works.',
+  },
+  {
+    word: 'provenance',
+    hint: 'Ownership history.',
+  },
+  {
+    word: 'snipe',
+    hint: 'Timed low-price purchases.',
+  },
+  {
+    word: 'Cease',
+    hint: '______Desist, Legal violation notice.',
+  },
+  {
+    word: 'trademark',
+    hint: 'Brand protection.',
+  },
+  {
+    word: 'patent',
+    hint: 'Invention protection',
+  },
+  {
+    word: 'blueprint',
+    hint: 'Crafting recipe NFTs.',
+  },
+  {
+    word: 'material',
+    hint: 'Crafting component NFTs.',
+  },
+  {
+    word: 'gem',
+    hint: 'Valuable game item NFTs.',
+  },
+  {
+    word: 'amulet',
+    hint: 'Protective charm NFTs.',
   },
 ]
