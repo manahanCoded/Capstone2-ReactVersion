@@ -161,18 +161,22 @@ export default function Unit() {
                             <div className="text-center text-gray-500">No units found.</div>
                         )}
                     </div>
-                    <div className="lg:block hidden mt-0.5 bg-gray-50 lg:w-4/6 ">
+                    <div className="lg:block  mt-0.5 bg-gray-50 lg:w-4/6">
                         <div className="h-64 p-8 border-b ">
-                            <h3 className="text-lg font-semibold text-red-900  ">Achievements</h3>
+                            <h3 className="text-lg font-semibold text-red-900 ">Achievements</h3>
                             <p className="text-sm mt-2">Badge you can earn by completing the module.</p>
                             <div className="mt-4 h-[6rem] w-[6rem]  relative">
+                                {moduleName.achievement_url?
                                 <img className="absolute inset-0 w-full h-full object-cover z-10"
                                     src={moduleName.achievement_url} alt="" />
+                                    :
+                                <p className="text-gray-500">No badges</p>
+                                }
                             </div>
                         </div>
-                        <h3 className=" px-8 pt-4 text-lg  font-semibold text-[#333333]  ">Completed Units</h3>
+                        <h3 className="px-8 pt-4 text-lg  font-semibold text-[#333333]  ">Completed Units</h3>
                         {units.length > 0 ? (
-                            <div className="h-96 flex flex-col p-8  border-b ">
+                            <div className="h-96 overflow-y-auto flex flex-col m-8 pr-2 border-b ">
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
                                     const score = userScore?.score || 0;
@@ -208,7 +212,7 @@ export default function Unit() {
                                 })}
                             </div>
                         ) : (
-                            <div className="text-center text-gray-500">No units found.</div>
+                            <div className="text-center text-gray-500 mb-8">No units found.</div>
                         )}
                     </div>
                 </section>

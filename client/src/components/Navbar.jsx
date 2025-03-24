@@ -218,7 +218,7 @@ const Navbar = () => {
           className=""
         >
           <img
-            className="h-6 hidden md:block"
+            className="h-6 w-32 hidden md:block"
             src="/Icons/LOGO_Maroon.png"
             alt="Crypto Warriors"
           />
@@ -537,7 +537,7 @@ const Navbar = () => {
                     {selectedAnnouncement ? (
                       <div>
                         <div
-                          className={` w-full overflow-hidden text-sm border-b border-gray-300 cursor-pointer flex flex-row  gap-4 items-center py-2 `}
+                          className={` w-full overflow-hidden text-sm border-b border-gray-300  flex flex-row  gap-4 items-center py-2 `}
                         >
                           {selectedAnnouncement?.image ? (
                             <img

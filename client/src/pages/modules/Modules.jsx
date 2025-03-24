@@ -52,7 +52,6 @@ export default function ModulesPage() {
 
   const uniqueTags = [...new Set(modules.flatMap((module) => module.tags))];
 
-  // Handle checkbox selection
   const handleTagChange = (tag) => {
     setSelectedTags((prevTags) => {
       const newTags = new Set(prevTags);
@@ -74,6 +73,8 @@ export default function ModulesPage() {
 
   const [showAllTags, setShowAllTags] = useState(false);
   const visibleTags = showAllTags ? uniqueTags : uniqueTags.slice(0, 5);
+
+  
 
   return (
     <div className="h-screen mt-14 ">
@@ -155,7 +156,7 @@ export default function ModulesPage() {
                   className="md:h-[24rem] h-[16rem]  flex flex-col justify-between xl:w-[19rem] sm:w-72  w-44  border border-b-2 border-b-red-800 rounded-xl bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 shadow-[1px_0px_20px_2px_rgba(0,_0,_0,_0.1)]"
                 >
                   <div
-                    className={`relative flex w-full md:min-h-56 h-80 p-2 overflow-hidden rounded-xl text-white transition-all duration-300 ${!module.file_url && "bg-red-950 "
+                    className={`relative flex w-full md:min-h-56 h-80 p-2 overflow-hidden rounded-xl text-white transition-all duration-300  "
                       }`}
                   >
                     {module.file_url && (
@@ -181,7 +182,7 @@ export default function ModulesPage() {
                     )}
                     {!module.file_url && (
                       <img
-                        className=" w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                        className={`w-full h-full aspect-[20/13] object-cover overflow-hidden rounded-md z-10 transition-transform duration-300 group-hover:scale-105 ${!module.file_url && "bg-red-950 "}shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]`}
                         src="/IMG_Modules/LOGO_white.png"
                         alt={module.name}
                       />
@@ -189,7 +190,7 @@ export default function ModulesPage() {
                   </div>
                   <div className="h-full p-2 px-3">
                     <img className="md:h-4 md:w-20 h-3 w-18 mb-2" src="/IMG_Modules/LOGO_maroon.png" alt="" />
-                    <h2 className="md:h-12 overflow-hidden md:text-base text-sm font-medium break-words line-clamp-2 z-10 text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <h2 className="md:h-12 overflow-hidden leading-snug md:font-bold break-words line-clamp-2 z-10 text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {module.name}
                     </h2>
                     <div className=" w-full md:h-14 h-6 flex flex-row flex-wrap  gap-1 overflow-hidden my-2">
