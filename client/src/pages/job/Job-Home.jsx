@@ -23,7 +23,7 @@ export default function JobHome() {
                     src="/IMG_Jobs/job1.jpg"
                     alt="Job Image"
                     className="h-full w-full object-cover"
-                    loading="lazy"
+
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             </div>

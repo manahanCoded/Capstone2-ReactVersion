@@ -82,7 +82,7 @@ export default function Login() {
               <h1 className="text-3xl font-semibold mb-4">Become a <span className="text-red-600">Crypto Warrior </span>Today</h1>
               <p className="text-sm">Unlock your learning journey! Sign in or register to access educational resources and courses.</p>
             </section>
-            <section className="lg:w-[65%] w-full  py-8 lg:px-32 px-12  bg-white flex justify-between flex-col lg:rounded-l-3xl ">
+            <section className="lg:w-[65%] w-full  py-8 lg:px-32 md:px-6 px-4   bg-white flex justify-between flex-col lg:rounded-l-3xl ">
               <div className="flex flex-col justify-between">
                 <h2 className="text-4xl font-bold mb-4">Log in to your Account</h2>
                 {/* Input Section */}

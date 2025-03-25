@@ -104,7 +104,7 @@ export default function Register() {
               <p className="text-sm">Unlock your learning journey! Sign in or register to access educational resources and courses.</p>
             </section>
 
-            <section className="lg:w-[65%] w-full py-8 lg:px-32 px-12  bg-white flex justify-between flex-col lg:rounded-l-3xl">
+            <section className="lg:w-[65%] w-full py-8 lg:px-32 md:px-6 px-4  bg-white flex justify-between flex-col lg:rounded-l-3xl">
               <div className="flex flex-col">
                 <h2 className="text-2xl font-semibold mb-4">Create Account</h2>
                 <div className="w-full flex flex-row items-center justify-between  mt-3 mb-4">
