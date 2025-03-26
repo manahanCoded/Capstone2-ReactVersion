@@ -125,7 +125,7 @@ export default function ModulesPage() {
             </section>
           </div>
 
-          <div className="w-full flex flex-wrap gap-4 md:justify-start justify-evenly">
+          <div className="w-full flex flex-wrap md:gap-4 gap-y-4 md:justify-start justify-evenly ">
             {/* Search */}
             <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center  gap-6 text-xs border-b-[1px] bg-white">
               <div>
@@ -153,7 +153,7 @@ export default function ModulesPage() {
                 <Link
                   to={`units/${module.id}`}
                   key={index}
-                  className="md:h-[24rem] h-[16rem]  flex flex-col justify-between xl:w-[19rem] sm:w-72  w-44  border border-b-2 border-b-red-800 rounded-xl bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 shadow-[1px_0px_20px_2px_rgba(0,_0,_0,_0.1)]"
+                  className="md:h-[24rem] h-[16rem]  flex flex-col justify-between xl:w-[19rem] sm:w-72  w-40  border border-b-2 border-b-red-800 rounded-xl bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 shadow-[1px_0px_20px_2px_rgba(0,_0,_0,_0.1)]"
                 >
                   <div
                     className={`relative flex w-full md:min-h-56 h-80 p-2 overflow-hidden rounded-xl text-white transition-all duration-300  "

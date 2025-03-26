@@ -18,39 +18,41 @@ export default function JobHome() {
     return (
         <div className="h-screen mt-14 bg-gray-50">
 
-            <div className="relative h-[32rem]">
-                <img
-                    src="/IMG_Jobs/job1.jpg"
-                    alt="Job Image"
-                    className="h-full w-full object-cover"
-
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-            </div>
-
-
-            <MaxWidthWrapper className="absolute inset-0 h-[32rem] mt-14 flex flex-col justify-center text-center">
-                <div className="text-white px-6 md:px-12">
-                    <h1 className="text-5xl font-semibold mb-4">We Are Hiring</h1>
-                    <p className="text-lg mb-6">Join our team of innovators and make a difference. Explore job opportunities and start your journey with us today!</p>
-
-
-                    <div className="flex justify-center gap-4">
-                        <Link to={"/jobs"} className="bg-red-900 text-white py-3 px-6 rounded-md text-lg hover:bg-red-700 transition">
-                            Browse Open Positions
-                        </Link>
-                        <button
-                            onClick={LearnMore}
-                            className="bg-transparent border-2 border-white text-white py-3 px-6 rounded-md text-lg hover:bg-white hover:text-blue-600 transition">
-                            Learn More About Us
-                        </button>
+                 <MaxWidthWrapper className="relative h-[36rem] flex flex-row items-center mb-14 bg-white">
+                    <div className='relative  w-[50%] lg:mx-20 '>
+                      <h3 className='mb-4 text-4xl font-extralight'>
+                        Discover Your <span className='decoration-red-800 font-normal underline decoration-4'>Career</span>
+                      </h3>
+                      <p className='mb-4'>Join our team of innovators and shape the future. Explore exciting opportunities and take the next step in your journey with us.</p>
+                      <p className='mb-4'>Become a <span className='text-red-900 font-semibold'>Crypto Warrior</span> today.</p>
+                      <div className='absolute w-[120%] xl:text-sm text-xs md:px-6 py-4 rounded-xl flex md:items-center justify-center md:flex-row flex-col z-10  bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]'>
+                        <div className='flex md:h-10 items-center  md:border-r  px-2'>
+                          <p className='text-gray-700'>🚀 Accelerate career growth</p>
+                        </div>
+                        <div className='flex md:h-10 items-center gap-4 md:border-r  px-2'>
+                          <p className='text-gray-700'>💡 Innovate technology</p>
+                        </div>
+                        <div className='flex md:h-10 items-center gap-4 md:border-r   px-2'>
+                          <p className='text-gray-700'>👥 Join collaborative team</p>
+                        </div>
+                        <div className='flex md:h-10 items-center gap-4 md:mt-0 mt-4 px-2'>
+                          <Link to="/jobs"
+                            className='py-2 px-4 rounded-2xl bg-red-700 hover:bg-red-900 text-white'
+                          >Check Now</Link>
+                        </div>
+                      </div>
+          
                     </div>
-                </div>
-            </MaxWidthWrapper>
+                    <img
+                      src="/IMG_Jobs/job1.jpg"
+                      alt="Job Image"
+                      className="absolute right-0 h-full w-[44%] object-cover rounded-bl-[14rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]"
+                    />
+                  </MaxWidthWrapper>
 
             {/* Why Work With Us Section */}
-            <MaxWidthWrapper className="my-12 px-6 md:px-12">
-                <h2 className="text-4xl font-semibold text-center text-gray-900 mb-6">Why Work With Us</h2>
+            <MaxWidthWrapper className="my-14 px-6 md:px-12">
+                <h2 className="md:text-4xl text-2xl font-semibold text-center text-gray-900 mb-6">Why Work With Us</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">

@@ -391,7 +391,7 @@ const Navbar = () => {
       </div>
       {
         notification && (
-          <section className='absolute py-1 top-14 right-20 text-xs rounded-lg  bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+          <section className='absolute py-1 top-14 md:right-20 right-16 text-xs rounded-lg  bg-white overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
             <div className=''>
               <h3 className='text-base py-2 px-4  '>Notifications</h3>
             </div>
@@ -409,7 +409,7 @@ const Navbar = () => {
                 All
               </button>
             </div>
-            <div className="max-h-60 min-h-60 w-72 overflow-y-auto mt-1">
+            <div className="max-h-60 min-h-60 md:w-72 w-[17rem] overflow-y-auto mt-1">
               {filteredAnnouncements.length > 0 ? (
                 filteredAnnouncements.map((announcement, index) => (
                   <div
