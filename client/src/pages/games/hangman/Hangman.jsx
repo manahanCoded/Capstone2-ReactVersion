@@ -1,6 +1,6 @@
 import './hangman.css'
 import { useState, FormEvent, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   blockchainWordList,
   cryptocurrencyWordList,
@@ -178,11 +178,8 @@ export default function Home() {
                 >
                   Cryptocurrency
                 </button>
-                <button className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black">
-                  <a href="https://capstone2-react-version.vercel.app/games">
-                    Go back
-                  </a>
-                </button>
+                <Link className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black" 
+                  to="/games">Go back</Link>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import './guessing-game.css'
 import { blockchainGuess, cryptoGuess, nftGuess } from './wordGuess'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 export default function GuessingGame() {
   const [guessWord, setGuessWord] = useState('')
   const [category, setCategory] = useState('blockchain')
@@ -169,11 +169,8 @@ export default function GuessingGame() {
                 >
                   Cryptocurrency
                 </button>
-                <button className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black">
-                  <a href="https://capstone2-react-version.vercel.app/games">
-                    Go back
-                  </a>
-                </button>
+                <Link className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black" 
+                  to="/games">Go back</Link>
               </div>
             </div>
           </div>
