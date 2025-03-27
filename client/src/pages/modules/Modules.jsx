@@ -4,6 +4,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import Footer from "@/components/Footer";
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -11,8 +12,11 @@ export default function ModulesPage() {
   const [checkUser, setCheckUser] = useState([])
   const [modules, setModules] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [levelOpen, setLevelOpen] = useState(false)
+  const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedTags, setSelectedTags] = useState(new Set());
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     async function fetchModulesAndUser() {
@@ -64,17 +68,29 @@ export default function ModulesPage() {
     });
   };
 
-  // Filter modules based on searchQuery and selectedTags
-  const filteredModules = modules.filter((module) =>
-    (module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      module.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))) &&
-    (selectedTags.size === 0 || module.tags.some(tag => selectedTags.has(tag))) // Filter by selected tags
-  );
+  const filteredModules = modules.filter((module) => {
+    const nameMatch = module?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const levelMatch = (module?.difficulty_level?.toLowerCase() || "").includes(searchQuery.toLowerCase());
+    const tagMatch = module?.tags?.some(tag => (tag?.toLowerCase() || "").includes(searchQuery.toLowerCase()));
+
+    const selectedTagMatch = selectedTags.size === 0 || module?.tags?.some(tag => selectedTags.has(tag));
+    const selectedLevelMatch = selectedLevel === "" || (module?.difficulty_level?.toLowerCase() || "") === selectedLevel?.toLowerCase();
+
+    return (nameMatch || levelMatch || tagMatch) && selectedTagMatch && selectedLevelMatch;
+  });
+
+
+
+
+  const levels = [...new Set(modules
+    .map(module => module.difficulty_level?.trim())
+  )];
 
   const [showAllTags, setShowAllTags] = useState(false);
   const visibleTags = showAllTags ? uniqueTags : uniqueTags.slice(0, 5);
 
-  
+
+
 
   return (
     <div className="h-screen mt-14 ">
@@ -87,7 +103,7 @@ export default function ModulesPage() {
               <DashboardOutlinedIcon />
               <h2 className="">Modules</h2>
             </div>
-            <section className=" w-full flex flex-row px-4 py-3 mb-4 justify-between items-center border-[1px] rounded-lg ">
+            <section className=" w-full flex flex-row px-4 py-3 mb-4 justify-between items-center border rounded-lg ">
               <input
                 type="text"
                 placeholder="Search modules..."
@@ -96,6 +112,41 @@ export default function ModulesPage() {
                 className="w-full outline-none"
               />
               <SearchOutlinedIcon />
+            </section>
+
+            <section className=" relative pb-4 ">
+              <button
+                onClick={() => setLevelOpen(!levelOpen)}
+                className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border  rounded-lg flex items-center justify-between"
+              >
+                {selectedLevel || "All Level"}
+                <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
+              </button>
+              {levelOpen && (
+                <ul className="absolute top-14 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                  <li
+                    onClick={() => {
+                      setSelectedLevel("");
+                      setLevelOpen(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    All Levels
+                  </li>
+                  {["Easy", "Medium", "Hard"].map((level, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        setSelectedLevel(level);
+                        setLevelOpen(false);
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {level}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
 
             {/* Filter section */}
@@ -133,7 +184,8 @@ export default function ModulesPage() {
                 <p className="">💡Every expert was once a beginner. Web3 is
                   still evolving, and you have the chance to grow with it. Keep learning, keep building!</p>
               </div>
-              <div className="lg:hidden w-full flex flex-row items-center border-[1px] rounded-lg overflow-hidden bg-slate-100">
+              <div className="lg:hidden w-full flex flex-row justify-between gap-2">
+              <div className=" w-full h-12 flex flex-row items-center border rounded-lg overflow-hidden bg-slate-100">
                 <input
                   placeholder="Search Module"
                   type="text"
@@ -142,6 +194,41 @@ export default function ModulesPage() {
                   className="h-9 w-full py-2 pl-4 outline-none bg-slate-100"
                 />
                 <SearchOutlinedIcon className="mr-2" />
+              </div>
+              <section className=" relative pb-4 ">
+              <button
+                onClick={() => setLevelOpen(!levelOpen)}
+                className="w-full h-12  py-2 px-4 text-left bg-white border  rounded-lg flex items-center justify-between"
+              >
+                {selectedLevel || "All Level"}
+                <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
+              </button>
+              {levelOpen && (
+                <ul className="absolute top-14 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
+                  <li
+                    onClick={() => {
+                      setSelectedLevel("");
+                      setLevelOpen(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    All Levels
+                  </li>
+                  {["Easy", "Medium", "Hard"].map((level, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        setSelectedLevel(level);
+                        setLevelOpen(false);
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {level}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
               </div>
             </section>
             {loading ? (

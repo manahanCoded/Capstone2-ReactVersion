@@ -280,10 +280,11 @@ const Navbar = () => {
             >
               {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
             </button>
-            <div>
+            <div
+            onClick={openProfile}
+            >
               <button
                 className="relative h-14 hover:text-red-900"
-                onClick={openProfile}
               >
                 {user.image ? (
                   <img
@@ -301,7 +302,7 @@ const Navbar = () => {
                   />
                 )}
               </button>
-              <ExpandMoreIcon className="absolute p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100" />
+              <ExpandMoreIcon className="absolute cursor-pointer p-0.5 bottom-1 md:right-6 right-2 rounded-full bg-slate-100" />
             </div>
             <section
               className={

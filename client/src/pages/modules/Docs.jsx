@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "quill/dist/quill.snow.css";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import Dashboard from "@/components/Dashboard";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function DocsPage() {
   const [posts, setPosts] = useState([]);
+  const [nextPage, setNextPage] = useState([]);
+  const [previousPage, setPreviousPage] = useState([]);
+  const [openNextPage, setOpenNextPage] =useState(false)
+  const [openPreviousPage, setOpenPreviousPage] =useState(false)
   const navigate = useNavigate();
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
@@ -58,6 +64,35 @@ export default function DocsPage() {
     }
     fetchModule();
   }, [id]);
+
+  useEffect(() => {
+    async function fetchNextUnits() {
+      if (!posts?.[0]?.storage_section_id) {
+        console.error("Posts or storage_section_id is undefined.");
+        return;
+      }
+      try {
+        
+        const unitsRes = await axios.get(`${API_URL}/api/module/module-units/${posts[0].storage_section_id}`);
+        const response = unitsRes.data.listall;
+
+        if (Array.isArray(response)) {
+          const nextUnits = response.findIndex(nextUnit => nextUnit.id === posts[0]?.id);
+          if(nextUnits <= response.length){
+            setNextPage(response[nextUnits + 1])
+          }
+          if (nextUnits + 1 < response.length) {
+            setPreviousPage(response[nextUnits - 1])
+          }
+        } else {
+          console.error("Data is not an array.");
+        }
+      } catch (error) {
+        console.error("Error fetching next page:", error);
+      }
+    }
+    fetchNextUnits();
+  }, [posts]);
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -163,7 +198,7 @@ export default function DocsPage() {
         <div className="lg:w-3/5 md:w-4/5 m-auto">
           {posts.map((post) => (
             <div key={post.id}>
-              <h1 className="flex flex-col font-extrabold text-5xl leading-tight">
+              <h1 className="flex flex-col font-extrabold lg:text-5xl text-2xl leading-tight">
                 <span className="font-bold text-red-900 text-lg">Introducing</span>
                 {post.title}
               </h1>
@@ -177,13 +212,32 @@ export default function DocsPage() {
               />
             </div>
           ))}
-          <button
-            className="w-[70%] h-10 m-auto mt-10 flex items-center justify-center font-semibold text-white rounded-md bg-red-800"
-            onClick={handleQuizStart}
-          >
-            <PsychologyAltIcon />
-            Start Quiz
-          </button>
+
+          <div className="mt-10 flex flex-col md:flex-row md:justify-between items-center gap-4">
+            <button
+              className="w-full  md:h-12 h-10 flex items-center justify-center gap-2 font-semibold text-white rounded-lg bg-red-700 hover:bg-red-800 transition"
+              onClick={handleQuizStart}
+            >
+              <img src="/IMG_Home/Quiz_white.png" className="h-8 " alt="Quiz Icon" />
+              Start Quiz
+            </button>
+            <div className="w-full md:w-[50%]  flex flex-row items-center justify-end gap-4">
+            <Link
+                className=" md:h-12 h-10  flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg  transition"
+                to={`/modules/units/docs/${previousPage?.id? previousPage?.id: posts[0]?.id}`}
+              >
+                <ArrowBackIosIcon />
+                Back
+              </Link>
+              <Link
+                className=" md:h-12 h-10  flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg  transition"
+                to={`/modules/units/docs/${nextPage?.id? nextPage?.id: posts[0]?.id}`}
+              >
+                Next
+                <ArrowForwardIosIcon />
+              </Link>
+            </div>
+          </div>
         </div>
       </MaxWidthWrapper>
 

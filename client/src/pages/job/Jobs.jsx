@@ -239,6 +239,7 @@ export default function JobsPage() {
                         key={jobType}
                         onClick={() => {
                           setSelectedJobType(jobType);
+                          handleJobTypeChange(jobType);
                           setJobTypeOpen(false);
                         }}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -274,6 +275,7 @@ export default function JobsPage() {
                         key={location}
                         onClick={() => {
                           setSelectedLocation(location);
+                          handleLocationChange(location)
                           setLocationOpen(false);
                         }}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -395,11 +397,11 @@ export default function JobsPage() {
                 <p className="text-lg font-medium animate-pulse">Loading Jobs...</p>
               </div>
             ) :
-              <div className="flex flex-wrap flow-row sm:gap-6 gap-x-2 gap-y-6">
+              <div className="flex flex-wrap flow-row md:justify-start justify-center sm:gap-6 gap-x-2 gap-y-6">
                 {currentJobs.map((job, index) => (
                   <section
                     key={job.id}
-                    className={`xl:w-96 md:w-80 sm:w-72 w-[14.5rem] sm:h-[24rem] flex flex-col justify-between py-1 gap-y-2 pb-4 md:px-2 border-[1px] rounded-2xl transition-all duration-300 hover:border-red-700 hover:scale-105 hover:shadow-lg`}
+                    className={`sm:h-[24rem] xl:w-96 md:w-80 w-[90%]  flex flex-col justify-between py-1 gap-y-2 pb-4 md:px-2 border-[1px] rounded-2xl transition-all duration-300 hover:border-red-700 hover:scale-105 hover:shadow-lg`}
                   >
                     <div className={`relative overflow-hidden sm:h-72 h-56 flex flex-col justify-between rounded-3xl p-4 transition-all duration-300 ${!job.file_data && "bg-red-950"}`}>
                       <img

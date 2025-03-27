@@ -43,10 +43,6 @@ const allModule_Storage = async (req, res) => {
   }
 };
 
-
-
-
-
 const allModule = async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM module ORDER BY id ");
@@ -59,23 +55,25 @@ const allModule = async (req, res) => {
 
 const units = async (req, res) => {
   const { id } = req.params;
+  const parsedId = parseInt(id);
 
-  if (!Number.isInteger(Number(id))) {
+  if (isNaN(parsedId)) {
     return res.status(400).json({ success: false, message: "Invalid ID." });
   }
 
   try {
     const result = await db.query(
       "SELECT * FROM module WHERE storage_section_id = $1 ORDER BY id",
-      [id]
+      [parsedId]
     );
 
     return res.json({ success: true, listall: result.rows });
   } catch (err) {
-    console.error(err);
+    console.error("Database query error:", err);
     res.status(500).json({ success: false, message: "Error fetching posts" });
   }
 };
+
 
 const addUnit = async (req, res) => {
 
@@ -273,18 +271,26 @@ const removeModule = async (req, res) => {
 
 
 const getModuleIds = async (req, res) => {
+  const { ids } = req.body;
+  const parsedId = parseInt(ids);
+
+  if (!ids || isNaN(parsedId) || parsedId <= 0) {
+    return res.status(400).json({ success: false, message: "Invalid ID provided." });
+  }
+
   try {
-    const result = await db.query("SELECT * FROM module WHERE id = $1", [req.body.ids]); 
+    const result = await db.query("SELECT * FROM module WHERE id = $1", [parsedId]);
     if (result.rows.length > 0) {
       return res.json({ success: true, listId: result.rows });
     } else {
       return res.status(404).json({ success: false, message: "Post not found" });
     }
   } catch (err) {
-    console.error(err);
+    console.error("Database error:", err);
     return res.status(500).json({ success: false, error: "Database error" });
   }
 };
+
 
 
 

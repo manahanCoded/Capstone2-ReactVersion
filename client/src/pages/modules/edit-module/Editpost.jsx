@@ -240,7 +240,7 @@ export default function EditPost({ postList, editPostID }) {
             className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
           >
             <ExitToApp />
-            {typeForm === "createQuiz" ? "No Questions" : "Discard"}
+            {typeForm === "createQuiz" ? "Go back" : "Discard"}
           </Link>
         </MaxWidthWrapper>
       </section>
