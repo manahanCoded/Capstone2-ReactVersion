@@ -31,6 +31,9 @@ export default function DocsPage() {
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [quizStartTime, setQuizStartTime] = useState(null);
 
+
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     async function checkUser() {
       const res = await fetch(`${API_URL}/api/user/profile`, {
@@ -49,6 +52,7 @@ export default function DocsPage() {
 
   useEffect(() => {
     async function fetchModule() {
+      setIsLoading(true);
       try {
         const response = await axios.post(`${API_URL}/api/module/getPostId`, {
           ids: id,
@@ -60,6 +64,8 @@ export default function DocsPage() {
         }
       } catch (error) {
         console.error("Error fetching module:", error);
+      }finally {
+        setIsLoading(false); // End loading
       }
     }
     fetchModule();
@@ -182,7 +188,6 @@ export default function DocsPage() {
   };
 
 
-
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -195,6 +200,11 @@ export default function DocsPage() {
   return (
     <div className="mt-14">
       <MaxWidthWrapper className="py-14">
+      {isLoading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
+          </div>
+        ) : (
         <div className="lg:w-3/5 md:w-4/5 m-auto">
           {posts.map((post) => (
             <div key={post.id}>
@@ -214,6 +224,7 @@ export default function DocsPage() {
           ))}
 
           <div className="mt-10 flex flex-col md:flex-row md:justify-between items-center gap-4">
+          {itemQuiz.length > 0 ?(
             <button
               className="w-full  md:h-12 h-10 flex items-center justify-center gap-2 font-semibold text-white rounded-lg bg-red-700 hover:bg-red-800 transition"
               onClick={handleQuizStart}
@@ -221,6 +232,11 @@ export default function DocsPage() {
               <img src="/IMG_Home/Quiz_white.png" className="h-8 " alt="Quiz Icon" />
               Start Quiz
             </button>
+            ):
+            (
+              <div></div>
+            )
+            }
             <div className="w-full md:w-[50%]  flex flex-row items-center justify-end gap-4">
             <Link
                 className=" md:h-12 h-10  flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg  transition"
@@ -239,6 +255,7 @@ export default function DocsPage() {
             </div>
           </div>
         </div>
+        )}
       </MaxWidthWrapper>
 
       {openQuiz && (

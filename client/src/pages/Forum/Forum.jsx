@@ -34,7 +34,6 @@ import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
-import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Reply from "@/pages/Forum/Reply";
 import CheckIcon from '@mui/icons-material/Check';
@@ -1533,7 +1532,7 @@ export default function Forum() {
                                         <p>No Questions Available</p>
                                     )}
                                     <div ref={observerRef} className="flex justify-center items-center py-4">
-                                        {loading && <CircularProgress />}
+                                        {loading &&  <div className="animate-spin h-12 w-12 border-4 border-red-500 border-t-transparent rounded-full"></div>}
                                     </div>
                                 </section>
                             }

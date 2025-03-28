@@ -233,7 +233,7 @@ export default function ModulesPage() {
             </section>
             {loading ? (
               <div className="w-full flex justify-center items-center">
-                <p className="text-lg font-medium animate-pulse">Loading modules...</p>
+                     <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
               </div>
             ) : filteredModules.length > 0 ? (
               filteredModules.map((module, index) => (

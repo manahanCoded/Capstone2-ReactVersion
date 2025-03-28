@@ -22,10 +22,13 @@ export default function EditPost({ postList, editPostID }) {
   const [isRawHtmlInformation, setIsRawHtmlInformation] = useState(false);
 
   const [typeForm, setTypeForm] = useState("createModule");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function handleCheckAdmin() {
+      setIsLoading(true);
       try {
+        
         const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
@@ -42,6 +45,8 @@ export default function EditPost({ postList, editPostID }) {
       } catch (err) {
         console.error("An error occurred:", err);
 
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -49,7 +54,7 @@ export default function EditPost({ postList, editPostID }) {
   }, [navigate]);
 
   useEffect(() => {
-    if (!userInfo.id) return; // Ensure ID is available before making a request
+    if (!userInfo.id) return; 
     async function fetchQuestions() {
       try {
         const res = await axios.get(
@@ -165,7 +170,7 @@ export default function EditPost({ postList, editPostID }) {
 
 
   const handleRemoveQuestion = async (index, question_id) => {
-    if (question_id) { 
+    if (question_id) {
       try {
         const response = await axios.delete(`${API_URL}/api/module/deleteQuestion/${question_id}`);
         if (response.status === 200) {
@@ -183,7 +188,7 @@ export default function EditPost({ postList, editPostID }) {
       setQuestions(updatedQuestions);
     }
   };
-  
+
 
   const handleSubmitQuestion = async (e) => {
     e.preventDefault();
@@ -217,7 +222,7 @@ export default function EditPost({ postList, editPostID }) {
 
 
   return (
-    <div className="mt-14 container mx-auto">
+    <div className=" mx-auto">
       <section className="text-sm">
         <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
           <div className="h-16  flex flex-row">
@@ -245,200 +250,209 @@ export default function EditPost({ postList, editPostID }) {
         </MaxWidthWrapper>
       </section>
 
-      {typeForm === "createModule" ?
-        <div className="row">
-          <form onSubmit={handleSubmit} className="bg-white shadow-md rounded md:px-8 pt-6 pb-8 mb-4">
-            <MaxWidthWrapper>
-              <div className="w-full flex items-center justify-between gap-2">
-                <h3 className="text-xl font-semibold mb-4">Edit</h3>
-                <button
-                  type="button"
-                  onClick={deleteModule}
-                  className="bg-red-800 py-2 px-4 rounded-md text-white hover:bg-red-900"
-                >
-                  Delete
-                </button>
-              </div>
-              <div className="form-row">
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Title <span className="text-red-500">*</span>
-                  </label>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-red-700"></div>
+        </div>
+      ) : (
+        <div>
+          {typeForm === "createModule" ?
+            <div className="row">
+              <form onSubmit={handleSubmit} className="bg-white shadow-md rounded md:px-8 pt-6 pb-8 ">
+                <MaxWidthWrapper>
+                  <div className="w-full flex items-center justify-between gap-2">
+                    <h3 className="text-xl font-semibold mb-4">Edit</h3>
+                    <button
+                      type="button"
+                      onClick={deleteModule}
+                      className="bg-red-800 py-2 px-4 rounded-md text-white hover:bg-red-900"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <div className="form-row">
+                    <div className="mb-4">
+                      <label className="block text-gray-700 font-bold mb-2">
+                        Title <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="title"
+                        value={userInfo.title}
+                        onChange={onChangeValue}
+                        className="form-control w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Title"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-gray-700 font-bold mb-2">
+                        Descriptioasdasdn <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex items-center gap-4 mb-2">
+                        <EditorToolbar toolbarId="t1" />
+                        <button
+                          type="button"
+                          onClick={toggleRawHtmlDescription}
+                          className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                        >
+                          {isRawHtmlDescription ? "Switch to Editor" : "Edit HTML"}
+                        </button>
+                      </div>
+                      {isRawHtmlDescription ? (
+                        <textarea
+                          value={userInfo.description}
+                          onChange={(e) => onDescriptionChange(e.target.value)}
+                          className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                      ) : (
+                        <ReactQuill
+                          theme="snow"
+                          value={userInfo.description}
+                          onChange={onDescriptionChange}
+                          placeholder="Write something awesome..."
+                          modules={modules("t1")}
+                          formats={formats}
+                          className="h-[70vh] overflow-y-auto "
+                        />
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 font-bold mb-2">
+                        Additional Information
+                      </label>
+                      <div className="flex items-center gap-4 mb-2">
+                        <EditorToolbar toolbarId="t2" />
+                        <button
+                          type="button"
+                          onClick={toggleRawHtmlInformation}
+                          className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                        >
+                          {isRawHtmlInformation ? "Switch to Editor" : "Edit HTML"}
+                        </button>
+                      </div>
+                      {isRawHtmlInformation ? (
+                        <textarea
+                          value={userInfo.information}
+                          onChange={(e) => onInformationChange(e.target.value)}
+                          className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                      ) : (
+                        <ReactQuill
+                          theme="snow"
+                          value={userInfo.information}
+                          onChange={onInformationChange}
+                          placeholder="Write something awesome..."
+                          modules={modules("t2")}
+                          formats={formats}
+                          className="h-[70vh] overflow-y-auto"
+                        />
+                      )}
+                    </div>
+
+                    {isError && <div className="errors">{isError}</div>}
+
+                    <div className="form-group col-sm-12 text-right">
+                      <button
+                        type="submit"
+                        className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </MaxWidthWrapper>
+              </form>
+            </div>
+            : <form onSubmit={handleSubmitQuestion} className="p-6 bg-white rounded-lg shadow">
+              {questions.map((question, index) => (
+                <div key={index} className="my-6 border-b pb-4">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-gray-700 font-bold">
+                      Question {index + 1}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveQuestion(index, question.question_id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
                   <input
                     type="text"
-                    name="title"
-                    value={userInfo.title}
-                    onChange={onChangeValue}
-                    className="form-control w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Title"
+                    name="question_text"
+                    value={question.question_text}
+                    onChange={(e) => handleChange(e, index)}
                     required
+                    className="w-full border rounded px-3 py-2 mb-2"
+                    placeholder="Enter question here"
                   />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Descriptioasdasdn <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center gap-4 mb-2">
-                    <EditorToolbar toolbarId="t1" />
-                    <button
-                      type="button"
-                      onClick={toggleRawHtmlDescription}
-                      className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                  {["option_a", "option_b", "option_c", "option_d"].map((opt, i) => (
+                    <input
+                      key={i}
+                      type="text"
+                      name={opt}
+                      value={question[opt]}
+                      onChange={(e) => handleChange(e, index)}
+                      required
+                      className="w-full border rounded px-3 py-2 mb-2"
+                      placeholder={`Option ${opt.split("_")[1].toUpperCase()}`}
+                    />
+                  ))}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 font-bold">Correct Option</label>
+                    <select
+                      name="correct_option"
+                      value={question.correct_option ?? ""} // Ensure existing value is shown
+                      onChange={(e) => handleChange(e, index)}
+                      required
+                      className="w-full border rounded px-3 py-2"
                     >
-                      {isRawHtmlDescription ? "Switch to Editor" : "Edit HTML"}
-                    </button>
+                      <option value="" disabled>
+                        {question.correct_option ? `Current: ${question.correct_option}` : "Select Correct Option"}
+                      </option>
+                      <option value="A">Option A</option>
+                      <option value="B">Option B</option>
+                      <option value="C">Option C</option>
+                      <option value="D">Option D</option>
+                    </select>
                   </div>
-                  {isRawHtmlDescription ? (
-                    <textarea
-                      value={userInfo.description}
-                      onChange={(e) => onDescriptionChange(e.target.value)}
-                      className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  ) : (
-                    <ReactQuill
-                      theme="snow"
-                      value={userInfo.description}
-                      onChange={onDescriptionChange}
-                      placeholder="Write something awesome..."
-                      modules={modules("t1")}
-                      formats={formats}
-                      className="h-[70vh] overflow-y-auto "
-                    />
-                  )}
                 </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Additional Information
-                  </label>
-                  <div className="flex items-center gap-4 mb-2">
-                    <EditorToolbar toolbarId="t2" />
-                    <button
-                      type="button"
-                      onClick={toggleRawHtmlInformation}
-                      className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
-                    >
-                      {isRawHtmlInformation ? "Switch to Editor" : "Edit HTML"}
-                    </button>
-                  </div>
-                  {isRawHtmlInformation ? (
-                    <textarea
-                      value={userInfo.information}
-                      onChange={(e) => onInformationChange(e.target.value)}
-                      className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  ) : (
-                    <ReactQuill
-                      theme="snow"
-                      value={userInfo.information}
-                      onChange={onInformationChange}
-                      placeholder="Write something awesome..."
-                      modules={modules("t2")}
-                      formats={formats}
-                      className="h-[70vh] overflow-y-auto"
-                    />
-                  )}
-                </div>
+              ))}
 
-                {isError && <div className="errors">{isError}</div>}
-
-                <div className="form-group col-sm-12 text-right">
-                  <button
-                    type="submit"
-                    className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </MaxWidthWrapper>
-          </form>
-        </div>
-        : <form onSubmit={handleSubmitQuestion} className="p-6 bg-white rounded-lg shadow">
-          {questions.map((question, index) => (
-            <div key={index} className="my-6 border-b pb-4">
-              <div className="flex justify-between items-center">
-                <label className="block text-gray-700 font-bold">
-                  Question {index + 1}
-                </label>
+              <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => handleRemoveQuestion(index, question.question_id)}
-                  className="text-red-500 hover:text-red-700"
+                  onClick={handleAddQuestion}
+                  className="border-red-900 border-2 text-red-900 py-2 px-4 rounded-lg hover:bg-red-900 hover:text-white"
                 >
-                  Remove
+                  Add Question
                 </button>
-              </div>
-              <input
-                type="text"
-                name="question_text"
-                value={question.question_text}
-                onChange={(e) => handleChange(e, index)}
-                required
-                className="w-full border rounded px-3 py-2 mb-2"
-                placeholder="Enter question here"
-              />
-              {["option_a", "option_b", "option_c", "option_d"].map((opt, i) => (
-                <input
-                  key={i}
-                  type="text"
-                  name={opt}
-                  value={question[opt]}
-                  onChange={(e) => handleChange(e, index)}
-                  required
-                  className="w-full border rounded px-3 py-2 mb-2"
-                  placeholder={`Option ${opt.split("_")[1].toUpperCase()}`}
-                />
-              ))}
-              <div className="mb-4">
-                <label className="block text-gray-700 font-bold">Correct Option</label>
-                <select
-                  name="correct_option"
-                  value={question.correct_option ?? ""} // Ensure existing value is shown
-                  onChange={(e) => handleChange(e, index)}
-                  required
-                  className="w-full border rounded px-3 py-2"
-                >
-                  <option value="" disabled>
-                    {question.correct_option ? `Current: ${question.correct_option}` : "Select Correct Option"}
-                  </option>
-                  <option value="A">Option A</option>
-                  <option value="B">Option B</option>
-                  <option value="C">Option C</option>
-                  <option value="D">Option D</option>
-                </select>
-              </div>
-            </div>
-          ))}
 
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={handleAddQuestion}
-              className="border-red-900 border-2 text-red-900 py-2 px-4 rounded-lg hover:bg-red-900 hover:text-white"
-            >
-              Add Question
-            </button>
-
-            {userInfo.title ? (
-              <button
-                type="submit"
-                className="bg-black text-white py-2 px-4 rounded-lg hover:bg-red-700"
-              >
-                Submit Questions
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="bg-red-800 text-white font-bold py-2 px-4 rounded"
-              >
-                Create Unit First
-              </button>
-            )}
-          </div>
-        </form>
-      }
+                {userInfo.title ? (
+                  <button
+                    type="submit"
+                    className="bg-black text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                  >
+                    Submit Questions
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="bg-red-800 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Create Unit First
+                  </button>
+                )}
+              </div>
+            </form>
+          }
+        </div>
+      )}
     </div>
+
   );
 };
 

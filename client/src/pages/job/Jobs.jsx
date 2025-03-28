@@ -149,7 +149,7 @@ export default function JobsPage() {
 
     const filteredJobs = displayJobs.filter((job) => {
       if (bookmarkedOnly && !bookmarkedJobs.includes(job.id)) {
-        return false; 
+        return false;
       }
 
       const matchesSearchTerm =
@@ -394,7 +394,7 @@ export default function JobsPage() {
             </div>
             {loading ? (
               <div className="w-full flex justify-center items-center">
-                <p className="text-lg font-medium animate-pulse">Loading Jobs...</p>
+                <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
               </div>
             ) :
               <div className="flex flex-wrap flow-row md:justify-start justify-center sm:gap-6 gap-x-2 gap-y-6">
