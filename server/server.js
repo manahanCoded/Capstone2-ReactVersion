@@ -52,14 +52,14 @@ app.use(
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 10000, 
+  max: 100000, 
   message: "Too many requests, please try again later.",
   headers: true,
 });
 
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, 
-  delayAfter: 10000, 
+  delayAfter: 20000, 
   delayMs: () => 500,
 });
 

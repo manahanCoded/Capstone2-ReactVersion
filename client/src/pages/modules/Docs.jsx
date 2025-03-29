@@ -260,7 +260,7 @@ export default function DocsPage() {
 
       {openQuiz && (
         <section className="w-screen h-screen fixed flex items-center pt-8 justify-center inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="w-2/3 h-5/6 m-auto bg-white rounded-md p-8">
+          <div className="lg:w-2/3 md:w-[75%] w-[95%] h-5/6 m-auto bg-white rounded-md p-8 overflow-y-auto">
             {!showResult && itemQuiz.length > 0 ? (
               <div>
                 <div className="w-full flex justify-between items-center">
@@ -275,7 +275,7 @@ export default function DocsPage() {
                   </button>
                 </div>
                 <p className="text-gray-700 mb-4">{itemQuiz[currentQuestionIndex].question_text}</p>
-                <div className="space-y-2">
+                <div className="space-y-2 flex items-center flex-col justify-center w-[95%]  px-4">
                   {["A", "B", "C", "D"].map((option) => (
                     <button
                       key={option}

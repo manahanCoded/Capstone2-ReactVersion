@@ -45,6 +45,8 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Forum() {
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(false)
+    const [loadingReply, setLoadingReply] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -153,6 +155,7 @@ export default function Forum() {
 
     useEffect(() => {
         async function handleAll_QA() {
+            setLoading(true)
             try {
                 const res = await fetch(`${API_URL}/api/question-answer/all`);
                 const data = await res.json();
@@ -169,9 +172,10 @@ export default function Forum() {
                 } catch (err) {
                     console.error("❌ Error fetching unseen questions:", err);
                 }
-
             } catch (err) {
                 console.error('Error fetching QA data:', err);
+            } finally {
+                setLoading(false)
             }
         }
 
@@ -271,9 +275,9 @@ export default function Forum() {
             }
             openPostOption(null)
             fetchAllQA();
-            setUnseenQuestions((prevUnseen) => 
+            setUnseenQuestions((prevUnseen) =>
                 prevUnseen.filter(q => q.question_id !== questionID)
-              );
+            );
         } catch (error) {
             alert("An error occurred: " + error.message);
         }
@@ -324,9 +328,11 @@ export default function Forum() {
 
     const handleAnswerSubmit = async (e, questionId, parentAnswerId = null) => {
         e.preventDefault();
-
+        setLoadingReply(true);
         const answerKey = parentAnswerId || questionId;
         const answerText = answers[answerKey];
+
+        setReplyingTo(replyingTo === parentAnswerId ? null : parentAnswerId)
 
         if (!checkUser?.id) {
             alert("Log in first");
@@ -364,6 +370,8 @@ export default function Forum() {
         } catch (error) {
             console.error("Error:", error);
             alert("An error occurred");
+        } finally {
+            setLoadingReply(false);
         }
     };
 
@@ -484,11 +492,11 @@ export default function Forum() {
                     return { ...prevData, questions: updatedQuestions };
                 });
 
-                setUpdateDeleteKey((prevKey) => prevKey + 1); 
+                setUpdateDeleteKey((prevKey) => prevKey + 1);
 
-                setUnseenQuestions((prevUnseen) => 
+                setUnseenQuestions((prevUnseen) =>
                     prevUnseen.filter(q => q.question_id !== questionId)
-                  );
+                );
 
             } else {
                 alert(`Error deleting question: ${data.error || "Unknown error"}`);
@@ -513,9 +521,9 @@ export default function Forum() {
             if (res.ok) {
                 fetchAllQA()
                 setOpenPostId(null)
-                setUnseenQuestions((prevUnseen) => 
+                setUnseenQuestions((prevUnseen) =>
                     prevUnseen.filter(q => q.question_id !== acceptID)
-                  );
+                );
             } else {
                 alert(data.error || "An error occurred on the server.");
             }
@@ -605,7 +613,7 @@ export default function Forum() {
     // Loader
     const [visibleQuestions, setVisibleQuestions] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loadingPage, setLoadingPage] = useState(false);
     const observerRef = useRef(null);
 
     const QUESTIONS_PER_PAGE = 5;
@@ -622,15 +630,15 @@ export default function Forum() {
         (entries) => {
             const target = entries[0];
 
-            if (target.isIntersecting && !loading && visibleQuestions.length < filteredQuestions.length) {
-                setLoading(true);
+            if (target.isIntersecting && !loadingPage && visibleQuestions.length < filteredQuestions.length) {
+                setLoadingPage(true);
                 setTimeout(() => {
                     setPage((prevPage) => prevPage + 1);
-                    setLoading(false);
+                    setLoadingPage(false);
                 }, 1000);
             }
         },
-        [loading, visibleQuestions.length, filteredQuestions.length]
+        [loadingPage, visibleQuestions.length, filteredQuestions.length]
     );
 
     useEffect(() => {
@@ -1098,7 +1106,8 @@ export default function Forum() {
                                     {/* Answer Form */}
                                     <form
                                         onClick={handleClickFirstCommentRef}
-                                        onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
+                                        onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)} 
+                                        className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                         <textarea
                                             ref={firstCommentRef}
                                             className="w-full px-4 outline-none"
@@ -1114,9 +1123,14 @@ export default function Forum() {
                                         <div className=" w-full flex justify-end items-center text-[0.7rem] px-2 ">
                                             <button
                                                 type="submit"
-                                                className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                className="py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                disabled={loadingReply}
                                             >
-                                                Reply
+                                                {loadingReply ? (
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white"></div>
+                                                ) : (
+                                                    "Reply"
+                                                )}
                                             </button>
                                         </div>
                                     </form>
@@ -1267,7 +1281,8 @@ export default function Forum() {
                                                                     {replyingTo === answer.answer_id && (
                                                                         <form
                                                                             onClick={handleClick}
-                                                                            onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
+                                                                            onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} 
+                                                                            className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                                                             <textarea
                                                                                 ref={textareaRef}
                                                                                 className="w-full px-4 outline-none"
@@ -1286,9 +1301,14 @@ export default function Forum() {
                                                                                 </button>
                                                                                 <button
                                                                                     type="submit"
-                                                                                    className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                                                    className="py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                                                                                    disabled={loadingReply}
                                                                                 >
-                                                                                    Reply
+                                                                                    {loadingReply ? (
+                                                                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white"></div>
+                                                                                    ) : (
+                                                                                        "Reply"
+                                                                                    )}
                                                                                 </button>
                                                                             </div>
                                                                         </form>
@@ -1316,6 +1336,7 @@ export default function Forum() {
                                                                                     editReply={editReply}
                                                                                     setEditReply={setEditReply}
                                                                                     handleEditAnswer={handleEditAnswer}
+                                                                                    loadingReply={loadingReply}
                                                                                 />
                                                                             ))}
                                                                     </div>
@@ -1331,209 +1352,217 @@ export default function Forum() {
                                 </section>
                                 :
                                 <section>
-                                    {visibleQuestions &&
-                                        visibleQuestions
-                                            .filter((question) =>
-                                                (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
-                                                (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
-                                                (!showUnapprovedOnly || !question.is_resolved)
-                                            )
-                                            .length > 0 ? (
-                                        visibleQuestions
-                                            .filter((question) =>
-                                                (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
-                                                (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
-                                                (!showUnapprovedOnly || !question.is_resolved)
-                                            )
-                                            .map((question) => {
-                                                const questionVotes = all_QA.votes.filter(
-                                                    (vote) => vote.target_id === question.question_id && vote.target_type === "question"
-                                                );
+                                    {loading ? (
+                                        <div className="w-full flex justify-center items-center">
+                                            <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
+                                        </div>
+                                    ) :
+                                        <section>
+                                            {visibleQuestions &&
+                                                visibleQuestions
+                                                    .filter((question) =>
+                                                        (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
+                                                        (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
+                                                        (!showUnapprovedOnly || !question.is_resolved)
+                                                    )
+                                                    .length > 0 ? (
+                                                visibleQuestions
+                                                    .filter((question) =>
+                                                        (specifyQuestion === "all" || question.email === specifyQuestion || question.topic_type === specifyQuestion) &&
+                                                        (checkUser?.role === "admin" || question.is_resolved || question.user_id === checkUser?.id) &&
+                                                        (!showUnapprovedOnly || !question.is_resolved)
+                                                    )
+                                                    .map((question) => {
+                                                        const questionVotes = all_QA.votes.filter(
+                                                            (vote) => vote.target_id === question.question_id && vote.target_type === "question"
+                                                        );
 
-                                                return (
-                                                    <section key={question.question_id} className="py-1 border-b border-gray-300 mb-1 ">
-                                                        <div className="p-2 hover:bg-gray-50 rounded-xl flex flex-col gap-2 cursor-pointer"
-                                                            onClick={() => {
-                                                                window.scrollTo(0, 0)
-                                                                handleCheckQuestion(question.question_id)
-                                                            }
-                                                            }
-                                                        >
-                                                            <section className="flex flex-row gap-2 items-center">
-                                                                <div className="w-full flex flex-row items-center ">
-                                                                    {question?.user_image ? (
-                                                                        <img
-                                                                            src={question.user_image}
-                                                                            className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                                                                            alt="Profile Picture"
-                                                                        />
-                                                                    ) : (
-                                                                        <AccountCircleIcon
-                                                                            style={{
-                                                                                width: '2.5rem',
-                                                                                height: '2.5rem',
-                                                                                marginRight: '0.5rem',
-                                                                                color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                                                                            }}
-                                                                        />
-                                                                    )}
+                                                        return (
+                                                            <section key={question.question_id} className="py-1 border-b border-gray-300 mb-1 ">
+                                                                <div className="p-2 hover:bg-gray-50 rounded-xl flex flex-col gap-2 cursor-pointer"
+                                                                    onClick={() => {
+                                                                        window.scrollTo(0, 0)
+                                                                        handleCheckQuestion(question.question_id)
+                                                                    }
+                                                                    }
+                                                                >
+                                                                    <section className="flex flex-row gap-2 items-center">
+                                                                        <div className="w-full flex flex-row items-center ">
+                                                                            {question?.user_image ? (
+                                                                                <img
+                                                                                    src={question.user_image}
+                                                                                    className="h-9 w-9 object-cover mr-2 rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                                                    alt="Profile Picture"
+                                                                                />
+                                                                            ) : (
+                                                                                <AccountCircleIcon
+                                                                                    style={{
+                                                                                        width: '2.5rem',
+                                                                                        height: '2.5rem',
+                                                                                        marginRight: '0.5rem',
+                                                                                        color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                                                                                    }}
+                                                                                />
+                                                                            )}
 
-                                                                    <div className="flex flex-col gap-1 text-xs">
-                                                                        {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
-                                                                            <div className={`gap-1 text-xs ${question.is_resolved ? "text-green-500" : "text-red-500"}`}>
-                                                                                <p>{question.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
+                                                                            <div className="flex flex-col gap-1 text-xs">
+                                                                                {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
+                                                                                    <div className={`gap-1 text-xs ${question.is_resolved ? "text-green-500" : "text-red-500"}`}>
+                                                                                        <p>{question.is_resolved ? "(Approved)" : "(Unapprove)"}</p>
+                                                                                    </div>
+
+                                                                                )}
+                                                                                <div className="flex flex-wrap gap-1 items-center text-xs">
+                                                                                    <p className=" text-gray-600">{question.name ? question.name : question.email}</p>
+                                                                                    <p>•</p>
+                                                                                    <p className=" text-gray-500">{timeAgo(question.created_at)}</p>
+                                                                                    <p>•</p>
+                                                                                    <p className=" text-gray-600">{question.topic_type}</p>
+                                                                                </div>
                                                                             </div>
-
-                                                                        )}
-                                                                        <div className="flex flex-wrap gap-1 items-center text-xs">
-                                                                            <p className=" text-gray-600">{question.name ? question.name : question.email}</p>
-                                                                            <p>•</p>
-                                                                            <p className=" text-gray-500">{timeAgo(question.created_at)}</p>
-                                                                            <p>•</p>
-                                                                            <p className=" text-gray-600">{question.topic_type}</p>
                                                                         </div>
+                                                                        <div className={`${checkUser?.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}
+                                                                            onClick={(e) => {
+                                                                                openPostOption(question.question_id)
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                            }
+                                                                        >
+                                                                            <MoreHorizIcon className="cursor-pointer" />
+                                                                            {openPostId === question.question_id &&
+                                                                                <div className="w-36 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                                                                    {(checkUser?.role === "admin") && (
+                                                                                        <div
+                                                                                            onClick={(e) => {
+                                                                                                handleAllowQuestion(question.question_id, !question.is_resolved);
+                                                                                                e.stopPropagation();
+                                                                                            }}
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            {question.is_resolved ? <CloseIcon /> : <CheckIcon />}
+                                                                                            <p>{question.is_resolved ? "Disapprove" : "Approve"}</p>
+                                                                                        </div>
+
+                                                                                    )}
+                                                                                    {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
+                                                                                        <div
+                                                                                            onClick={(e) => {
+                                                                                                openPostOption()
+                                                                                                handleEditQuestion(question.question_id)
+                                                                                                setOpenEditQuestion(true)
+                                                                                                e.stopPropagation()
+                                                                                            }
+                                                                                            }
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            <EditOutlinedIcon />
+                                                                                            <p>Edit</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
+                                                                                        <div
+                                                                                            key={updateDeleteKey}
+                                                                                            onClick={(e) => {
+                                                                                                handleDeleteQuestion(question.question_id)
+                                                                                                e.stopPropagation()
+                                                                                            }
+                                                                                            }
+                                                                                            className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                                                                        >
+                                                                                            <DeleteOutlineIcon />
+                                                                                            <p>Delete</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </section>
+                                                                    <h3 className=" font-semibold line-clamp-3">{question.topic}</h3>
+                                                                    {question.image ? (
+                                                                        <div
+                                                                            className="w-full relative rounded-2xl bg-cover bg-center flex justify-center overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                                                            style={{ backgroundImage: `url(${question.image})` }}
+                                                                        >
+                                                                            <div className="absolute inset-0 bg-black/20 rounded-xl backdrop-blur-lg"></div>
+                                                                            <img
+                                                                                className="w-full  aspect-[20/13] rounded-lg object-contain backdrop-blur-sm"
+                                                                                src={question.image}
+                                                                                alt="Uploaded"
+                                                                            />
+                                                                        </div>
+                                                                    ) :
+                                                                        <p className="h-fit text-sm text-[#333333] line-clamp-6">
+                                                                            {stripHtml(question.question_text ?? "No description available")}
+                                                                        </p>
+                                                                    }
+                                                                    <div>
+                                                                        {(() => {
+                                                                            const userVote =
+                                                                                all_QA?.votes?.find(
+                                                                                    (vote) =>
+                                                                                        vote?.target_id === question.question_id &&
+                                                                                        vote?.target_type === "question" &&
+                                                                                        vote?.user_id === checkUser?.id
+                                                                                ) || null;
+
+                                                                            const isUpvoted = userVote?.vote_type === "up";
+                                                                            return (
+                                                                                <section className="my-2 flex flex-row items-center justify-between gap-2 ">
+                                                                                    <div className=" flex flex-row items-center gap-2 text-sm">
+                                                                                        <button
+                                                                                            className={`flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200  ${isUpvoted ? "text-red-500" : "text-black"}`}
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation()
+                                                                                                handleVote(
+                                                                                                    question.question_id,
+                                                                                                    "question",
+                                                                                                    isUpvoted ? "down" : "up"
+                                                                                                )
+                                                                                            }
+                                                                                            }
+                                                                                        >
+                                                                                            {isUpvoted ? <FavoriteIcon style={{ fontSize: "18px" }} />
+                                                                                                : <FavoriteBorderIcon style={{ fontSize: "18px" }} />}
+
+                                                                                            <span className="ml-2 ">
+                                                                                                {(() => {
+                                                                                                    const heartCount = questionVotes.filter((vote) => vote.vote_type === "up").length
+                                                                                                    return heartCount > 0 ? heartCount : 0
+                                                                                                })()}
+                                                                                            </span>
+                                                                                        </button>
+
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200"
+                                                                                        >
+                                                                                            <ChatBubbleOutlineRoundedIcon style={{ fontSize: "18px" }} />
+                                                                                            <span className="ml-2 ">
+                                                                                                {(() => {
+                                                                                                    const commentCount = all_QA.answers.filter(
+                                                                                                        (answer) => answer.question_id === question.question_id
+                                                                                                    ).length;
+                                                                                                    return commentCount > 0 ? commentCount : 0;
+                                                                                                })()}
+                                                                                            </span>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </section>
+                                                                            );
+                                                                        })()}
                                                                     </div>
                                                                 </div>
-                                                                <div className={`${checkUser?.id ? "" : "hidden"}relative p-1 rounded-full hover:bg-gray-300`}
-                                                                    onClick={(e) => {
-                                                                        openPostOption(question.question_id)
-                                                                        e.stopPropagation()
-                                                                    }
-                                                                    }
-                                                                >
-                                                                    <MoreHorizIcon className="cursor-pointer" />
-                                                                    {openPostId === question.question_id &&
-                                                                        <div className="w-36 absolute top-10 z-30 flex flex-col right-0 rounded-lg overflow-hidden text-sm bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
-                                                                            {(checkUser?.role === "admin") && (
-                                                                                <div
-                                                                                    onClick={(e) => {
-                                                                                        handleAllowQuestion(question.question_id, !question.is_resolved);
-                                                                                        e.stopPropagation();
-                                                                                    }}
-                                                                                    className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                                                                >
-                                                                                    {question.is_resolved ? <CloseIcon /> : <CheckIcon />}
-                                                                                    <p>{question.is_resolved ? "Disapprove" : "Approve"}</p>
-                                                                                </div>
-
-                                                                            )}
-                                                                            {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
-                                                                                <div
-                                                                                    onClick={(e) => {
-                                                                                        openPostOption()
-                                                                                        handleEditQuestion(question.question_id)
-                                                                                        setOpenEditQuestion(true)
-                                                                                        e.stopPropagation()
-                                                                                    }
-                                                                                    }
-                                                                                    className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                                                                >
-                                                                                    <EditOutlinedIcon />
-                                                                                    <p>Edit</p>
-                                                                                </div>
-                                                                            )}
-                                                                            {(checkUser?.id === question.user_id || checkUser?.role === "admin") && (
-                                                                                <div
-                                                                                    key={updateDeleteKey}
-                                                                                    onClick={(e) => {
-                                                                                        handleDeleteQuestion(question.question_id)
-                                                                                        e.stopPropagation()
-                                                                                    }
-                                                                                    }
-                                                                                    className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                                                                >
-                                                                                    <DeleteOutlineIcon />
-                                                                                    <p>Delete</p>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    }
-                                                                </div>
                                                             </section>
-                                                            <h3 className=" font-semibold line-clamp-3">{question.topic}</h3>
-                                                            {question.image ? (
-                                                                <div
-                                                                    className="w-full relative rounded-2xl bg-cover bg-center flex justify-center overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                                                                    style={{ backgroundImage: `url(${question.image})` }}
-                                                                >
-                                                                    <div className="absolute inset-0 bg-black/20 rounded-xl backdrop-blur-lg"></div>
-                                                                    <img
-                                                                        className="w-full  aspect-[20/13] rounded-lg object-contain backdrop-blur-sm"
-                                                                        src={question.image}
-                                                                        alt="Uploaded"
-                                                                    />
-                                                                </div>
-                                                            ) :
-                                                                <p className="h-fit text-sm text-[#333333] line-clamp-6">
-                                                                    {stripHtml(question.question_text ?? "No description available")}
-                                                                </p>
-                                                            }
-                                                            <div>
-                                                                {(() => {
-                                                                    const userVote =
-                                                                        all_QA?.votes?.find(
-                                                                            (vote) =>
-                                                                                vote?.target_id === question.question_id &&
-                                                                                vote?.target_type === "question" &&
-                                                                                vote?.user_id === checkUser?.id
-                                                                        ) || null;
-
-                                                                    const isUpvoted = userVote?.vote_type === "up";
-                                                                    return (
-                                                                        <section className="my-2 flex flex-row items-center justify-between gap-2 ">
-                                                                            <div className=" flex flex-row items-center gap-2 text-sm">
-                                                                                <button
-                                                                                    className={`flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200  ${isUpvoted ? "text-red-500" : "text-black"}`}
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation()
-                                                                                        handleVote(
-                                                                                            question.question_id,
-                                                                                            "question",
-                                                                                            isUpvoted ? "down" : "up"
-                                                                                        )
-                                                                                    }
-                                                                                    }
-                                                                                >
-                                                                                    {isUpvoted ? <FavoriteIcon style={{ fontSize: "18px" }} />
-                                                                                        : <FavoriteBorderIcon style={{ fontSize: "18px" }} />}
-
-                                                                                    <span className="ml-2 ">
-                                                                                        {(() => {
-                                                                                            const heartCount = questionVotes.filter((vote) => vote.vote_type === "up").length
-                                                                                            return heartCount > 0 ? heartCount : 0
-                                                                                        })()}
-                                                                                    </span>
-                                                                                </button>
-
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="flex flex-row items-center justify-center w-20 px-2 py-1 rounded-full border bg-gray-100 hover:bg-gray-200"
-                                                                                >
-                                                                                    <ChatBubbleOutlineRoundedIcon style={{ fontSize: "18px" }} />
-                                                                                    <span className="ml-2 ">
-                                                                                        {(() => {
-                                                                                            const commentCount = all_QA.answers.filter(
-                                                                                                (answer) => answer.question_id === question.question_id
-                                                                                            ).length;
-                                                                                            return commentCount > 0 ? commentCount : 0;
-                                                                                        })()}
-                                                                                    </span>
-                                                                                </button>
-                                                                            </div>
-                                                                        </section>
-                                                                    );
-                                                                })()}
-                                                            </div>
-                                                        </div>
-                                                    </section>
-                                                );
-                                            })
-                                    ) : (
-                                        <p>No Questions Available</p>
-                                    )}
-                                    <div ref={observerRef} className="flex justify-center items-center py-4">
-                                        {loading &&  <div className="animate-spin h-12 w-12 border-4 border-red-500 border-t-transparent rounded-full"></div>}
-                                    </div>
+                                                        );
+                                                    })
+                                            ) : (
+                                                <p>No Questions Available</p>
+                                            )}
+                                            <div ref={observerRef} className="flex justify-center items-center py-4">
+                                                {loadingPage && <div className="animate-spin h-12 w-12 border-4 border-red-500 border-t-transparent rounded-full"></div>}
+                                            </div>
+                                        </section>
+                                    }
                                 </section>
                             }
                         </section>

@@ -199,12 +199,42 @@ export default function JobsPage() {
     setSelectedJobTypes((prev) =>
       prev.includes(jobType) ? prev.filter((jt) => jt !== jobType) : [...prev, jobType]
     );
+    applyFilters(jobType);
+  };
+
+  
+  const handleMobile_JobTypeChange = (jobType) => {
+    setSelectedJobType(jobType === selectedJobType ? "" : jobType);
+    applyMobile_JobFilters(jobType);
+    setJobTypeOpen(false);
+  };
+
+    const applyMobile_JobFilters = (jobType) => {
+    const filteredJobs = displayJobs.filter((job) => {
+      const matchesJobType = !jobType || job.jobtype === jobType;
+      return matchesJobType;
+    });
+    setDisplayOptions(filteredJobs);
   };
 
   const handleLocationChange = (location) => {
     setSelectedLocations((prev) =>
       prev.includes(location) ? prev.filter((loc) => loc !== location) : [...prev, location]
     );
+  };
+
+  const handleMobile_LocationChange = (location) => {
+    setSelectedLocation(location === selectedLocation ? "" : location);
+    applyMobile_LocationFilters(location);
+    setLocationOpen(false);
+  };
+
+  const applyMobile_LocationFilters = (location) => {
+    const filteredJobs = displayJobs.filter((job) => {
+      const matchesLocation = !location || job.state === location;
+      return matchesLocation;
+    });
+    setDisplayOptions(filteredJobs);
   };
 
 
@@ -220,7 +250,7 @@ export default function JobsPage() {
                   onClick={() => setJobTypeOpen(!isJobTypeOpen)}
                   className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
                 >
-                  {selectedJobType || "Select Job Type"}
+                  {selectedJobType || "All Job Types"}
                   <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
                 </button>
                 {isJobTypeOpen && (
@@ -228,6 +258,7 @@ export default function JobsPage() {
                     <li
                       onClick={() => {
                         setSelectedJobType("");
+                        handleMobile_JobTypeChange("");
                         setJobTypeOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -239,7 +270,7 @@ export default function JobsPage() {
                         key={jobType}
                         onClick={() => {
                           setSelectedJobType(jobType);
-                          handleJobTypeChange(jobType);
+                          handleMobile_JobTypeChange(jobType);
                           setJobTypeOpen(false);
                         }}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -256,7 +287,7 @@ export default function JobsPage() {
                   onClick={() => setLocationOpen(!isLocationOpen)}
                   className="w-full lg:h-11 h-9  py-2 px-4 text-left bg-white border border-gray-300 rounded-xl flex items-center justify-between"
                 >
-                  {selectedLocation || "Select Location"}
+                  {selectedLocation || "Select All Location"}
                   <span className="ml-2 text-gray-500"><ExpandMoreIcon /></span>
                 </button>
                 {isLocationOpen && (
@@ -264,6 +295,7 @@ export default function JobsPage() {
                     <li
                       onClick={() => {
                         setSelectedLocation("");
+                        handleMobile_LocationChange("")
                         setLocationOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -275,7 +307,7 @@ export default function JobsPage() {
                         key={location}
                         onClick={() => {
                           setSelectedLocation(location);
-                          handleLocationChange(location)
+                          handleMobile_LocationChange(location)
                           setLocationOpen(false);
                         }}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -393,7 +425,7 @@ export default function JobsPage() {
               </div>
             </div>
             {loading ? (
-              <div className="w-full flex justify-center items-center">
+              <div className="w-full flex justify-center items-center h-screen">
                 <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
               </div>
             ) :

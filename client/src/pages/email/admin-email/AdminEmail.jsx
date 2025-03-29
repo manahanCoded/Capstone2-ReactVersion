@@ -6,11 +6,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminDashboard from "@/components/AdminDashboard";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AdminEmail() {
     const [checkAdmin, setCheckAdmin] = useState(null)
+    const [isOpen, setIsOpen] = useState(false)
     const [applicants, setApplicants] = useState([])
     const [mail, setMail] = useState(null);
     const [successReply, setSuccessReply] = useState(false)
@@ -97,6 +100,7 @@ export default function AdminEmail() {
     }, []);
 
     const handleEmail = (e) => {
+        setIsOpen(false);
         const emailValue = applicants.find(
             (applicant) => applicant.id == e.currentTarget.id
         );
@@ -234,9 +238,70 @@ export default function AdminEmail() {
     return (
         <div className="mt-14 h-screen text-sm">
             <AdminDashboard />
-            <MaxWidthWrapper className=" md:px-0 h-screen flex flex-row ">
-                <div className="lg:w-[32%] md:w-[52%] flex flex-col border-r-[1px] border-b-[1px]">
-                    {/* Search and Filter Section */}
+            <MaxWidthWrapper className=" md:px-0 h-screen flex md:flex-row flex-col">
+                <div className="md:hidden h-fit w-full  flex flex-col  border-b-[1px]">
+                    <section className="min-h-12 w-full mb-2">
+                        <MaxWidthWrapper className="h-full flex gap-2 flex-row justify-between items-center">
+                            <div className="flex items-center justify-center mt-2 w-full border rounded-full pr-2 border-gray-400">
+                                <input
+                                    className="w-full text-sm px-4 p-2 rounded-s-full mr-1"
+                                    placeholder="Search"
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                />
+                                <SearchOutlinedIcon className="text-gray-500" />
+                            </div>
+                        </MaxWidthWrapper>
+                    </section>
+
+                    <div
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="md:hidden text-sm w-full flex justify-between gap-2 items-center cursor-pointer overflow-hidden px-4 mb-1 p-3 bg-white rounded-lg  shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                    >
+                        <div className='overflow-hidden flex flex-col justify-start'>
+                            <p className='font-bold'>{mail?.fullname}</p>
+                            <p>{mail?.email}</p>
+                            <p className='truncate line-clamp-1 '>{mail?.job_title}</p>
+                        </div>
+                        {isOpen ? <ExpandMoreIcon size={20} /> : <ExpandLessIcon size={20} />}
+                    </div>
+                    {isOpen &&
+                        <section className=" h-96 overflow-y-auto overflow-hidden mb-4 rounded-lg border py-4  bg-white">
+                            <MaxWidthWrapper className="">
+                                {filteredApplicants?.map((applicant, index) => {
+                                    const formattedDate = new Intl.DateTimeFormat("en-US", {
+                                        month: "short",
+                                        day: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                    }).format(new Date(applicant.date));
+                                    return (
+                                        <section
+                                            key={index}
+                                            onClick={handleEmail}
+                                            id={applicant.id}
+                                            className="p-3 mt-3 flex flex-col gap-2 rounded-sm text-sm cursor-pointer hover:bg-slate-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                        >
+                                            <div className="flex flex-row justify-between">
+                                                <h3 className="font-semibold">{applicant.fullname}</h3>
+                                                <p className="text-xs text-gray-400">{formattedDate}</p>
+                                            </div>
+                                            <p className="line-clamp-2 text-xs">{applicant.application}</p>
+                                            <p className="bg-[#333333] py-1 px-2 rounded-lg text-white text-[10px] font-semibold w-fit">
+                                                {applicant.job_title}
+                                            </p>
+                                        </section>
+                                    );
+                                })}
+                            </MaxWidthWrapper>
+                        </section>
+                    }
+                </div>
+
+                <div className="hidden lg:w-[32%] md:w-[52%] md:flex flex-col border-r-[1px] border-b-[1px]">
                     <section className="min-h-12 w-full border-b-[1px]">
                         <MaxWidthWrapper className="h-full flex gap-2 flex-row justify-between items-center">
                             <div className="flex items-center justify-center mt-2 w-full border-[1px] rounded-full pr-2 border-gray-400">
@@ -252,11 +317,10 @@ export default function AdminEmail() {
                         </MaxWidthWrapper>
                     </section>
 
-                    {/* Applicants List Section */}
                     <section className="h-full overflow-y-auto py-4">
                         <MaxWidthWrapper>
                             {filteredApplicants?.map((applicant, index) => {
-                                 const formattedDate = new Intl.DateTimeFormat("en-US", {
+                                const formattedDate = new Intl.DateTimeFormat("en-US", {
                                     month: "short",
                                     day: "2-digit",
                                     year: "numeric",
@@ -285,6 +349,7 @@ export default function AdminEmail() {
                         </MaxWidthWrapper>
                     </section>
                 </div>
+
                 <div className=" w-full md:flex lg:flex-row flex-col ">
                     <section className="lg:w-2/3 border-x-[1px]">
                         <MaxWidthWrapper className="p-4 border-b-[1px] flex flex-row justify-between items-center text-xs">
@@ -298,27 +363,27 @@ export default function AdminEmail() {
                             <p>{formattedDate}</p>
                         </MaxWidthWrapper>
 
-                        <MaxWidthWrapper className="p-4 ">
-                            <p>{mail?.fullname}</p>
-                            <h2 className="text-md font-semibold">Application Details</h2>
-                            <p>{mail?.name}</p>
-                            <div className='mt-4'>
-                            {mail?.resumeUrl && (
-                                <>
-                                    {mail?.resumeUrl.startsWith('data:image/') ? (
-                                        <img src={mail?.resumeUrl} alt="Applicant Resume" style={{ width: "200px", height: "auto" }} />
-                                    ) : (
-                                        <a href={`${API_URL}/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
-                                        Download Resume
-                                      </a>
-                                    )}
-                                </>
-                            )}
+                        <MaxWidthWrapper className="p-4 flex flex-col gap-4">
+                            <h3 className='text-4xl'>{mail?.job_title}</h3>
+                            <p className="text-md font-semibold">Application Details</p>
+                            <div>
+                                <p className='mb-4'>{mail?.application}</p>
+                                {mail?.resumeUrl && (
+                                    <>
+                                        {mail?.resumeUrl.startsWith('data:image/') ? (
+                                            <img src={mail?.resumeUrl} alt="Applicant Resume" style={{ width: "200px", height: "auto" }} />
+                                        ) : (
+                                            <a href={`${API_URL}/api/job/download/${mail.id}`} className='bg-[#333333] px-3 py-2 text-white rounded-md'>
+                                                Download Resume
+                                            </a>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </MaxWidthWrapper>
                     </section>
                     {/* Reply */}
-                    <section className="sticky top-14 flex flex-col items-center lg:w-1/3  h-fit">
+                    <section className="sticky top-14 flex flex-col lg:border-none border-t items-center lg:w-1/3  h-fit">
                         <div className="w-full px-4 flex items-center justify-start"
                             onClick={() => setShowReply(!showReply)}>
                             <p className={`h-12 px-3 flex items-center border-x-[1px] hover:bg-[#333333] hover:text-white cursor-pointer ${showReply ? "bg-[#333333] text-white" : "bg-white text-black"}`}>View Reply</p>

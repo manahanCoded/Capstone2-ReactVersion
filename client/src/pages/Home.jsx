@@ -185,7 +185,7 @@ export default function Home() {
                 <img
                   className='md:h-10 h-8'
                   src="/IMG_Home/Demo_white.png" alt="" />
-                <p >Demomostration</p>
+                <p >Demonstration</p>
               </div>
               <div className='h-fit flex flex-row  items-center  gap-2 md:w-44 w-40  md:px-4 px-2 py-2 rounded-xl border border-white text-white'>
                 <img

@@ -326,7 +326,7 @@ const Navbar = () => {
                     onClick={openProfile}
                     className="text-sm w-full border-b-[1px] border-gray-300 flex flex-row justify-between items-center py-2 px-4 group hover:bg-red-900"
                   >
-                    <p className="line line-clamp-1 group-hover:text-white">
+                    <p className=" line-clamp-1 group-hover:text-white">
                       Create Job/ Announcement
                     </p>
                     <ExitToAppIcon className="group-hover:text-white" />

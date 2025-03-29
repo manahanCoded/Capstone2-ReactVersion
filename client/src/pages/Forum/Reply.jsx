@@ -18,7 +18,7 @@ import { Filter } from "bad-words";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 
-const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answers, setAnswers, replyingTo, setReplyingTo, updateReply, handleEditAnswer, setEditReply, editReply }) => {
+const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answers, setAnswers, replyingTo, setReplyingTo, updateReply, handleEditAnswer, setEditReply, editReply, loadingReply }) => {
     const navigate = useNavigate()
     const [showReplies, setShowReplies] = useState(true);
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
@@ -248,12 +248,12 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
 
             {replyingTo === reply.answer_id && (
                 <form
-                onClick={handleClick}
-                onSubmit={(e) => {
-                    setShowReplies(false);
-                    handleAnswerSubmit(e, reply.question_id, reply.answer_id);
-                }}
-                        className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
+                    onClick={handleClick}
+                    onSubmit={(e) => {
+                        setShowReplies(false);
+                        handleAnswerSubmit(e, reply.question_id, reply.answer_id);
+                    }}
+                    className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                     <textarea
                         ref={textareaRef}
                         className="w-full px-4 outline-none"
@@ -266,15 +266,20 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                     <div className=" w-full flex justify-end items-center gap-2 text-[0.7rem] px-2 ">
                         <button
                             onClick={() => setReplyingTo(replyingTo === reply.answer_id ? null : reply.answer_id)}
-                            className=" py-2 px-4 rounded-3xl text-white border-[1px] border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
+                            className=" py-2 px-4 rounded-3xl text-white border border-[#333333] hover:border-black bg-[#333333] hover:bg-black"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className=" py-2 px-4 rounded-3xl text-white border-[1px] border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                            className="py-2 px-4 rounded-3xl text-white border border-red-900 hover:border-red-700 bg-red-900 hover:bg-red-700"
+                            disabled={loadingReply}
                         >
-                            Reply
+                            {loadingReply ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white"></div>
+                            ) : (
+                                "Reply"
+                            )}
                         </button>
                     </div>
                 </form>
@@ -313,6 +318,7 @@ const Reply = ({ reply, all_QA, checkUser, handleVote, handleAnswerSubmit, answe
                             editReply={editReply}
                             setEditReply={setEditReply}
                             handleEditAnswer={handleEditAnswer}
+                            loadingReply={loadingReply}
                         />
                     ))}
             </div>

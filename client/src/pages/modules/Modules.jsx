@@ -176,7 +176,7 @@ export default function ModulesPage() {
             </section>
           </div>
 
-          <div className="w-full flex flex-wrap md:gap-4 gap-y-4 md:justify-start justify-evenly ">
+          <div className="w-full flex flex-wrap md:gap-4 gap-y-4 md:justify-start justify-between items-center">
             {/* Search */}
             <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center  gap-6 text-xs border-b-[1px] bg-white">
               <div>

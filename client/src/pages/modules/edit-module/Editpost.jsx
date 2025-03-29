@@ -28,7 +28,6 @@ export default function EditPost({ postList, editPostID }) {
     async function handleCheckAdmin() {
       setIsLoading(true);
       try {
-        
         const res = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           credentials: "include",
@@ -252,8 +251,8 @@ export default function EditPost({ postList, editPostID }) {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-red-700"></div>
-        </div>
+         <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
+       </div>
       ) : (
         <div>
           {typeForm === "createModule" ?

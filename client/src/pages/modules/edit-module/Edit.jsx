@@ -37,11 +37,9 @@ const Edit = () => {
 
   return (
     <div className="mt-14 container mx-auto">
-      {post ? (
+      {post && 
         <EditPost postList={[post]} editPostID={parseInt(editPostID)} />
-      ) : (
-        <div className="text-center">Post not found</div>
-      )}
+      }
     </div>
   );
 };
