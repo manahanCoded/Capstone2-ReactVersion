@@ -66,6 +66,7 @@ export default function Forum() {
     const [answers, setAnswers] = useState({});
 
     const [searchTerm, setSearchTerm] = useState("");
+    const [mobileFilter, setMobileFilter] = useState(false)
     const [acceptedAnswers, setAcceptedAnswers] = useState({});
 
     const [openEditQuestion, setOpenEditQuestion] = useState(false)
@@ -652,18 +653,83 @@ export default function Forum() {
     return (
         <div className="h-screen ">
             <div className="w-full flex md:flex-row flex-col justify-between md:gap-14 px-3.5 md:px-8">
-                <section className="md:sticky top-0 md:h-screen md:w-[24rem] md:pt-24 pt-16 md:pr-6 flex flex-col gap-1 items-center md:border-r border-gray-400">
-                    <div className=" w-full flex flex-row pl-4 px-2 py-1 mb-4 justify-between items-center border-[1px] rounded-xl text-xs">
-                        <input
-                            placeholder="Search related questions"
-                            type="text"
-                            className="h-10 w-full outline-none"
-                            value={searchTerm}
-                            onChange={handleSearch}
-                        />
-                        <SearchOutlinedIcon className="" />
+                <section className="md:sticky top-0 md:h-screen md:w-[24rem] md:pt-24 pt-14 md:pr-6 flex flex-col gap-1 items-center md:border-r md:border-gray-400 border-b md:px-0 px-3.5 md:-mx-0 -mx-4">
+                    <div className="w-full md:py-0 py-2 flex flex-row gap-1 justify-between items-center ">
+                        {checkUser?.id &&
+                            <p
+                                className={`md:hidden text-sm h-9 px-2 py-1 flex items-center gap-1 rounded-md cursor-pointer ${isOpen ? "bg-red-700 text-white" : "hover:bg-red-800 hover:text-white"}`}
+                                onClick={toggleForm}
+                            >
+                                {isOpen ?
+                                    <SchoolRoundedIcon className="mr-1" /> :
+                                    <SchoolOutlinedIcon className="mr-1" />
+                                }
+                                Question
+                            </p>
+                        }
+                        <div className=" w-full flex flex-row pl-4 px-2 py-1 md:mb-4 justify-between items-center border rounded-xl text-xs">
+                            <input
+                                placeholder="Search related questions"
+                                type="text"
+                                className="md:h-10 h-7 w-full outline-none"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
+                            <SearchOutlinedIcon className="" />
+                        </div>
+                        {checkUser?.role === "admin" && (
+                            <p
+                                onClick={() => {
+                                    setCheckQuestion(null)
+                                    setShowUnapprovedOnly((prev) => !prev)
+                                }}
+                                className={`md:hidden relative h-9 px-3 py-1 mr-1 flex items-center gap-2 text-[#333333] rounded-md cursor-pointer ${showUnapprovedOnly
+                                    ? "bg-red-700 text-white"
+                                    : "hover:bg-red-800 hover:text-white"
+                                    }`}
+                            >
+                                <ChecklistOutlinedIcon />
+                                {unseenQuestions.length > 0 && (
+                                    <span className="absolute top-0 -right-1 text-[0.5rem]  bg-red-500 text-white  px-2 py-1 rounded-full">
+                                        {unseenQuestions.length}
+                                    </span>
+                                )}
+                            </p>
+                        )}
+
+                        <div className="w-16 relative md:hidden flex flex-row px-2 py-1 justify-between items-center ">
+                            {mobileFilter ?
+                                <img
+                                    onClick={() => setMobileFilter(false)}
+                                    className=' h-5'
+                                    src="/IMG_Forum/filter_black.png" alt="" />
+                                :
+                                <img
+                                    onClick={() => setMobileFilter(true)}
+                                    className=' h-5'
+                                    src="/IMG_Forum/filter_white.png" alt="" />
+                            }
+                            {mobileFilter &&
+                                <div className="h-fit w-44 absolute top-[2.65rem] right-2 z-30 flex flex-col overflow-y-auto overflow-hidden rounded-md text-xs bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]">
+                                    {types.map((type) => (
+                                        <p
+                                            key={type.name}
+                                            onClick={() => {
+                                                setCheckQuestion(null)
+                                                setSpecifyQuestion(type.value)
+                                            }}
+                                            className={`h-11 px-3 md:pl-6 py-1 flex items-center gap-2 text-[#333333] hover:bg-gray-100  cursor-pointer ${specifyQuestion === type.value ? "bg-gray-200 " : "bg-transparent"
+                                                }`}
+                                        >
+                                            {specifyQuestion === type.value ? type.filled : type.outlined}
+                                            {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
+                                        </p>
+                                    ))}
+                                </div>
+                            }
+                        </div>
                     </div>
-                    <section className="w-full flex md:flex-col flex-wrap gap-1 text-sm">
+                    <section className="hidden w-full md:flex md:flex-col flex-wrap gap-1 text-sm">
                         {types.map((type) => (
                             <p
                                 key={type.name}
@@ -1106,7 +1172,7 @@ export default function Forum() {
                                     {/* Answer Form */}
                                     <form
                                         onClick={handleClickFirstCommentRef}
-                                        onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)} 
+                                        onSubmit={(e) => handleAnswerSubmit(e, checkQuestion.question_id)}
                                         className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                         <textarea
                                             ref={firstCommentRef}
@@ -1281,7 +1347,7 @@ export default function Forum() {
                                                                     {replyingTo === answer.answer_id && (
                                                                         <form
                                                                             onClick={handleClick}
-                                                                            onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)} 
+                                                                            onSubmit={(e) => handleAnswerSubmit(e, answer.question_id, answer.answer_id)}
                                                                             className="w-full max-h-36 overflow-y-auto py-3 text-xs cursor-pointer border-[1px] border-gray-600 rounded-3xl">
                                                                             <textarea
                                                                                 ref={textareaRef}
