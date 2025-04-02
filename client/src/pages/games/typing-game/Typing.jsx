@@ -192,8 +192,12 @@ export default function TypingGame() {
                 >
                   Cryptocurrency
                 </button>
-                  <Link className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black" 
-                  to="/games">Go back</Link>
+                <Link
+                  className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black"
+                  to="https://cryptowarriors.netlify.app/games"
+                >
+                  Go back
+                </Link>
               </div>
             </div>
           </div>

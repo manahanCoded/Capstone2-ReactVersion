@@ -178,8 +178,12 @@ export default function Home() {
                 >
                   Cryptocurrency
                 </button>
-                <Link className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black" 
-                  to="/games">Go back</Link>
+                <Link
+                  className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black"
+                  to="https://cryptowarriors.netlify.app/games"
+                >
+                  Go back
+                </Link>
               </div>
             </div>
           </div>
@@ -212,9 +216,7 @@ export default function Home() {
               Play Again
             </button>
             <button className="category-btn bg-black text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black">
-              <a href="https://capstone2-react-version.vercel.app/games">
-                Go back
-              </a>
+              <a href="https://cryptowarriors.netlify.app/games">Go back</a>
             </button>
           </div>
         </div>
