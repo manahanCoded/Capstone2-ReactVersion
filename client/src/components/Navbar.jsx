@@ -181,7 +181,7 @@ const Navbar = () => {
                 Games
               </Link>
               <a
-                href="https://cryptowarriorssimulation.netlify.app/"
+                href="https://cryptowarriors-simulation.netlify.app/"
                 className="flex flex-row items-center gap-2 py-2 px-4 hover:bg-gray-100 cursor-pointer"
               >
                 Demo
@@ -245,7 +245,7 @@ const Navbar = () => {
             Games
           </Link>
           <a
-            href="https://cryptowarriorssimulation.netlify.app/"
+            href="https://cryptowarriors-simulation.netlify.app/"
             className="px-2 h-full md:block hidden hover:border-b-[3px] border-red-900"
           >
             Demo

@@ -511,11 +511,11 @@ const allQuestion = async (req, res) => {
 
 const user_score = async (req, res) => {
   const { user_id, module_id, completed, score, passed, attempt_number, time_spent, feedback, perfect_score } = req.body;
-
+  console.log(req.body)
   if (!user_id || !module_id || score === undefined || passed === undefined) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-
+  
   try {
 
     const existingQuiz = await db.query(

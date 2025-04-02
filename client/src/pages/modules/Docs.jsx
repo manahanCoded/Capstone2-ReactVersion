@@ -87,9 +87,7 @@ export default function DocsPage() {
           if(nextUnits <= response.length){
             setNextPage(response[nextUnits + 1])
           }
-          if (nextUnits + 1 < response.length) {
             setPreviousPage(response[nextUnits - 1])
-          }
         } else {
           console.error("Data is not an array.");
         }

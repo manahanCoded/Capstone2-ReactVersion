@@ -71,8 +71,7 @@ export default function Achievements() {
                   moduleName.find((module) => module?.id === completedModule.storage_section_id)
                 )
                 .filter((item, index, self) => item && index === self.findIndex((m) => m?.id === item?.id));
-          
-              console.log(getAchievements);
+        
               setBadges(getAchievements);
             }
           }, [moduleName, units, userScores]);

@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, timeSpent, perfect_score, completed }) => {
   const [aiResponse, setAiResponse] = useState([]);
-  
+
   const passingScore = 0.5
 
   // Function to save user progress to the backend
@@ -66,6 +66,8 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
 
   return (
     <div className=" w-[90%] m-auto py-6">
+      <h3 className="text-3xl mb-2">Reviewer</h3>
+      <p className="mb-10">Reviewer is save on profile check it out.</p>
       {isQuizCompleted ? (
         score === perfect_score ? (
           <p className="text-green-500 text-center font-bold">Perfect score! Congratulations!</p>

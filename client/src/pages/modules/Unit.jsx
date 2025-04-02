@@ -82,14 +82,14 @@ export default function Unit() {
                             <div className="w-full flex flex-row justify-between items-center">
                                 <img className="h-5 "
                                     src="/IMG_Modules/LOGO_maroon.png" alt="" />
-                            {checkUser?.role === "admin" && (
-                                <Link
-                                    to={`/modules/create-unit/${id}`}
-                                    className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white"
-                                >
-                                    Add Unit
-                                </Link>
-                            )}
+                                {checkUser?.role === "admin" && (
+                                    <Link
+                                        to={`/modules/create-unit/${id}`}
+                                        className="rounded-sm py-2 px-4 font-medium bg-[#333333] hover:bg-[#121212] text-white"
+                                    >
+                                        Add Unit
+                                    </Link>
+                                )}
                             </div>
                             <h1 className="text-[2.5rem]  text-red-900 break-words font-light mt-1">{moduleName.name}</h1>
                             <p className="mt-4 text-sm">🛠️ Blockchain may seem tough now, but soon it'll click!</p>
@@ -100,8 +100,8 @@ export default function Unit() {
                     <div className=" lg:w-4/6  top-20">
                         <div className="md:h-[30rem] w-full relative">
                             {moduleName.file_url &&
-                            <img className="absolute inset-0 aspect-[20/13] h-full z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                                src={moduleName.file_url} alt="" />
+                                <img className="absolute inset-0 aspect-[20/13] h-full z-10 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                    src={moduleName.file_url} alt="" />
                             }
                         </div>
                     </div>
@@ -166,11 +166,11 @@ export default function Unit() {
                             <h3 className="text-lg font-semibold text-red-900 ">Achievements</h3>
                             <p className="text-sm mt-2">Badge you can earn by completing the module.</p>
                             <div className="mt-4 h-[6rem] w-[6rem]  relative">
-                                {moduleName.achievement_url?
-                                <img className="absolute inset-0 w-full h-full object-cover z-10"
-                                    src={moduleName.achievement_url} alt="" />
+                                {moduleName.achievement_url ?
+                                    <img className="absolute inset-0 w-full h-full object-cover z-10"
+                                        src={moduleName.achievement_url} alt="" />
                                     :
-                                <p className="text-gray-500">No badges</p>
+                                    <p className="text-gray-500">No badges</p>
                                 }
                             </div>
                         </div>
@@ -179,11 +179,20 @@ export default function Unit() {
                             <div className="h-96 overflow-y-auto flex flex-col m-8 pr-2 border-b ">
                                 {units.map((unit, index) => {
                                     const userScore = userScores.find((score) => score.module_id === unit.id);
-                                    const score = userScore?.score || 0;
-                                    const passed = userScore?.passed ? userScore?.passed  : "Untaken";
+                                    const score = userScore?.score ?? 0; 
+                                    const perfectScore = userScore?.perfect_score ?? 0; 
+                                    const passingScore = 0.5;
+                                    let status;
+                                    if (!userScore) {
+                                        status = "Untaken"; 
+                                    } else if (score >= perfectScore * passingScore) {
+                                        status = "Passed"; 
+                                    } else {
+                                        status = "Failed";
+                                    }
                                     const completedUnits = units.filter((unit) => {
                                         const userScore = userScores.find((score) => score.module_id === unit.id);
-                                        return userScore?.completed === true;  //
+                                        return userScore?.completed === true;
                                     });
                                     return (
                                         <Link
@@ -196,7 +205,7 @@ export default function Unit() {
                                             </p>
                                             {completedUnits ? (
                                                 <div className="px-4 flex flex-row justify-between text-gray-500 mt-2">
-                                                    <p>{passed}</p>
+                                                    <p>{status}</p>
                                                     <p>Score: {score}</p>
                                                 </div>
                                             ) : (
