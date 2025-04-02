@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, timeSpent, perfect_score, completed }) => {
   const [aiResponse, setAiResponse] = useState([]);
 
-  const passingScore = 0.5
-
-  // Function to save user progress to the backend
-  useEffect(() => {
-    if (!isQuizCompleted) return;
-  }, [isQuizCompleted]);
+  const passingScore = 0.5;
 
   const saveQuizProgress = async (aiData) => {
+    const feedbackText = aiData.length > 0
+      ? aiData.map(
+          (answer) =>
+            `Question: ${answer.question}\nYour Answer: ${answer.user_answer}\nCorrect Answer: ${answer.correct_answer}\nExplanation: ${answer.explanation || "N/A"}`
+        ).join("\n\n")
+      : "Perfect score! No incorrect answers.";
+
     const progressData = {
       user_id,
       module_id,
@@ -20,49 +23,39 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
       completed,
       passed: score >= perfect_score * passingScore,
       attempt_number: 1,
-      feedback: aiData
-        .map(
-          (answer) =>
-            `Question: ${answer.question}\nYour Answer: ${answer.user_answer}\nCorrect Answer: ${answer.correct_answer}\nExplanation: ${answer.explanation || "N/A"}`
-        )
-        .join("\n\n"),
+      feedback: feedbackText,
       perfect_score
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/module/update-module-score", progressData);
+      await axios.post(`${API_URL}/api/module/update-module-score`, progressData);
     } catch (error) {
       console.error("Error saving quiz progress:", error);
     }
   };
 
-  // Fetch AI response and save progress when the quiz is completed
+  // ✅ Move fetchAiResponse here
+  const fetchAiResponse = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/api/api/dashboard/allDashboards`, {
+        wrongAnswers,
+      });
+      const aiData = response.data;
+      setAiResponse(aiData);
+
+      // Save quiz progress after fetching AI response
+      await saveQuizProgress(aiData);
+    } catch (error) {
+      console.log("Perfect score no AI");
+      await saveQuizProgress([]);
+    }
+  };
+
+  // ✅ Call fetchAiResponse when quiz is completed
   useEffect(() => {
     if (!isQuizCompleted) return;
-    const fetchAiResponse = async () => {
-      try {
-        const response = await axios.post("http://localhost:5000/api/dashboard/allDashboards", {
-          wrongAnswers,
-        });
-        const aiData = response.data;
-        setAiResponse(aiData);
-
-        // Save quiz progress after fetching AI response
-        await saveQuizProgress(aiData);
-      } catch (error) {
-        console.log("Perfect score no ai")
-        await saveQuizProgress([]);
-      }
-    };
-
     fetchAiResponse();
   }, [isQuizCompleted, wrongAnswers]);
-
-  // Custom function to calculate the score
-  const calculateScore = (aiData) => {
-    // Your logic to calculate score
-    return aiData.reduce((score, answer) => score + (answer.correct ? 1 : 0), 0);
-  };
 
   return (
     <div className=" w-[90%] m-auto py-6">
