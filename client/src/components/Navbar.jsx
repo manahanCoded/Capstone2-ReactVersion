@@ -281,7 +281,7 @@ const Navbar = () => {
               {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
             </button>
             <div
-            onClick={openProfile}
+              onClick={openProfile}
             >
               <button
                 className="relative h-14 hover:text-red-900"
@@ -382,12 +382,20 @@ const Navbar = () => {
             </section>
           </div>
         ) : (
-          <Link
-            to="/user/login"
-            className="text-sm py-2 px-4 rounded bg-red-900 hover:bg-red-950 text-white"
-          >
-            Login
-          </Link>
+          <div className='flex flex-row py-2 items-center gap-x-4'>
+            <button
+              className="h-10 w-10 rounded-full bg-gray-200"
+              onClick={openNotification}
+            >
+              {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
+            </button>
+            <Link
+              to="/user/login"
+              className="text-sm py-2 px-4 rounded bg-red-900 hover:bg-red-950 text-white"
+            >
+              Login
+            </Link>
+          </div>
         )}
       </div>
       {
