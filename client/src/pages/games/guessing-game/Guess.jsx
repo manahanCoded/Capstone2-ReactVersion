@@ -205,9 +205,12 @@ export default function GuessingGame() {
             >
               Play Again
             </button>
-            <button className="category-btn bg-black text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black">
-              <a href="https://cryptowarriors.netlify.app/games">Go back</a>
-            </button>
+            <Link
+              className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black"
+              to="https://cryptowarriors.netlify.app/games"
+            >
+              Go back
+            </Link>
           </div>
         </div>
       ) : (
