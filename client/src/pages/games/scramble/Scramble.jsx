@@ -52,11 +52,11 @@ export default function Scramble() {
             return
           }
 
-          console.log(
-            'This the value of isPickingCategory: ',
-            isPickingCategory
-          )
-          console.log('This is the number of tries: ', tries)
+          // console.log(
+          //   'This the value of isPickingCategory: ',
+          //   isPickingCategory
+          // )
+          // console.log('This is the number of tries: ', tries)
           if (!isPickingCategory) {
             setTimeout(() => {
               setUserInput('')
@@ -71,8 +71,8 @@ export default function Scramble() {
   }
 
   const initGame = () => {
-    console.log('This is executed')
-    console.log('This the value of isPickingCategory: ', isPickingCategory)
+    // console.log('This is executed')
+    // console.log('This the value of isPickingCategory: ', isPickingCategory)
 
     clearInterval(timerRef.current)
     setTime(15)
@@ -92,7 +92,7 @@ export default function Scramble() {
     setRandomWord(wordString)
     setCorrectWord(randomObj.word.toLowerCase())
     setHint(randomObj.hint)
-    console.log('The word string: ', wordString)
+    // console.log('The word string: ', wordString)
   }
 
   function shuffleWord(chosenWord) {
@@ -131,7 +131,7 @@ export default function Scramble() {
   }
 
   useEffect(() => {
-    console.log('this is executed')
+    // console.log('this is executed')
     if (!isPickingCategory) {
       initGame()
     }
@@ -158,7 +158,7 @@ export default function Scramble() {
     }
   }, [isPickingCategory])
 
-  console.log('Tries: ', tries)
+  // console.log('Tries: ', tries)
   const progress = (15 - time) / 15
 
   return (
@@ -386,7 +386,7 @@ export default function Scramble() {
           <div className="details">
             <p className="my-8 text-5xl">
               <span className="text-2xl my-5">
-                Hint
+                GUESS THE WORD
                 <span className="font-sans text-3xl font-bold"> : </span>
                 <span className="text-2xl font-sans font-bold"> {hint}</span>
               </span>
@@ -434,7 +434,7 @@ export default function Scramble() {
               className="refresh-word bg-gray-600 text-2xl font-bold mb-6 hover:bg-gray-900 hover:text-white "
               onClick={() => {
                 let wordString = shuffleWord(randomWord)
-                console.log('These is the value of wordString', wordString)
+                // console.log('These is the value of wordString', wordString)
                 setRandomWord(wordString)
               }}
               disabled={time <= 0 ? true : false}

@@ -25,7 +25,7 @@ export default function GuessingGame() {
     if (category === 'cryptocurrency') currentCategory = cryptoGuess
     if (category === 'nft') currentCategory = nftGuess
 
-    console.log('This is the selected category: ', currentCategory)
+    // console.log('This is the selected category: ', currentCategory)
     let ranObj =
       currentCategory[Math.floor(Math.random() * currentCategory.length)]
     setCorrectLetters([])
@@ -49,9 +49,9 @@ export default function GuessingGame() {
       !correctLetters.includes(key)
     ) {
       if (guessWord.includes(key)) {
-        console.log('This is the guessed word: ', guessWord)
-        console.log('This is the key pressed: ', key)
-        console.log('This is the guessCount: ', guessCount)
+        // console.log('This is the guessed word: ', guessWord)
+        // console.log('This is the key pressed: ', key)
+        // console.log('This is the guessCount: ', guessCount)
 
         const updatedLetters = [...displayedLetters]
         let cpyCorrectLetters = [...correctLetters]
@@ -77,7 +77,7 @@ export default function GuessingGame() {
     e.target.value = ''
   }
 
-  console.log('This is the Hint: ', hint)
+  // console.log('This is the Hint: ', hint)
   const uniqueSet = new Set(guessWord)
   const uniqueArray = Array.from(uniqueSet)
 
@@ -206,7 +206,7 @@ export default function GuessingGame() {
               Play Again
             </button>
             <Link
-              className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black"
+              className="category-btn bg-black text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
               to="https://cryptowarriors.netlify.app/games"
             >
               Go back
@@ -329,7 +329,7 @@ export default function GuessingGame() {
           </div>
           <div className="details">
             <p className="hint mt-16 mb-4">
-              <span className="text-3xl">Hint</span>
+              <span className="text-3xl">GUESS THE WORD</span>
               <span className="font-sans text-4xl font-bold">: </span>
               <span className="text-3xl font-sans font-bold">{hint}</span>
             </p>

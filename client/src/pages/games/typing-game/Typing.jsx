@@ -75,7 +75,7 @@ export default function TypingGame() {
     if (category === 'cryptocurrency') setParagraph(cryptocurrencyParagraphs)
     if (category === 'nft') setParagraph(nftParagraphs)
 
-    console.log('This is the current category', currentCategory)
+    // console.log('This is the current category', currentCategory)
 
     resetGame()
   }, [category])
@@ -96,7 +96,7 @@ export default function TypingGame() {
     const characters = charRefs.current
     let currentChar = charRefs.current[charIndex]
     let typedChar = e.target.value.slice(-1)
-    console.log(typedChar)
+    // console.log(typedChar)
     if (charIndex < characters.length && timeLeft > 0) {
       if (!isTyping) {
         setIsTyping(true)
@@ -126,8 +126,8 @@ export default function TypingGame() {
     // resetGame()
   }
 
-  console.log('This is the length of the paragraph', paragraphLength)
-  console.log('P index: ', pIndex)
+  // console.log('This is the length of the paragraph', paragraphLength)
+  // console.log('P index: ', pIndex)
   return (
     <div
       className={`

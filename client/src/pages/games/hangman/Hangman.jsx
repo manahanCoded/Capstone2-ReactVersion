@@ -40,13 +40,13 @@ export default function Home() {
     if (category === 'blockchain') currentCategory = blockchainWordList
     if (category === 'cryptocurrency') currentCategory = cryptocurrencyWordList
     if (category === 'nft') currentCategory = nftWordList
-    console.log('current category: ', currentCategory)
+    // console.log('current category: ', currentCategory)
 
     const { word, hint } =
       currentCategory[Math.floor(Math.random() * blockchainWordList.length)]
     setHint(hint)
     setCurrentWord(word)
-    console.log('The word: ', word)
+    // console.log('The word: ', word)
     const wordyWord = word
       .split('') // Split the word into individual characters
       .map((char, index) => <li key={index} className="letter"></li>)
@@ -54,12 +54,12 @@ export default function Home() {
   }
 
   const handleButtonClick = (clickedLetter) => {
-    console.log('Clicked Letter: ', clickedLetter)
-    console.log('Current Word: ', currentWord)
+    // console.log('Clicked Letter: ', clickedLetter)
+    // console.log('Current Word: ', currentWord)
     if (currentWord.includes(clickedLetter)) {
       // Update the revealed letters state
       let cpyCorrectLetters = [...correctLetters]
-      console.log('This line is executer')
+      // console.log('This line is executer')
       const updatedRevealedLetters = revealedLetters.map((char, index) => {
         const currentCorrectLetter =
           currentWord[index] === clickedLetter && clickedLetter
@@ -179,7 +179,7 @@ export default function Home() {
                   Cryptocurrency
                 </button>
                 <Link
-                  className="category-btn bg-black text-white w-[180%] text-4xl h-16 hover:bg-white hover:text-black"
+                  className="category-btn bg-black text-white w-[50%] text-4xl h-16 hover:bg-white hover:text-black"
                   to="https://cryptowarriors.netlify.app/games"
                 >
                   Go back
@@ -387,7 +387,7 @@ export default function Home() {
               ))}
             </ul>
             <h4 className="hint-text text-2xl">
-              Hint
+              GUESS THE WORD
               <span className="font-sans text-2xl font-bold"> : </span>
               <b className="text-2xl font-sans font-bold"> {hint}</b>
             </h4>
