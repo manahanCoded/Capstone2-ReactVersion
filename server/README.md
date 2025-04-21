@@ -44,15 +44,16 @@ CREATE TABLE module_storage_section (
 
 <!-- DATABASE FOR Units -->
 CREATE TABLE module (
-	id serial primary key,
-	publisher INTEGER not null,
-	title text UNIQUE not null,
-	description text not null,
-	information text not null,
-    storage_section_id INTEGER NOT NULL REFERENCES module_storage_section(id),
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id SERIAL PRIMARY KEY,
+    publisher INTEGER NOT NULL,
+    title TEXT UNIQUE NOT NULL,
+    description TEXT NOT NULL,
+    information TEXT NOT NULL,
+    storage_section_id INTEGER NOT NULL REFERENCES module_storage_section(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
+
 
 <!-- DATABASE FOR quiz  -->
 CREATE TABLE questions (

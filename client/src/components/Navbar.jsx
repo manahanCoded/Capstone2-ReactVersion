@@ -25,6 +25,7 @@ const Navbar = () => {
   const [notification, setNotification] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+
   const [menu, setMenu] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
@@ -79,22 +80,91 @@ const Navbar = () => {
   useEffect(() => {
     const fetchAllAnnouncement = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/api/announcement/allAnnouncements`
-        )
-
+        const res = await axios.get(`${API_URL}/api/announcement/allAnnouncements`);
         if (res.status === 200) {
-          setDisplayAnnouncement(res.data.announcement)
-        } else {
-          console.error('Failed to fetch all announcements')
+          setDisplayAnnouncement(res.data.announcement);
         }
       } catch (error) {
-        console.error('Error fetching all announcements:', error)
+        console.error('Error fetching announcements:', error);
       }
-    }
+    };
+    fetchAllAnnouncement();
+  }, []);
 
-    fetchAllAnnouncement()
-  }, [])
+  const [haventRead, setHaventRead] = useState([]);
+  const [alreadyRead, setAlreadyRead] = useState([]);
+  const [isloadingNotification, setLoadingNotification] = useState(false);
+
+
+  useEffect(() => {
+    if (!user) return;
+  
+    const stored = localStorage.getItem(`Notification-${user.id}`);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const now = Date.now();
+        const RemovalDay = 48 * 60 * 60 * 1000;
+  
+        if (now - parsed.timestamp < RemovalDay) {
+
+          setAlreadyRead(Array.isArray(parsed.data) ? parsed.data : []);
+        } else {
+          localStorage.removeItem(`Notification-${user.id}`);
+          setAlreadyRead([]);
+        }
+      } catch (error) {
+        console.error("Failed to parse notifications", error);
+      }
+    } else {
+      setAlreadyRead([]);
+    }
+  
+    setLoadingNotification(true);
+  }, [user]);
+  
+
+
+  useEffect(() => {
+    if (!user) return;
+    if (isloadingNotification) {
+      localStorage.setItem(
+        `Notification-${user.id}`,
+        JSON.stringify({
+          data: alreadyRead,
+          timestamp: Date.now()
+        })
+      );
+    }
+  }, [alreadyRead, isloadingNotification, user]);
+
+  useEffect(() => {
+    const getToday = displayAnnouncement.filter((announcement) => {
+      const today = new Date();
+      const announcementDate = new Date(announcement.date);
+      return (
+        announcementDate.getDate() === today.getDate() &&
+        announcementDate.getMonth() === today.getMonth() &&
+        announcementDate.getFullYear() === today.getFullYear()
+      );
+    });
+
+    const hasRead = getToday.filter(announcement =>
+      !alreadyRead.includes(announcement.announcementsid)
+    );
+    setHaventRead(hasRead)
+
+  }, [displayAnnouncement, alreadyRead]);
+
+
+  const handleAlreadyRead = (announcementID) => {
+    setAlreadyRead(prev => {
+      if (!prev.includes(announcementID)) {
+        return [...prev, announcementID];
+      }
+      return prev;
+    });
+  };
 
   const handleAnnouncementClick = (announcement) => {
     setSelectedAnnouncement(announcement)
@@ -274,12 +344,18 @@ const Navbar = () => {
         </div>
         {user ? (
           <div className="flex flex-row py-2 items-center gap-x-4">
-            <button
-              className="h-10 w-10 rounded-full bg-gray-200"
+            <div className='relative'
               onClick={openNotification}
             >
-              {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
-            </button>
+              <button
+                className="h-10 w-10 rounded-full bg-gray-200"
+              >
+                {notification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
+              </button>
+              {haventRead.length > 0 &&
+                <p className='absolute -top-1 -left-2 rounded-full bg-red-600 text-white p-1 px-2 text-[0.7rem]'>{haventRead.length}</p>
+              }
+            </div>
             <div
               onClick={openProfile}
             >
@@ -426,6 +502,7 @@ const Navbar = () => {
                     onClick={() => {
                       setNotification(false)
                       handleAnnouncementClick(announcement)
+                      handleAlreadyRead(announcement.announcementsid)
                     }}
                     className=" w-full border-b cursor-pointer border-gray-300 flex flex-row items-center gap-4 py-2 px-4 group hover:bg-gray-100"
                   >

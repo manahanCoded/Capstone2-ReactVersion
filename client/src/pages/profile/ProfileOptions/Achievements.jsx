@@ -34,50 +34,74 @@ export default function Achievements() {
         fetchUser();
     }, [navigate]);
 
-       useEffect(() => {
-            if (!checkUser.id) return;
-    
-            async function fetchUnitsAndScores() {
-                try {
-                    const [unitsRes, scoresRes, moduleData] = await Promise.all([
-                        axios.get(`${API_URL}/api/module/allModule`),
-                        axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`),
-                        axios.get(`${API_URL}/api/module/allModule-storage`),
-                    ]);
-    
-                    setUnits(unitsRes.data.listall);
-                    setUserScores(scoresRes.data);
-                    setModuleName(moduleData.data.success ? moduleData.data.listall : []);
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                } finally {
-                    setLoading(false);
+    useEffect(() => {
+        if (!checkUser.id) return;
+
+        async function fetchUnitsAndScores() {
+            try {
+                const [unitsRes, scoresRes, moduleData] = await Promise.all([
+                    axios.get(`${API_URL}/api/module/allModule`),
+                    axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`),
+                    axios.get(`${API_URL}/api/module/allModule-storage`),
+                ]);
+
+                setUnits(unitsRes.data.listall);
+                setUserScores(scoresRes.data);
+                setModuleName(moduleData.data.success ? moduleData.data.listall : []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchUnitsAndScores();
+    }, [checkUser.id]);
+
+
+
+    useEffect(() => {
+        if (moduleName?.length && units?.length && userScores?.length) {
+            const completedModules = units.filter((module) =>
+                userScores.some((score) => score.module_id === module.id )
+            );
+
+            const countedUnits = units.reduce((acc, unit) => {
+                const id = unit.storage_section_id;
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+            }, {});
+
+
+            const countedUnitsDone = completedModules.reduce((acc, unit) => {
+                const id = unit.storage_section_id;
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+            }, {});
+
+            const completedSections = [];
+
+            for (const sectionId in countedUnits) {
+                const total = countedUnits[sectionId];
+                const done = countedUnitsDone[sectionId] || 0;
+
+                if (done === total) {
+                    completedSections.push(parseInt(sectionId));
                 }
             }
-    
-            fetchUnitsAndScores();
-        }, [checkUser.id]);
 
- 
-
-        useEffect(() => {
-            if (moduleName?.length && units?.length && userScores?.length) {
-              const completedModules = units.filter((module) =>
-                userScores.some((score) => score.module_id === module.id && score.completed)
-              );
-          
-              const getAchievements = completedModules
+            const getAchievements = completedSections
                 .map((completedModule) =>
-                  moduleName.find((module) => module?.id === completedModule.storage_section_id)
+                    moduleName.find((module) => module?.id === completedModule)
                 )
                 .filter((item, index, self) => item && index === self.findIndex((m) => m?.id === item?.id));
-        
-              setBadges(getAchievements);
-            }
-          }, [moduleName, units, userScores]);
-          
 
-    
+            setBadges(getAchievements);
+        }
+    }, [moduleName, units, userScores]);
+
+
+
 
     if (loading) {
         return <p>Loading...</p>;
@@ -140,9 +164,9 @@ export default function Achievements() {
                             {badges.map((badges, index) => (
                                 <li key={index}>
                                     <p className="text-xs">{badges?.name}</p>
-                         
-                                    <img src={`data:image/png;base64,${badges?.achievement_image_data}`}  alt={badges?.title} style={{ width: '100px', height: '100px' }} />
-                               
+
+                                    <img src={`data:image/png;base64,${badges?.achievement_image_data}`} alt={badges?.title} style={{ width: '100px', height: '100px' }} />
+
                                 </li>
                             ))}
                         </ul>

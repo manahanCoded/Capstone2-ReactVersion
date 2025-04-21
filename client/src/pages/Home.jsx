@@ -10,8 +10,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Home() {
   const [modules, setModules] = useState([]);
-  const [displayJobs, setDisplayJobs] = useState([]);
-  const [displayOptions, setDisplayOptions] = useState([]);
 
   useEffect(() => {
     async function fetchModulesAndUser() {
@@ -40,23 +38,6 @@ export default function Home() {
   }, []);
 
 
-  useEffect(() => {
-    const fetchAllJobs = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/job/display`);
-
-        if (res.status === 200) {
-          setDisplayJobs(res.data);
-          setDisplayOptions(res.data);
-        } else {
-          console.error("Failed to fetch all jobs");
-        }
-      } catch (error) {
-        console.error("Error fetching all jobs:", error);
-      }
-    };
-    fetchAllJobs()
-  }, []);
 
   return (
     <>

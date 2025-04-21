@@ -10,9 +10,9 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
   const saveQuizProgress = async (aiData) => {
     const feedbackText = aiData.length > 0
       ? aiData.map(
-          (answer) =>
-            `Question: ${answer.question}\nYour Answer: ${answer.user_answer}\nCorrect Answer: ${answer.correct_answer}\nExplanation: ${answer.explanation || "N/A"}`
-        ).join("\n\n")
+        (answer) =>
+          `Question: ${answer.question}\nYour Answer: ${answer.user_answer}\nCorrect Answer: ${answer.correct_answer}\nExplanation: ${answer.explanation || "N/A"}`
+      ).join("\n\n")
       : "Perfect score! No incorrect answers.";
 
     const progressData = {
@@ -37,7 +37,7 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
   // ✅ Move fetchAiResponse here
   const fetchAiResponse = async () => {
     try {
-      const response = await axios.post(`${API_URL}/api/api/dashboard/allDashboards`, {
+      const response = await axios.post(`${API_URL}/api/dashboard/allDashboards`, {
         wrongAnswers,
       });
       const aiData = response.data;
@@ -46,7 +46,6 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
       // Save quiz progress after fetching AI response
       await saveQuizProgress(aiData);
     } catch (error) {
-      console.log("Perfect score no AI");
       await saveQuizProgress([]);
     }
   };
@@ -59,47 +58,53 @@ const Dashboard = ({ wrongAnswers, isQuizCompleted, module_id, user_id, score, t
 
   return (
     <div className=" w-[90%] m-auto py-6">
-      <h3 className="text-3xl mb-2">Reviewer</h3>
-      <p className="mb-10">Reviewer is save on profile check it out.</p>
-      {isQuizCompleted ? (
-        score === perfect_score ? (
-          <p className="text-green-500 text-center font-bold">Perfect score! Congratulations!</p>
-        ) : aiResponse.length > 0 ? (
-          <div>
-            <h2 className="mb-4">Your Incorrect Answers:</h2>
-            <ul className="space-y-4">
-              {aiResponse.map((answer, index) => (
-                <li
-                  key={index}
-                  className="p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-all"
-                >
-                  <div className="mb-2">
-                    <strong className="text-lg font-semibold text-gray-800">Question:</strong>
-                    <p className="text-gray-700 mt-1">{answer.question}</p>
-                  </div>
-                  <div className="mb-2">
-                    <strong className="text-lg font-semibold text-gray-800">Your Answer:</strong>
-                    <p className="text-gray-700 mt-1">{answer.user_answer}</p>
-                  </div>
-                  <div className="mb-2">
-                    <strong className="text-lg font-semibold text-gray-800">Correct Answer:</strong>
-                    <p className="text-gray-700 mt-1">{answer.correct_answer}</p>
-                  </div>
-                  {answer.explanation && (
-                    <div className="mt-2">
-                      <strong className="text-lg font-semibold text-gray-800">Explanation:</strong>
-                      <p className="text-gray-700 mt-1">{answer.explanation}</p>
+      {score === perfect_score ? "" :
+        <div>
+          <h3 className="text-3xl mb-2">Reviewer</h3>
+          <p className="mb-10">Reviewer is save on profile check it out.</p>
+        </div>
+      }
+      {
+        isQuizCompleted ? (
+          score === perfect_score ? (
+            <p className="text-green-500 text-center font-bold">Perfect score! Congratulations!</p>
+          ) : aiResponse.length > 0 ? (
+            <div>
+              <h2 className="mb-4">Your Incorrect Answers:</h2>
+              <ul className="space-y-4">
+                {aiResponse.map((answer, index) => (
+                  <li
+                    key={index}
+                    className="p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-all"
+                  >
+                    <div className="mb-2">
+                      <strong className="text-lg font-semibold text-gray-800">Question:</strong>
+                      <p className="text-gray-700 mt-1">{answer.question}</p>
                     </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center">Loading explanations...</p>
-        )
-      ) : null}
-    </div>
+                    <div className="mb-2">
+                      <strong className="text-lg font-semibold text-gray-800">Your Answer:</strong>
+                      <p className="text-gray-700 mt-1">{answer.user_answer}</p>
+                    </div>
+                    <div className="mb-2">
+                      <strong className="text-lg font-semibold text-gray-800">Correct Answer:</strong>
+                      <p className="text-gray-700 mt-1">{answer.correct_answer}</p>
+                    </div>
+                    {answer.explanation && (
+                      <div className="mt-2">
+                        <strong className="text-lg font-semibold text-gray-800">Explanation:</strong>
+                        <p className="text-gray-700 mt-1">{answer.explanation}</p>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center">Loading explanations...</p>
+          )
+        ) : null
+      }
+    </div >
   );
 };
 
