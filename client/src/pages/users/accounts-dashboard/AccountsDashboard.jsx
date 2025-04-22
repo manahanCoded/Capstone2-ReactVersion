@@ -122,41 +122,59 @@ export default function AccountsDashboard() {
     }, [checkUser.id]);
 
     useEffect(() => {
-        if (moduleName.length === 0 || units.length === 0 || userScores.length === 0) return;
+        if (!moduleName?.length || !units?.length || !userScores?.length) return;
+    
+        const userCompletedModules = userScores.reduce((acc, score) => {
+            if (!acc[score.user_id]) {
+                acc[score.user_id] = new Set();
+            }
+            acc[score.user_id].add(score.module_id);
+            return acc;
+        }, {});
+    
+        const countedUnits = units.reduce((acc, unit) => {
+            const id = unit.storage_section_id;
+            acc[id] = (acc[id] || 0) + 1;
+            return acc;
+        }, {});
+    
 
         const userBadgesMap = {};
+        
+        accounts.forEach(account => {
+            const userId = account.id;
+            const userModules = userCompletedModules[userId] || new Set();
+            
+            const userCompletedUnits = units.filter(module => 
+                userModules.has(module.id)
+            );
 
-        userScores.forEach((score) => {
-            if (!score.completed) return; // Only process completed modules
-
-            const completedModule = units.find((module) => module.id === score.module_id);
-            if (!completedModule) return;
-
-            const moduleInfo = moduleName.find((module) => module.id === completedModule.storage_section_id);
-            if (!moduleInfo) return;
-
-            if (!userBadgesMap[score.user_id]) {
-                userBadgesMap[score.user_id] = [];
+            const countedUnitsDone = userCompletedUnits.reduce((acc, unit) => {
+                const id = unit.storage_section_id;
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+            }, {});
+    
+            const completedSections = [];
+            for (const sectionId in countedUnits) {
+                const total = countedUnits[sectionId];
+                const done = countedUnitsDone[sectionId] || 0;
+    
+                if (done === total) {
+                    completedSections.push(parseInt(sectionId));
+                }
             }
-
-            const imageData = moduleInfo.achievement_image_data?.startsWith("data:image")
-                ? moduleInfo.achievement_image_data
-                : `data:image/png;base64,${moduleInfo.achievement_image_data}`;
-
-            // Create a unique key to identify the badge
-            const badgeKey = `${moduleInfo.name}-${imageData}`;
-
-            // Prevent duplicates
-            if (!userBadgesMap[score.user_id].some((badge) => `${badge.name}-${badge.achievement_image_data}` === badgeKey)) {
-                userBadgesMap[score.user_id].push({
-                    name: moduleInfo.name || "Unknown Badge",
-                    achievement_image_data: imageData,
-                });
-            }
+    
+            // Get achievements for completed sections
+            userBadgesMap[userId] = completedSections
+                .map(sectionId => 
+                    moduleName.find(module => module?.id === sectionId)
+                )
+                .filter(item => item); // Remove undefined
         });
-
+    
         setBadges(userBadgesMap);
-    }, [moduleName, units, userScores]);
+    }, [moduleName, units, userScores, accounts]);
 
 
 
@@ -213,11 +231,7 @@ export default function AccountsDashboard() {
                     <div className="flex justify-start gap-4  h-24 p-[5px]">
                         {userBadges.map((badge, index) => (
                             <div key={index} className="flex  flex-col  items-center  gap-1 h-24 ">
-                                <img
-                                    src={badge.achievement_image_data}
-                                    alt={badge.name || "Badge"}
-                                    className="w-6 h-6 rounded-full object-cover"
-                                />
+                                        <img src={`data:image/png;base64,${badge?.achievement_image_data}`} alt={badge?.title} className="w-6 h-6 rounded-full object-cover"/>
                                 <p className="text-xs">
                                     {badge.name}
                                 </p>

@@ -89,6 +89,7 @@ export default function Achievements() {
                     completedSections.push(parseInt(sectionId));
                 }
             }
+            
 
             const getAchievements = completedSections
                 .map((completedModule) =>
