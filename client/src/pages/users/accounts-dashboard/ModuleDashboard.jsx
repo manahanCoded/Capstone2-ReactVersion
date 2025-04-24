@@ -90,12 +90,24 @@ export default function ModuleDashboard() {
         return <div>No user data available</div>;
     }
 
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    
     const columns = [
         { field: 'email', headerName: 'Email', width: 200 },
         { field: 'unit', headerName: 'Quiz Name', width: 200 },
         { field: 'score', headerName: 'Score', width: 120 },
         { field: 'attempt_number', headerName: 'Attempts', width: 120 },
-        { field: 'time_spent', headerName: 'Time Spent (seconds)', width: 180 },
         { field: 'completed', headerName: 'Completed', width: 120 },
         { field: 'perfect_score', headerName: 'Perfect Score', width: 150 },
         {field: 'completion_date',headerName: 'Date Completed',width: 180,}
@@ -116,10 +128,9 @@ export default function ModuleDashboard() {
         unit: user.unit,
         score: user.score,
         attempt_number: user.attempt_number,
-        time_spent: user.time_spent,
         completed: user.completed ? 'Yes' : 'No',
         perfect_score: user.perfect_score,
-        completion_date: user.completion_date,
+        completion_date: formatDate(user.completion_date),
     }));
     return (
         <div className="mt-14 h-screen text-sm">

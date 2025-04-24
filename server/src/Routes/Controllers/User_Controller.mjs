@@ -12,7 +12,7 @@ import env from "dotenv"
 env.config()
 
 const login = (req, res) => {
-  
+
   const problem = validationResult(req)
 
   try {
@@ -66,14 +66,14 @@ const google_login_callback = (req, res, next) => {
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ error: "Internal Server Error" });
-    
+
       req.session.save((err) => {
         if (err) console.error(" Error saving session:", err);
-        if(process.env.NODE_ENV === 'production'){
-           return res.redirect(`${process.env.CLIENT_URL}`);
+        if (process.env.NODE_ENV === 'production') {
+          return res.redirect(`${process.env.CLIENT_URL}`);
         }
-         return res.redirect("http://localhost:5173");
-        
+        return res.redirect("http://localhost:5173");
+
       });
     });
   })(req, res, next);
@@ -94,10 +94,18 @@ const register = async (req, res) => {
     const checkEmail = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
+    const checkPhoneNumber = await db.query("SELECT * FROM users WHERE phone_number = $1", [
+      phone_number,
+    ]);
     if (checkEmail.rowCount > 0)
       return res
         .status(400)
         .json({ error: "User with this email already exists." });
+
+    if (checkPhoneNumber.rowCount > 0)
+      return res
+        .status(400)
+        .json({ error: "User with this Phone Number already exists." });
 
     if (password !== confirmPassword)
       return res.status(400).json({ error: "Password Must be similar" });
@@ -263,8 +271,8 @@ const userInfo = (req, res) => {
     lastname: req.user.lastname,
     phone_number: req.user.phone_number,
     role: req.user.role,
-    image: imageBase64,  
-    file_mime_type: req.user.file_mime_type, 
+    image: imageBase64,
+    file_mime_type: req.user.file_mime_type,
     type: req.user.type,
   })
 };
