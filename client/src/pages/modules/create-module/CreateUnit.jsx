@@ -7,13 +7,24 @@ import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ExitToApp } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Alert
+} from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function CreateUnitPage() {
   const [typeForm, setTypeForm] = useState("createModule");
-  const [unitPlace, setUnitPlace] = useState([])
+  const [unitPlace, setUnitPlace] = useState([]);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [userInfo, setUserInfo] = useState({
     title: "",
@@ -23,8 +34,25 @@ export default function CreateUnitPage() {
     publisher: ""
   });
 
-  const { id } = useParams()
+  const [questions, setQuestions] = useState([
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+  ]);
 
+  // State for dialogs and loading
+  const [openModuleDialog, setOpenModuleDialog] = useState(false);
+  const [openQuizDialog, setOpenQuizDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
+  // Check admin status and fetch module data
   useEffect(() => {
     async function handleCheckAdmin() {
       try {
@@ -32,43 +60,46 @@ export default function CreateUnitPage() {
           method: "GET",
           credentials: "include",
         });
-  
+
         if (!res.ok) {
           navigate("/user/login");
           return;
         }
-  
+
         const data = await res.json();
         if (data.role === "client") {
           navigate("/modules");
           return;
         }
-  
+
         const moduleData = await axios.get(`${API_URL}/api/module/allModule-storage/${id}`);
         if (moduleData.data.success) {
           setUnitPlace(moduleData.data.listall[0]);
-  
-          setUserInfo((prev) => ({
+          setUserInfo(prev => ({
             ...prev,
             publisher: data.id,
             storage_section_id: moduleData.data.listall[0].id,
           }));
         } else {
-          setError("Module not found");
+          setSnackbar({
+            open: true,
+            message: "Module not found",
+            severity: "error"
+          });
           setUnitPlace(null);
         }
       } catch (err) {
         console.error("An error occurred:", err);
-        alert("Failed to fetch user profile.");
+        setSnackbar({
+          open: true,
+          message: "Failed to fetch user profile",
+          severity: "error"
+        });
       }
     }
-  
+
     handleCheckAdmin();
   }, [navigate, id]);
-  
-
-  const [isError, setError] = useState(null);
-
 
   const onChangeValue = (e) => {
     setUserInfo({
@@ -76,7 +107,6 @@ export default function CreateUnitPage() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   const onDescription = (value) => {
     setUserInfo({ ...userInfo, description: value });
@@ -86,19 +116,37 @@ export default function CreateUnitPage() {
     setUserInfo({ ...userInfo, information: value });
   };
 
-  const addDetails = async (event) => {
-    event.preventDefault();
-
+  // Validate module form
+  const validateModule = () => {
     if (!userInfo.title.trim()) {
-      setError("Title is required.");
-      return;
+      setSnackbar({
+        open: true,
+        message: "Title is required",
+        severity: "error"
+      });
+      return false;
     }
-
     if (userInfo.description.length < 50) {
-      setError("Description must be at least 50 characters long.");
-      return;
+      setSnackbar({
+        open: true,
+        message: "Description must be at least 50 characters long",
+        severity: "error"
+      });
+      return false;
     }
+    return true;
+  };
 
+  // Show module confirmation dialog
+  const handleModuleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateModule()) return;
+    setOpenModuleDialog(true);
+  };
+
+  // Confirm and create module
+  const confirmCreateModule = async () => {
+    setIsLoading(true);
     try {
       const res = await axios.post(`${API_URL}/api/module/addModule`, {
         title: userInfo.title,
@@ -109,30 +157,32 @@ export default function CreateUnitPage() {
       });
 
       if (res.data.success) {
-        alert("Unit has been successfully created.")
+        setSnackbar({
+          open: true,
+          message: "Unit created successfully!",
+          severity: "success"
+        });
         setTypeForm("createQuiz");
       } else {
-        setError(res.data.error || "An error occurred while submitting the form.");
+        setSnackbar({
+          open: true,
+          message: res.data.error || "Failed to create unit",
+          severity: "error"
+        });
       }
     } catch (error) {
-
-      if (error.response && error.response.data && error.response.data.error) {
-        setError(error.response.data.error);
-      } else {
-        setError("A File is to big try changing file.");
-      }
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || "Failed to create unit",
+        severity: "error"
+      });
+    } finally {
+      setIsLoading(false);
+      setOpenModuleDialog(false);
     }
   };
 
-  const [questions, setQuestions] = useState([
-    { question_text: userInfo.title, option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
-    { question_text: userInfo.title, option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
-    { question_text: userInfo.title, option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
-    { question_text: userInfo.title, option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
-    { question_text: userInfo.title, option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
-  ]);
-
-  // Handle changes for all fields (inputs and textareas)
+  // Handle question changes
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedQuestions = [...questions];
@@ -140,7 +190,7 @@ export default function CreateUnitPage() {
     setQuestions(updatedQuestions);
   };
 
-  // Handle adding a new question
+  // Add new question
   const handleAddQuestion = () => {
     setQuestions([
       ...questions,
@@ -148,74 +198,140 @@ export default function CreateUnitPage() {
     ]);
   };
 
-  // Handle removing a question
+  // Remove question
   const handleRemoveQuestion = (index) => {
     if (questions.length > 5) {
       const updatedQuestions = questions.filter((_, i) => i !== index);
       setQuestions(updatedQuestions);
     } else {
-      alert("You cannot remove more questions. At least 5 questions are required.");
+      setSnackbar({
+        open: true,
+        message: "Minimum of 5 questions required",
+        severity: "error"
+      });
     }
   };
 
-  const handleSubmitQuestion = async (e) => {
-    e.preventDefault();
-
+  // Validate quiz form
+  const validateQuiz = () => {
     if (!userInfo.title) {
-      alert("Please create a module first.");
-      return; // Stop further execution if there's no module title
+      setSnackbar({
+        open: true,
+        message: "Please create a module first",
+        severity: "error"
+      });
+      return false;
     }
-
     if (questions.length < 5) {
-      alert("You must have at least 5 questions.");
-      return;
+      setSnackbar({
+        open: true,
+        message: "Minimum of 5 questions required",
+        severity: "error"
+      });
+      return false;
     }
 
-    const module_title = userInfo.title;
-
-
-    const validQuestions = questions.filter((q) => q.question_text && q.question_text.trim() !== "");
-
-    if (validQuestions.length < 5) {
-      alert("Each question must have a valid question text.");
-      return;
+    for (const question of questions) {
+      if (!question.question_text.trim()) {
+        setSnackbar({
+          open: true,
+          message: "All questions must have text",
+          severity: "error"
+        });
+        return false;
+      }
+      if (!question.correct_option) {
+        setSnackbar({
+          open: true,
+          message: "All questions must have a correct option selected",
+          severity: "error"
+        });
+        return false;
+      }
+      for (const opt of ["option_a", "option_b", "option_c", "option_d"]) {
+        if (!question[opt].trim()) {
+          setSnackbar({
+            open: true,
+            message: "All options must be filled for each question",
+            severity: "error"
+          });
+          return false;
+        }
+      }
     }
+    return true;
+  };
 
+  // Show quiz confirmation dialog
+  const handleQuizSubmit = (e) => {
+    e.preventDefault();
+    if (!validateQuiz()) return;
+    setOpenQuizDialog(true);
+  };
 
-    const updatedQuestions = validQuestions.map((question) => {
-      const correctOptionMap = {
-        option_a: 'A',
-        option_b: 'B',
-        option_c: 'C',
-        option_d: 'D',
-      };
-
-      const correctOption = correctOptionMap[question.correct_option] || '';
-
-      return { ...question, correct_option: correctOption };
-    });
-
+  // Confirm and create quiz
+  const confirmCreateQuiz = async () => {
+    setIsLoading(true);
     try {
+      const module_title = userInfo.title;
+      const validQuestions = questions.map(question => ({
+        ...question,
+        correct_option: {
+          option_a: 'A',
+          option_b: 'B',
+          option_c: 'C',
+          option_d: 'D',
+        }[question.correct_option] || ''
+      }));
+
       const response = await axios.post(`${API_URL}/api/module/addQuestions`, {
         module_title,
-        questions: updatedQuestions,
+        questions: validQuestions,
       });
 
-      navigate(`/modules/units/${userInfo.storage_section_id}`);
+      setSnackbar({
+        open: true,
+        message: "Quiz created successfully!",
+        severity: "success"
+      });
+      setTimeout(() => navigate(`/modules/units/${userInfo.storage_section_id}`), 1500);
     } catch (error) {
-      console.error("Axios error:", error);
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || "Failed to create quiz",
+        severity: "error"
+      });
+    } finally {
+      setIsLoading(false);
+      setOpenQuizDialog(false);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   const [isEditingHTMLDescription, setIsEditingHTMLDescription] = useState(false);
   const [isEditingHTMLInformation, setIsEditingHTMLInformation] = useState(false);
 
-
   return (
-    <div className="mt-14 container mx-auto ">
+    <div className="mt-14 container mx-auto">
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Header Section */}
       <section className="text-sm">
         <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
-          <div className="h-16  flex flex-row">
+          <div className="h-16 flex flex-row">
             <div
               className={typeForm === "createModule" ? "px-4 flex items-center cursor-pointer text-white bg-red-900" : "px-4 flex items-center cursor-pointer"}
               onClick={() => setTypeForm("createModule")}
@@ -223,8 +339,18 @@ export default function CreateUnitPage() {
               <p>Create Unit</p>
             </div>
             <div
-              className={typeForm === "createQuiz" ? "px-4 flex items-center cursor-pointer text-white bg-red-900 " : "px-4 flex items-center cursor-pointer"}
-              onClick={() => setTypeForm("createQuiz")}
+              className={typeForm === "createQuiz" ? "px-4 flex items-center cursor-pointer text-white bg-red-900" : "px-4 flex items-center cursor-pointer"}
+              onClick={() => {
+                if (!userInfo.title) {
+                  setSnackbar({
+                    open: true,
+                    message: "Please create a unit first",
+                    severity: "error"
+                  });
+                  return;
+                }
+                setTypeForm("createQuiz");
+              }}
             >
               <p>Create Quiz</p>
             </div>
@@ -232,16 +358,18 @@ export default function CreateUnitPage() {
 
           <Link
             to={`/modules/units/${userInfo.storage_section_id}`}
-            className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
+            className="flex gap-1 items-center p-2 rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
           >
             <ExitToApp />
             {typeForm === "createQuiz" ? "No Questions" : "Discard"}
           </Link>
         </MaxWidthWrapper>
       </section>
+
+      {/* Module Creation Form */}
       <form
-        onSubmit={addDetails}
-        className={typeForm === "createModule" ? " m-auto bg-white shadow-md rounded lg:px-8 pt-6 pb-8 mb-4" : "hidden"}
+        onSubmit={handleModuleSubmit}
+        className={typeForm === "createModule" ? "m-auto bg-white shadow-md rounded lg:px-8 pt-6 pb-8 mb-4" : "hidden"}
       >
         <MaxWidthWrapper>
           {/* Title Input */}
@@ -261,7 +389,7 @@ export default function CreateUnitPage() {
             />
           </div>
 
-          {/* Description (Toggle between Quill and Raw HTML) */}
+          {/* Description Editor */}
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
               Description <span className="text-red-500">*</span>
@@ -270,10 +398,8 @@ export default function CreateUnitPage() {
               <EditorToolbar toolbarId="t1" />
               <button
                 type="button"
-                onClick={() =>
-                  setIsEditingHTMLDescription(!isEditingHTMLDescription)
-                }
-                 className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                onClick={() => setIsEditingHTMLDescription(!isEditingHTMLDescription)}
+                className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
               >
                 {isEditingHTMLDescription ? "Switch to Editor" : "Edit HTML"}
               </button>
@@ -282,28 +408,23 @@ export default function CreateUnitPage() {
               <textarea
                 className="w-full p-2 border rounded h-[70vh]"
                 value={userInfo.description}
-                onChange={(e) =>
-                  setUserInfo({ ...userInfo, description: e.target.value })
-                }
+                onChange={(e) => setUserInfo({ ...userInfo, description: e.target.value })}
                 placeholder="Edit raw HTML here..."
               />
             ) : (
-              <>
-                <ReactQuill
-                  theme="snow"
-                  value={userInfo.description}
-                  onChange={onDescription}
-                  placeholder="Write something awesome..."
-                  modules={modules("t1")}
-                  formats={formats}
-                  className="bg-white border rounded h-[70vh] overflow-y-auto"
-                />
-              </>
+              <ReactQuill
+                theme="snow"
+                value={userInfo.description}
+                onChange={onDescription}
+                placeholder="Write something awesome..."
+                modules={modules("t1")}
+                formats={formats}
+                className="bg-white border rounded h-[70vh] overflow-y-auto"
+              />
             )}
-
           </div>
 
-          {/* Additional Information (Toggle between Quill and Raw HTML) */}
+          {/* Additional Information Editor */}
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
               Additional Information
@@ -312,10 +433,8 @@ export default function CreateUnitPage() {
               <EditorToolbar toolbarId="t2" />
               <button
                 type="button"
-                onClick={() =>
-                  setIsEditingHTMLInformation(!isEditingHTMLInformation)
-                }
-             className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
+                onClick={() => setIsEditingHTMLInformation(!isEditingHTMLInformation)}
+                className="text-sm bg-gray-600 text-white py-3 px-3 rounded hover:bg-gray-700"
               >
                 {isEditingHTMLInformation ? "Switch to Editor" : "Edit HTML"}
               </button>
@@ -324,50 +443,53 @@ export default function CreateUnitPage() {
               <textarea
                 className="w-full p-2 border rounded h-[70vh]"
                 value={userInfo.information}
-                onChange={(e) =>
-                  setUserInfo({ ...userInfo, information: e.target.value })
-                }
+                onChange={(e) => setUserInfo({ ...userInfo, information: e.target.value })}
                 placeholder="Edit raw HTML here..."
               />
             ) : (
-              <>
-                <ReactQuill
-                  theme="snow"
-                  value={userInfo.information}
-                  onChange={onInformation}
-                  placeholder="Write something more..."
-                  modules={modules("t2")}
-                  formats={formats}
-                  className="bg-white border rounded h-[70vh] overflow-y-auto"
-                />
-              </>
+              <ReactQuill
+                theme="snow"
+                value={userInfo.information}
+                onChange={onInformation}
+                placeholder="Write something more..."
+                modules={modules("t2")}
+                formats={formats}
+                className="bg-white border rounded h-[70vh] overflow-y-auto"
+              />
             )}
           </div>
-
-          {isError && <div className="text-red-500 text-sm mb-4">{isError}</div>}
 
           <div className="flex items-center justify-end">
             <button
               type="submit"
-              className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-red-900 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-red-800"
+              disabled={isLoading}
             >
-              Submit
+              {isLoading ? "Creating..." : "Create Unit"}
             </button>
           </div>
         </MaxWidthWrapper>
       </form>
 
+      {/* Quiz Creation Form */}
       <div className={typeForm === "createQuiz" ? "max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg" : "hidden"}>
-        {userInfo.title ?
-          <h2 className="text-2xl font-semibold text-center py-6">Create Questions for Unit: {userInfo.title} (Minimum of 5)</h2> :
-          <h2 className="text-2xl font-semibold text-center py-6 text-red-800">Please create a Unit first.</h2>
-        }
+        {userInfo.title ? (
+          <h2 className="text-2xl font-semibold text-center py-6">
+            Create Questions for Unit: {userInfo.title} (Minimum of 5)
+          </h2>
+        ) : (
+          <h2 className="text-2xl font-semibold text-center py-6 text-red-800">
+            Please create a Unit first.
+          </h2>
+        )}
 
-        <form onSubmit={handleSubmitQuestion}>
+        <form onSubmit={handleQuizSubmit}>
           {questions.map((question, index) => (
             <div key={index} className="my-6 border-b-[1px]">
               <div className="flex justify-between">
-                <label className="block text-gray-700 font-bold mb-2">Question {index + 1}</label>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Question {index + 1}
+                </label>
                 <button
                   type="button"
                   onClick={() => handleRemoveQuestion(index)}
@@ -422,7 +544,9 @@ export default function CreateUnitPage() {
                 placeholder="Option D"
               />
               <div className="mb-4">
-                <label className="block text-gray-700 font-bold mb-2">Correct Option</label>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Correct Option
+                </label>
                 <select
                   name="correct_option"
                   required
@@ -444,29 +568,119 @@ export default function CreateUnitPage() {
             <button
               type="button"
               onClick={handleAddQuestion}
-              className="border-red-900 border-2 text-red-900 py-2 px-4 rounded-lg hover:text-white hover:bg-red-900 "
+              className="border-red-900 border-2 text-red-900 py-2 px-4 rounded-lg hover:text-white hover:bg-red-900"
             >
               Add Question
             </button>
 
-            {userInfo.title ? <button
-              type="submit"
-              className="bg-black text-white py-2 px-4 rounded-lg hover:bg-red-700"
-            >
-              Submit Questions
-            </button> :
+            {userInfo.title ? (
               <button
                 type="submit"
+                className="bg-black text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating..." : "Submit Questions"}
+              </button>
+            ) : (
+              <button
+                type="button"
                 className="bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                onClick={() => setTypeForm("createModule")}
               >
                 Create Unit First
-              </button>}
+              </button>
+            )}
           </div>
         </form>
       </div>
 
+      {/* Module Creation Confirmation Dialog */}
+      <Dialog
+        open={openModuleDialog}
+        onClose={() => setOpenModuleDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Unit Creation</DialogTitle>
+        <DialogContent>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to create this unit?
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold text-blue-800">
+                "{userInfo.title}"
+              </p>
+              <p className="text-blue-600 mt-2">
+                This will create a new learning unit that will be immediately visible to users.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button
+            onClick={() => setOpenModuleDialog(false)}
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmCreateModule}
+            variant="contained"
+            color="primary"
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isLoading ? "Creating..." : "Confirm Creation"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Quiz Creation Confirmation Dialog */}
+      <Dialog
+        open={openQuizDialog}
+        onClose={() => setOpenQuizDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Quiz Creation</DialogTitle>
+        <DialogContent>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to create this quiz?
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold text-blue-800">
+                For Unit: "{userInfo.title}"
+              </p>
+              <p className="text-blue-600 mt-2">
+                This will create {questions.length} questions that will be immediately available for the unit.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button
+            onClick={() => setOpenQuizDialog(false)}
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmCreateQuiz}
+            variant="contained"
+            color="primary"
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isLoading ? "Creating..." : "Confirm Creation"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-
-

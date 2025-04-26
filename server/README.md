@@ -22,7 +22,10 @@ CREATE TABLE users(
     password text not null,
 	role varchar(45) not null,
     image BYTEA,
-    file_mime_type TEXT
+    file_mime_type TEXT,
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_code VARCHAR(10),
+    code_expires_at TIMESTAMP
 )
 
 <!-- DATABASE FOR modules -->

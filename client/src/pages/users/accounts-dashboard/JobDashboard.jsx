@@ -62,6 +62,22 @@ export default function JobDashboards() {
         job.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.title?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    const allJobs = filteredJobs.map(all =>({
+        ...all,
+        salary: all.salary || "Unpaid",
+        date: formatDate(all.date)
+    }))
+    
 
     const columns = [
         { field: "id", headerName: "ID", width: 90 },
@@ -73,21 +89,7 @@ export default function JobDashboards() {
         { field: "city", headerName: "City", width: 150 },
         { field: "state", headerName: "State", width: 150 },
         { field: "applicants", headerName: "Applicants", width: 150 },
-        {
-            field: "file_data",
-            headerName: "Image",
-            width: 150,
-            renderCell: (params) =>
-                params.value ? (
-                    <img
-                        src={params.value}
-                        alt="Job Image"
-                        style={{ width: 50, height: 50, objectFit: "cover" }}
-                    />
-                ) : (
-                    "No Image"
-                ),
-        },
+        { field: "date", headerName: "date", width: 150 },
     ];
 
 
@@ -109,7 +111,7 @@ export default function JobDashboards() {
                     </Box>
                     <div className="w-full">
                         <DataGrid
-                            rows={filteredJobs}
+                            rows={allJobs}
                             columns={columns}
                             pageSize={10}
                             rowsPerPageOptions={[5, 10, 20]}

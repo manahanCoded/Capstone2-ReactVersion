@@ -97,8 +97,6 @@ export default function ModuleDashboard() {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
         });
     };
 
@@ -107,9 +105,9 @@ export default function ModuleDashboard() {
         { field: 'email', headerName: 'Email', width: 200 },
         { field: 'unit', headerName: 'Quiz Name', width: 200 },
         { field: 'score', headerName: 'Score', width: 120 },
-        { field: 'attempt_number', headerName: 'Attempts', width: 120 },
-        { field: 'completed', headerName: 'Completed', width: 120 },
         { field: 'perfect_score', headerName: 'Perfect Score', width: 150 },
+        { field: 'passed', headerName: 'Passed', width: 150 },
+        { field: 'attempt_number', headerName: 'Attempts', width: 120 },
         {field: 'completion_date',headerName: 'Date Completed',width: 180,}
     ];
 
@@ -127,9 +125,9 @@ export default function ModuleDashboard() {
         email: user.email,
         unit: user.unit,
         score: user.score,
-        attempt_number: user.attempt_number,
-        completed: user.completed ? 'Yes' : 'No',
         perfect_score: user.perfect_score,
+        passed: user.passed,
+        attempt_number: user.attempt_number,
         completion_date: formatDate(user.completion_date),
     }));
     return (

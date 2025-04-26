@@ -6,6 +6,16 @@ import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ExitToApp } from "@mui/icons-material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  CircularProgress,
+  Alert,
+  Snackbar
+} from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -14,15 +24,33 @@ export default function EditPost({ postList, editPostID }) {
   const [checkAdminData, setCheckAdmin] = useState(null);
 
   const initialPostData = postList?.[0] || { title: "", description: "", information: "" };
-  const [userInfo, setUserInfo] = useState(initialPostData);
+  const [unitInfo, setUnitInfo] = useState(initialPostData);
   const [isError, setError] = useState(null);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState([
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" },
+    { question_text: "", option_a: "", option_b: "", option_c: "", option_d: "", correct_option: "" }
+  ]);
 
   const [isRawHtmlDescription, setIsRawHtmlDescription] = useState(false);
   const [isRawHtmlInformation, setIsRawHtmlInformation] = useState(false);
 
   const [typeForm, setTypeForm] = useState("createModule");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Confirmation dialog states
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openSaveDialog, setOpenSaveDialog] = useState(false);
+  const [openQuestionSaveDialog, setOpenQuestionSaveDialog] = useState(false);
+  const [openQuestionDeleteDialog, setOpenQuestionDeleteDialog] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
 
   useEffect(() => {
     async function handleCheckAdmin() {
@@ -43,7 +71,6 @@ export default function EditPost({ postList, editPostID }) {
         }
       } catch (err) {
         console.error("An error occurred:", err);
-
       } finally {
         setIsLoading(false);
       }
@@ -53,11 +80,11 @@ export default function EditPost({ postList, editPostID }) {
   }, [navigate]);
 
   useEffect(() => {
-    if (!userInfo.id) return; 
+    if (!unitInfo.id) return; 
     async function fetchQuestions() {
       try {
         const res = await axios.get(
-          `${API_URL}/api/module/allQuestions?id=${encodeURIComponent(userInfo.id)}`
+          `${API_URL}/api/module/allQuestions?id=${encodeURIComponent(unitInfo.id)}`
         );
         setQuestions(res.data || []);
       } catch (error) {
@@ -65,29 +92,25 @@ export default function EditPost({ postList, editPostID }) {
       }
     }
     fetchQuestions();
-  }, [userInfo.id]); // Depend only on userInfo.id
-
-
-
-
+  }, [unitInfo.id]);
 
   const onChangeValue = (e) => {
-    setUserInfo({
-      ...userInfo,
+    setUnitInfo({
+      ...unitInfo,
       [e.target.name]: e.target.value,
     });
   };
 
   const onDescriptionChange = (value) => {
-    setUserInfo({
-      ...userInfo,
+    setUnitInfo({
+      ...unitInfo,
       description: value,
     });
   };
 
   const onInformationChange = (value) => {
-    setUserInfo({
-      ...userInfo,
+    setUnitInfo({
+      ...unitInfo,
       information: value,
     });
   };
@@ -100,48 +123,93 @@ export default function EditPost({ postList, editPostID }) {
     setIsRawHtmlInformation(!isRawHtmlInformation);
   };
 
+  const validateForm = () => {
+    if (!unitInfo.title.trim()) {
+      setError("Title is required");
+      return false;
+    }
+    if (!unitInfo.description || unitInfo.description.length < 50) {
+      setError("Description must be at least 50 characters");
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setOpenSaveDialog(true);
+  };
 
-    if (userInfo.description.length < 50) {
-      setError("Required: Add description with a minimum length of 50 characters.");
-      return;
-    }
-
+  const confirmSave = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/api/module/editModule`, {
-        title: userInfo.title,
-        description: userInfo.description,
-        information: userInfo.information,
+        title: unitInfo.title,
+        description: unitInfo.description,
+        information: unitInfo.information,
         ids: editPostID,
       });
 
       if (response.data.success === true) {
-        alert("Edit successfull.")
-        navigate(-1);
+        setSnackbar({
+          open: true,
+          message: "Module updated successfully!",
+          severity: "success"
+        });
+        setTimeout(() => navigate(-1), 1500);
       }
     } catch (error) {
-      alert(error.response?.data?.error || "Failed to edit module.");
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || "Failed to edit module",
+        severity: "error"
+      });
       console.error("Error editing module:", error);
+    } finally {
+      setIsLoading(false);
+      setOpenSaveDialog(false);
     }
   };
 
-  const deleteModule = async () => {
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.delete(`${API_URL}/api/module/deleteModules/${editPostID}`);
 
       if (response.status === 200) {
-        alert("Delete successfull.")
-        navigate(-1);
+        setSnackbar({
+          open: true,
+          message: "Module deleted successfully!",
+          severity: "success"
+        });
+        setTimeout(() => navigate(-1), 1500);
       } else {
-        console.error("Failed to delete module");
+        setSnackbar({
+          open: true,
+          message: "Failed to delete module",
+          severity: "error"
+        });
       }
     } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error deleting module",
+        severity: "error"
+      });
       console.error("Error deleting module:", error);
+    } finally {
+      setIsLoading(false);
+      setOpenDeleteDialog(false);
     }
   };
-
-
 
   // Quiz Edit Section
   const handleChange = (e, index) => {
@@ -150,7 +218,6 @@ export default function EditPost({ postList, editPostID }) {
     updatedQuestions[index][name] = value;
     setQuestions(updatedQuestions);
   };
-
 
   const handleAddQuestion = () => {
     setQuestions([
@@ -167,64 +234,156 @@ export default function EditPost({ postList, editPostID }) {
     ]);
   };
 
+  const handleRemoveQuestionClick = (index, question_id) => {
+    if (questions.length <= 5) {
+      setSnackbar({
+        open: true,
+        message: "Minimum of 5 questions required",
+        severity: "error"
+      });
+      return;
+    }
+    setQuestionToDelete({ index, question_id });
+    setOpenQuestionDeleteDialog(true);
+  };
+  
 
-  const handleRemoveQuestion = async (index, question_id) => {
+  const confirmQuestionDelete = async () => {
+    const { index, question_id } = questionToDelete;
+    
     if (question_id) {
       try {
         const response = await axios.delete(`${API_URL}/api/module/deleteQuestion/${question_id}`);
         if (response.status === 200) {
           const updatedQuestions = questions.filter((_, i) => i !== index);
           setQuestions(updatedQuestions);
+          setSnackbar({
+            open: true,
+            message: "Question deleted successfully!",
+            severity: "success"
+          });
         } else {
-          alert("Failed to delete question.");
+          setSnackbar({
+            open: true,
+            message: "Failed to delete question",
+            severity: "error"
+          });
         }
       } catch (error) {
+        setSnackbar({
+          open: true,
+          message: "Error deleting question",
+          severity: "error"
+        });
         console.error("Error deleting question:", error);
-        alert("Error deleting question.");
       }
     } else {
       const updatedQuestions = questions.filter((_, i) => i !== index);
       setQuestions(updatedQuestions);
     }
+    
+    setOpenQuestionDeleteDialog(false);
+    setQuestionToDelete(null);
   };
 
-
-  const handleSubmitQuestion = async (e) => {
-    e.preventDefault();
-
-    const allowedOptions = ["A", "B", "C", "D"];
-
-    const validatedQuestions = questions.map((q) => {
-      if (!allowedOptions.includes(q.correct_option)) {
-        alert(`Error: Invalid correct option for question "${q.question_text}". Must be A, B, C, or D.`);
-        throw new Error("Invalid correct_option");
+  const validateQuestions = () => {
+    if (questions.length < 5) {
+      setSnackbar({
+        open: true,
+        message: "Minimum of 5 questions required",
+        severity: "error"
+      });
+      return false;
+    }
+    
+    for (const question of questions) {
+      if (!question.question_text.trim()) {
+        setSnackbar({
+          open: true,
+          message: "All questions must have text",
+          severity: "error"
+        });
+        return false;
       }
-      return q;
-    });
+      
+      const options = ["A", "B", "C", "D"];
+      if (!options.includes(question.correct_option)) {
+        setSnackbar({
+          open: true,
+          message: `Question "${question.question_text}" must have a valid correct option (A, B, C, or D)`,
+          severity: "error"
+        });
+        return false;
+      }
+      
+      for (const opt of ["option_a", "option_b", "option_c", "option_d"]) {
+        if (!question[opt].trim()) {
+          setSnackbar({
+            open: true,
+            message: `Question "${question.question_text}" must have all options filled`,
+            severity: "error"
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
-    const requestBody = { module_id: userInfo.id, questions: validatedQuestions };
+  const handleSubmitQuestion = (e) => {
+    e.preventDefault();
+    
+    if (!validateQuestions()) return;
+    
+    setOpenQuestionSaveDialog(true);
+  };
 
+  const confirmQuestionSave = async () => {
+    setIsLoading(true);
     try {
+      const requestBody = { module_id: unitInfo.id, questions };
       const response = await axios.post(`${API_URL}/api/module/updateQuestions`, requestBody, {
         headers: { "Content-Type": "application/json" },
       });
 
-      alert("Questions updated successfully!");
-
+      setSnackbar({
+        open: true,
+        message: "Questions updated successfully!",
+        severity: "success"
+      });
     } catch (error) {
-      console.error(" Error updating questions:", error.response?.data || error);
-      alert("Error updating questions.");
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || "Error updating questions",
+        severity: "error"
+      });
+      console.error("Error updating questions:", error.response?.data || error);
+    } finally {
+      setIsLoading(false);
+      setOpenQuestionSaveDialog(false);
     }
   };
 
-
-
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   return (
-    <div className=" mx-auto">
+    <div className="mx-auto">
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
       <section className="text-sm">
         <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
-          <div className="h-16  flex flex-row">
+          <div className="h-16 flex flex-row">
             <div
               className={typeForm === "createModule" ? "px-4 flex items-center cursor-pointer text-white bg-red-900" : "px-4 flex items-center cursor-pointer"}
               onClick={() => setTypeForm("createModule")}
@@ -240,8 +399,8 @@ export default function EditPost({ postList, editPostID }) {
           </div>
 
           <Link
-            to={`/modules/units/${userInfo.storage_section_id}`}
-            className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
+            to={`/modules/units/${unitInfo.storage_section_id}`}
+            className="flex gap-1 items-center p-2 rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
           >
             <ExitToApp />
             {typeForm === "createQuiz" ? "Go back" : "Discard"}
@@ -251,11 +410,11 @@ export default function EditPost({ postList, editPostID }) {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
-         <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
-       </div>
+          <CircularProgress color="error" />
+        </div>
       ) : (
         <div>
-          {typeForm === "createModule" ?
+          {typeForm === "createModule" ? (
             <div className="row">
               <form onSubmit={handleSubmit} className="bg-white shadow-md rounded md:px-8 pt-6 pb-8 ">
                 <MaxWidthWrapper>
@@ -263,10 +422,11 @@ export default function EditPost({ postList, editPostID }) {
                     <h3 className="text-xl font-semibold mb-4">Edit</h3>
                     <button
                       type="button"
-                      onClick={deleteModule}
+                      onClick={handleDeleteClick}
                       className="bg-red-800 py-2 px-4 rounded-md text-white hover:bg-red-900"
+                      disabled={isLoading}
                     >
-                      Delete
+                      {isLoading ? "Deleting..." : "Delete"}
                     </button>
                   </div>
                   <div className="form-row">
@@ -277,7 +437,7 @@ export default function EditPost({ postList, editPostID }) {
                       <input
                         type="text"
                         name="title"
-                        value={userInfo.title}
+                        value={unitInfo.title}
                         onChange={onChangeValue}
                         className="form-control w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         placeholder="Title"
@@ -287,7 +447,7 @@ export default function EditPost({ postList, editPostID }) {
 
                     <div className="mb-4">
                       <label className="block text-gray-700 font-bold mb-2">
-                        Descriptioasdasdn <span className="text-red-500">*</span>
+                        Description <span className="text-red-500">*</span>
                       </label>
                       <div className="flex items-center gap-4 mb-2">
                         <EditorToolbar toolbarId="t1" />
@@ -301,14 +461,14 @@ export default function EditPost({ postList, editPostID }) {
                       </div>
                       {isRawHtmlDescription ? (
                         <textarea
-                          value={userInfo.description}
+                          value={unitInfo.description}
                           onChange={(e) => onDescriptionChange(e.target.value)}
                           className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
                       ) : (
                         <ReactQuill
                           theme="snow"
-                          value={userInfo.description}
+                          value={unitInfo.description}
                           onChange={onDescriptionChange}
                           placeholder="Write something awesome..."
                           modules={modules("t1")}
@@ -333,14 +493,14 @@ export default function EditPost({ postList, editPostID }) {
                       </div>
                       {isRawHtmlInformation ? (
                         <textarea
-                          value={userInfo.information}
+                          value={unitInfo.information}
                           onChange={(e) => onInformationChange(e.target.value)}
                           className="form-control w-full h-[70vh] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
                       ) : (
                         <ReactQuill
                           theme="snow"
-                          value={userInfo.information}
+                          value={unitInfo.information}
                           onChange={onInformationChange}
                           placeholder="Write something awesome..."
                           modules={modules("t2")}
@@ -350,22 +510,30 @@ export default function EditPost({ postList, editPostID }) {
                       )}
                     </div>
 
-                    {isError && <div className="errors">{isError}</div>}
+                    {isError && (
+                      <div className="mb-4 text-red-600 font-medium">
+                        {isError}
+                      </div>
+                    )}
 
                     <div className="form-group col-sm-12 text-right">
                       <button
                         type="submit"
-                        className="bg-red-900 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        className="bg-red-900 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        disabled={isLoading}
                       >
-                        Submit
+                        {isLoading ? "Saving..." : "Submit"}
                       </button>
                     </div>
                   </div>
                 </MaxWidthWrapper>
               </form>
             </div>
-            : <form onSubmit={handleSubmitQuestion} className="p-6 bg-white rounded-lg shadow">
-              {questions.map((question, index) => (
+          ) : (
+            <form onSubmit={handleSubmitQuestion} className="p-6 bg-white rounded-lg shadow">
+              {questions.map((question, index) => {
+                
+                return(
                 <div key={index} className="my-6 border-b pb-4">
                   <div className="flex justify-between items-center">
                     <label className="block text-gray-700 font-bold">
@@ -373,7 +541,7 @@ export default function EditPost({ postList, editPostID }) {
                     </label>
                     <button
                       type="button"
-                      onClick={() => handleRemoveQuestion(index, question.question_id)}
+                      onClick={() => handleRemoveQuestionClick(index, question.question_id)}
                       className="text-red-500 hover:text-red-700"
                     >
                       Remove
@@ -404,7 +572,7 @@ export default function EditPost({ postList, editPostID }) {
                     <label className="block text-gray-700 font-bold">Correct Option</label>
                     <select
                       name="correct_option"
-                      value={question.correct_option ?? ""} // Ensure existing value is shown
+                      value={question.correct_option ?? ""}
                       onChange={(e) => handleChange(e, index)}
                       required
                       className="w-full border rounded px-3 py-2"
@@ -419,7 +587,7 @@ export default function EditPost({ postList, editPostID }) {
                     </select>
                   </div>
                 </div>
-              ))}
+              )})}
 
               <div className="flex justify-between">
                 <button
@@ -430,12 +598,13 @@ export default function EditPost({ postList, editPostID }) {
                   Add Question
                 </button>
 
-                {userInfo.title ? (
+                {unitInfo.title ? (
                   <button
                     type="submit"
                     className="bg-black text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                    disabled={isLoading}
                   >
-                    Submit Questions
+                    {isLoading ? "Saving..." : "Submit Questions"}
                   </button>
                 ) : (
                   <button
@@ -447,12 +616,81 @@ export default function EditPost({ postList, editPostID }) {
                 )}
               </div>
             </form>
-          }
+          )}
         </div>
       )}
+
+      {/* Delete Module Confirmation Dialog */}
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete this module?</p>
+          <p className="font-bold mt-2">"{unitInfo.title}"</p>
+          <p className="text-red-600 mt-2">This action cannot be undone!</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Save Module Confirmation Dialog */}
+      <Dialog open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
+        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to save these changes to the module?</p>
+          <p className="font-bold mt-2">"{unitInfo.title}"</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenSaveDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmSave} color="primary" variant="contained">
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Question Confirmation Dialog */}
+      <Dialog open={openQuestionDeleteDialog} onClose={() => setOpenQuestionDeleteDialog(false)}>
+        <DialogTitle>Confirm Delete Question</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete this question?</p>
+          {questionToDelete && (
+            <p className="font-bold mt-2">"{questions[questionToDelete.index]?.question_text}"</p>
+          )}
+          <p className="text-red-600 mt-2">This action cannot be undone!</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenQuestionDeleteDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmQuestionDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Save Questions Confirmation Dialog */}
+      <Dialog open={openQuestionSaveDialog} onClose={() => setOpenQuestionSaveDialog(false)}>
+        <DialogTitle>Confirm Save Questions</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to save all question changes?</p>
+          <p className="mt-2">This will update {questions.length} questions.</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenQuestionSaveDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmQuestionSave} color="primary" variant="contained">
+            Save Questions
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
-
   );
-};
-
-
+}

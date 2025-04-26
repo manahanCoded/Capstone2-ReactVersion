@@ -186,6 +186,7 @@ export default function AccountsDashboard() {
             email: account.email || "N/A",
             role: account.role || "N/A",
             badges: badges[account?.id] || [],
+            type: account.type || "Unverified"
         };
     });
 
@@ -195,6 +196,7 @@ export default function AccountsDashboard() {
     const columns = [
         { field: "email", headerName: "Email", width: 300 },
         { field: "role", headerName: "Role", width: 100 },
+        { field: "type", headerName: "type", width: 100 },
         {
             field: "roleChange",
             headerName: "Change Role",

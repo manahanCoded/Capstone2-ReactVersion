@@ -47,8 +47,8 @@ const Validate_Register = checkSchema({
   },
   password: {
     isLength: {
-      options: { min: 6 },
-      errorMessage: "Password must be at least 6 characters",
+      options: { min: 8 },
+      errorMessage: "Password must be at least 8 characters",
     },
     notEmpty: {
       errorMessage: "Password must not be empty",
@@ -81,8 +81,8 @@ const Validate_Login = checkSchema({
   },
   password: {
     isLength: {
-      options: { min: 6 },
-      errorMessage: "Password must be at least 6 characters.",
+      options: { min: 8 },
+      errorMessage: "Password must be at least 8 characters.",
     },
     notEmpty: {
       errorMessage: "Password must not be empty.",

@@ -7,17 +7,21 @@ import ReactQuill from "react-quill-new";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
 import "react-quill-new/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AnnouncementsDashboard() {
     const [announcements, setAnnouncements] = useState([]);
-    const [checkUser, setCheckUser] = useState()
+    const [checkUser, setCheckUser] = useState();
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [editingRow, setEditingRow] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function checkUser() {
@@ -38,8 +42,7 @@ export default function AnnouncementsDashboard() {
                     return;
                 }
 
-                setCheckUser(data)
-
+                setCheckUser(data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -69,14 +72,22 @@ export default function AnnouncementsDashboard() {
         fetchAnnouncements();
     }, []);
 
-    const handleDelete = async (id) => {
+    const handleDeleteClick = (id) => {
+        const announcement = announcements.find(ann => ann.announcementsid === id);
+        setAnnouncementToDelete(announcement);
+        setOpenDeleteDialog(true);
+    };
+
+    const confirmDelete = async () => {
         try {
             await fetch(`${API_URL}/api/announcement/deleteAnnouncement`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ id: announcementToDelete.announcementsid }),
             });
-            setAnnouncements((prev) => prev.filter((ann) => ann.id !== id));
+            setAnnouncements((prev) => prev.filter((ann) => ann.announcementsid !== announcementToDelete.announcementsid));
+            setOpenDeleteDialog(false);
+            setAnnouncementToDelete(null);
         } catch (error) {
             console.error("Error deleting announcement:", error);
         }
@@ -92,11 +103,12 @@ export default function AnnouncementsDashboard() {
         setEditingRow(null);  
     };
 
-
-
-    const [isLoading, setIsLoading] = useState(false);
-
     const handleSaveEdit = async () => {
+        if (!editingRow?.title?.trim() || !editingRow?.description?.trim()) {
+            alert("Title and description cannot be empty!");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const response = await fetch(`${API_URL}/api/announcement/editAnnouncement`, {
@@ -121,11 +133,17 @@ export default function AnnouncementsDashboard() {
         }
     };
     
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
     
-    
-
     const filteredAnnouncements = announcements.filter((announcement) => {
-
         return (
             announcement?.title?.toLowerCase().includes(searchTerm) ||
             announcement?.email?.toLowerCase().includes(searchTerm) ||
@@ -162,7 +180,7 @@ export default function AnnouncementsDashboard() {
                 <Button
                     variant="contained"
                     size="small"
-                    onClick={() => handleDelete(params.row.announcementsid)}
+                    onClick={() => handleDeleteClick(params.row.announcementsid)}
                     sx={{ backgroundColor: '#b91c1c', '&:hover': { backgroundColor: '#991b1b' } }}
                 >
                     Delete
@@ -174,8 +192,8 @@ export default function AnnouncementsDashboard() {
     const normalizedAnnouncements = filteredAnnouncements.map((ann, index) => ({
         ...ann,
         id: ann.announcementsid || index,
+        date: formatDate(ann.date)
     }));
-
 
     return (
         <div className="mt-14 h-screen text-sm">
@@ -216,6 +234,9 @@ export default function AnnouncementsDashboard() {
                             onChange={(e) => setEditingRow({...editingRow , title: e.target.value})}
                             fullWidth
                             margin="dense"
+                            required
+                            error={!editingRow?.title?.trim()}
+                            helperText={!editingRow?.title?.trim() ? "Title is required" : ""}
                         />
                         <div>
                             <EditorToolbar toolbarId="t3" />
@@ -228,6 +249,9 @@ export default function AnnouncementsDashboard() {
                                 formats={formats}
                                 className="bg-white border rounded h-[55vh] overflow-y-auto"
                             />
+                            {!editingRow?.description?.trim() && (
+                                <p className="text-red-500 text-xs mt-1">Description is required</p>
+                            )}
                         </div>
                     </div>
                 </DialogContent>
@@ -236,12 +260,34 @@ export default function AnnouncementsDashboard() {
                         sx={{ color: '#333333', '&:hover': { color: '#222222' } }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSaveEdit}
+                    <Button 
+                        onClick={handleSaveEdit}
+                        disabled={!editingRow?.title?.trim() || !editingRow?.description?.trim() || isLoading}
                         sx={{ color: '#b91c1c', '&:hover': { color: '#991b1b' } }}>
-                        Save
+                        {isLoading ? "Saving..." : "Save"}
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div >
+
+
+            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to delete the announcement titled:</p>
+                    <p className="font-bold my-2">"{announcementToDelete?.title}"</p>
+                    <p>This action cannot be undone.</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}
+                        sx={{ color: '#333333', '&:hover': { color: '#222222' } }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDelete}
+                        sx={{ color: '#b91c1c', '&:hover': { color: '#991b1b' } }}>
+                        Confirm Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     );
 }

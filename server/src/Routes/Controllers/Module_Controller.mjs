@@ -585,6 +585,7 @@ const getAllModule_UserInfo = async (req, res) => {
         u.id AS user_id,
         m.title AS unit,
         ms.score,
+        ms.passed,
         ms.attempt_number,
         ms.module_id,
         ms.time_spent,

@@ -12,6 +12,16 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import EditorToolbar, { modules, formats } from "@/components/EditToolbar";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Alert
+} from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -42,8 +52,16 @@ export default function EditJobPage() {
 
   const [isClient, setIsClient] = useState(false);
   const [stateid, setStateid] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openSaveDialog, setOpenSaveDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
 
-
+  // Check user authentication and role
   useEffect(() => {
     async function checkUser() {
       try {
@@ -66,8 +84,8 @@ export default function EditJobPage() {
     }
     checkUser();
   }, [navigate]);
-  
 
+  // Fetch job data
   useEffect(() => {
     if (jobEditID) {
       async function fetchJobData() {
@@ -78,13 +96,18 @@ export default function EditJobPage() {
           setSpecificJob(response.data);
         } catch (error) {
           console.error("Error fetching specific job:", error);
+          setSnackbar({
+            open: true,
+            message: "Failed to load job data",
+            severity: "error"
+          });
         }
       }
       fetchJobData();
     }
   }, [jobEditID]);
 
-
+  // Set form data when job data is loaded
   useEffect(() => {
     if (specificJob) {
       setIsClient(true);
@@ -106,7 +129,6 @@ export default function EditJobPage() {
       });
     }
   }, [specificJob]);
-
 
   const onInputChange = (e) => {
     const { name, value } = e.target;
@@ -132,23 +154,98 @@ export default function EditJobPage() {
     }
   };
 
-  async function editJob(e) {
+  // Form validation
+  const validateForm = () => {
+    if (!information.title.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Job title is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.name.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Contact person name is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.email.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Email is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.jobtype) {
+      setSnackbar({
+        open: true,
+        message: "Job type is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.remote) {
+      setSnackbar({
+        open: true,
+        message: "Remote option is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.experience) {
+      setSnackbar({
+        open: true,
+        message: "Experience level is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.state || !information.city || !information.street) {
+      setSnackbar({
+        open: true,
+        message: "Complete location information is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.description || information.description.length < 50) {
+      setSnackbar({
+        open: true,
+        message: "Description must be at least 50 characters",
+        severity: "error"
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-  
-    const formData = new FormData();
-  
-    Object.entries(information).forEach(([key, value]) => {
-      if (key === "fileBuffer" && information.fileBuffer) {
-        const blob = new Blob([new Uint8Array(atob(value).split('').map(c => c.charCodeAt(0)))], {
-          type: information.fileMimeType,
-        });
-        formData.append("file", blob, information.fileName);
-      } else {
-        formData.append(key, value);
-      }
-    });
-  
+    if (!validateForm()) return;
+    setOpenSaveDialog(true);
+  };
+
+  // Confirm and execute job edit
+  const confirmEdit = async () => {
+    setIsLoading(true);
     try {
+      const formData = new FormData();
+
+      Object.entries(information).forEach(([key, value]) => {
+        if (key === "fileBuffer" && information.fileBuffer) {
+          const blob = new Blob([new Uint8Array(atob(value).split('').map(c => c.charCodeAt(0)))], {
+            type: information.fileMimeType,
+          });
+          formData.append("file", blob, information.fileName);
+        } else {
+          formData.append(key, value);
+        }
+      });
+
       const response = await axios.put(
         `${API_URL}/api/job/upDatejob/${jobEditID}`,
         formData,
@@ -158,42 +255,91 @@ export default function EditJobPage() {
           },
         }
       );
-      alert("Update: " + response.data.message); 
-      navigate("/jobs");
+
+      setSnackbar({
+        open: true,
+        message: "Job updated successfully!",
+        severity: "success"
+      });
+      setTimeout(() => navigate("/jobs"), 1500);
     } catch (error) {
-        alert("Error updating job: " + error.message); 
-
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.message || "Error updating job",
+        severity: "error"
+      });
+      console.error("Error updating job:", error);
+    } finally {
+      setIsLoading(false);
+      setOpenSaveDialog(false);
     }
-  }
+  };
 
-  const deleteJob = async () => {
+  // Handle delete confirmation
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  // Confirm and execute job deletion
+  const confirmDelete = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.delete(`${API_URL}/api/job/delete/${jobEditID}`);
       if (response.status === 200) {
-        alert("Job deleted successfully!");
-        navigate("/jobs");
+        setSnackbar({
+          open: true,
+          message: "Job deleted successfully!",
+          severity: "success"
+        });
+        setTimeout(() => navigate("/jobs"), 1500);
       }
     } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Failed to delete the job",
+        severity: "error"
+      });
       console.error("Error deleting job:", error);
-      alert("Failed to delete the job.");
+    } finally {
+      setIsLoading(false);
+      setOpenDeleteDialog(false);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
     <div className="mt-14 flex flex-row justify-center text-sm">
-      <form onSubmit={editJob} className="w-full flex flex-col border-l-2">
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Main Form */}
+      <form onSubmit={handleSubmit} className="w-full flex flex-col border-l-2">
         <section className="">
           <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
-            <div className="h-16  flex flex-row">
-              <div
-                className="px-4 flex items-center cursor-pointer text-white bg-red-900"
-              >
+            <div className="h-16 flex flex-row">
+              <div className="px-4 flex items-center cursor-pointer text-white bg-red-900">
                 <p>Edit Job</p>
               </div>
             </div>
             <Link
-              href="/jobs"
-              className=" flex gap-1 items-center p-2  rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
+              to="/jobs"
+              className="flex gap-1 items-center p-2 rounded-lg border-2 border-red-900 text-red-900 hover:bg-red-900 hover:border-red-900 hover:text-white"
             >
               <ExitToAppIcon />
               Discard
@@ -203,7 +349,8 @@ export default function EditJobPage() {
 
         <section className="block py-14">
           <MaxWidthWrapper>
-            <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8  m-auto rounded-lg bg-gray-100 ">
+            <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8 m-auto rounded-lg bg-gray-100 ">
+              {/* Contact Person Section */}
               <section className="flex justify-between md:flex-row flex-col gap-4 mb-2">
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Contact Person</h6>
@@ -229,9 +376,10 @@ export default function EditJobPage() {
                           type="text"
                           value={information.phone}
                           onChange={(e) => {
+                            const onlyNums = e.target.value.replace(/\D/g, ""); 
                             setInformation({
                               ...information,
-                              phone: e.target.value,
+                              phone: onlyNums,
                             });
                           }}
                           placeholder="Enter phone number"
@@ -276,7 +424,6 @@ export default function EditJobPage() {
                       </svg>
                       <div className="flex flex-col gap-1">
                         <span className="ml-2 text-sm font-medium text-gray-700">
-
                           Edit Background Image
                         </span>
                       </div>
@@ -289,14 +436,16 @@ export default function EditJobPage() {
                     </label>
                     <span className="text-sm text-gray-500">{information.fileName}</span>
                   </div>
-                  <div className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer "
-                    onClick={deleteJob}
+                  <div
+                    className="h-14 w-20 flex rounded-sm text-sm items-center justify-center bg-red-900 text-white cursor-pointer hover:bg-red-800"
+                    onClick={handleDeleteClick}
                   >
                     <p>Delete</p>
                   </div>
                 </div>
               </section>
 
+              {/* Job Title Section */}
               <section className="flex flex-col gap-2 mb-2">
                 <label className="text-xl">Title</label>
                 <input
@@ -311,313 +460,99 @@ export default function EditJobPage() {
                 />
               </section>
 
+              {/* Job Details Section */}
               <section className="flex flex-row gap-4 justify-between mb-2">
-                {/* Full-time options */}
+                {/* Job Type Options */}
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Job Type</h6>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Internship"
-                        checked={information.jobtype === "Internship"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Internship" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Internship
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Freelance"
-                        checked={information.jobtype === "Freelance"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Freelance" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Freelance
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Contract"
-                        checked={information.jobtype === "Contract"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Contract" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Contract
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Project"
-                        checked={information.jobtype === "Project"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Project" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Project
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Part-time"
-                        checked={information.jobtype === "Part-time"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Part-time" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Part-time
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobType"
-                        className="hidden peer"
-                        value="Full-time"
-                        checked={information.jobtype === "Full-time"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            jobtype: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.jobtype === "Full-time" ? "text-red-600" : "text-gray-700"}  peer-checked:border-red-600 `}
-                      >
-                        Full-time
-                      </span>
-                    </label>
+                    {["Internship", "Freelance", "Contract", "Project", "Part-time", "Full-time"].map((type) => (
+                      <label key={type} className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="jobType"
+                          className="hidden peer"
+                          value={type}
+                          checked={information.jobtype === type}
+                          onChange={(e) => {
+                            setInformation({
+                              ...information,
+                              jobtype: e.target.value,
+                            });
+                          }}
+                        />
+                        <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
+                        <span
+                          className={`ml-2 ${information.jobtype === type ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
+                        >
+                          {type}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                {/* Remote options */}
+                {/* Remote Options */}
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Remote?</h6>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="remote"
-                        className="hidden peer"
-                        value="On-site"
-                        checked={information.remote === "On-site"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            remote: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.remote === "On-site" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        On-site
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="remote"
-                        className="hidden peer"
-                        value="Hybrid-remote"
-                        checked={information.remote === "Hybrid-remote"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            remote: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.remote === "Hybrid-remote" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Hybrid-remote
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="remote"
-                        className="hidden peer"
-                        value="Full remote"
-                        checked={information.remote === "Full remote"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            remote: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.remote === "Full remote" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Full remote
-                      </span>
-                    </label>
+                    {["On-site", "Hybrid-remote", "Full remote"].map((option) => (
+                      <label key={option} className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="remote"
+                          className="hidden peer"
+                          value={option}
+                          checked={information.remote === option}
+                          onChange={(e) => {
+                            setInformation({
+                              ...information,
+                              remote: e.target.value,
+                            });
+                          }}
+                        />
+                        <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
+                        <span
+                          className={`ml-2 ${information.remote === option ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
+                        >
+                          {option}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-
-                {/* Experience options */}
+                {/* Experience Options */}
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Experience</h6>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="experience"
-                        className="hidden peer"
-                        value="Entry-Level"
-                        checked={information.experience === "Entry-Level"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            experience: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.experience === "Entry-Level" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Entry-Level
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="experience"
-                        className="hidden peer"
-                        value="Mid-Level"
-                        checked={information.experience === "Mid-Level"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            experience: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.experience === "Mid-Level" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Mid-Level
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="experience"
-                        className="hidden peer"
-                        value="Senior-Level"
-                        checked={information.experience === "Senior-Level"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            experience: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.experience === "Senior-Level" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Senior-Level
-                      </span>
-                    </label>
-
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="experience"
-                        className="hidden peer"
-                        value="Managerial"
-                        checked={information.experience === "Managerial"}
-                        onChange={(e) => {
-                          setInformation({
-                            ...information,
-                            experience: e.target.value,
-                          });
-                        }}
-                      />
-                      <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
-                      <span
-                        className={`ml-2 ${information.experience === "Managerial" ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
-                      >
-                        Managerial
-                      </span>
-                    </label>
+                    {["Entry-Level", "Mid-Level", "Senior-Level", "Managerial"].map((level) => (
+                      <label key={level} className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="experience"
+                          className="hidden peer"
+                          value={level}
+                          checked={information.experience === level}
+                          onChange={(e) => {
+                            setInformation({
+                              ...information,
+                              experience: e.target.value,
+                            });
+                          }}
+                        />
+                        <div className="w-4 h-4 rounded-full border-4 border-gray-300 peer-checked:border-red-600 peer-checked:bg-white"></div>
+                        <span
+                          className={`ml-2 ${information.experience === level ? "text-red-600" : "text-gray-700"} peer-checked:text-red-600`}
+                        >
+                          {level}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                {/* Salary */}
+                {/* Salary Input */}
                 <div className="w-1/3 flex flex-col gap-2">
                   <label>Salary</label>
                   <input
@@ -625,8 +560,8 @@ export default function EditJobPage() {
                     required
                     placeholder=""
                     className={`px-4 py-2 rounded-md border-[1px] border-slate-300 ${information.salary === "Unpaid"
-                      ? "text-gray-400"
-                      : "text-black"
+                        ? "text-gray-400"
+                        : "text-black"
                       }`}
                     value={information.salary || "Unpaid"}
                     onChange={(e) => {
@@ -659,6 +594,7 @@ export default function EditJobPage() {
                 </div>
               </section>
 
+              {/* Location Section */}
               <section className="flex flex-col gap-2 mb-2">
                 <h6 className="text-base">Location</h6>
                 <section className="flex md:flex-row flex-col justify-between gap-4">
@@ -718,6 +654,7 @@ export default function EditJobPage() {
                 </p>
               </section>
 
+              {/* Description Editors */}
               <section className="flex flex-col gap-2">
                 {isClient && (
                   <div className="mb-4">
@@ -754,15 +691,105 @@ export default function EditJobPage() {
                   </div>
                 )}
               </section>
-              <input
+              <button
                 type="submit"
-                required
-                className="px-4 py-2 rounded-lg border-2 bg-red-900 cursor-pointer text-white"
-              />
+                className="px-4 py-2 rounded-lg border-2 bg-red-900 cursor-pointer text-white hover:bg-red-800"
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving..." : "Save Changes"}
+              </button>
             </section>
           </MaxWidthWrapper>
         </section>
       </form>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to permanently delete this job posting?
+            </p>
+            <div className="bg-red-50 p-4 rounded-lg">
+              <p className="font-semibold text-red-800">
+                "{information.title}"
+              </p>
+              <p className="text-red-600 mt-2">
+                Warning: This action cannot be undone and will permanently remove all job data.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button
+            onClick={() => setOpenDeleteDialog(false)}
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDelete}
+            variant="contained"
+            color="error"
+            className="bg-red-600 hover:bg-red-700"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isLoading ? "Deleting..." : "Delete Permanently"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Save Confirmation Dialog */}
+      <Dialog
+        open={openSaveDialog}
+        onClose={() => setOpenSaveDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Changes</DialogTitle>
+        <DialogContent>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to save these changes to the job posting?
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold text-blue-800">
+                "{information.title}"
+              </p>
+              <p className="text-blue-600 mt-2">
+                All changes will be immediately visible to applicants.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button
+            onClick={() => setOpenSaveDialog(false)}
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmEdit}
+            variant="contained"
+            color="primary"
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isLoading ? "Saving..." : "Confirm Changes"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

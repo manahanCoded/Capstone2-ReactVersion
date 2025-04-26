@@ -4,7 +4,7 @@ import passport from "passport";
 import db from "../../Database/DB_Connect.mjs";
 import bcrypt from "bcrypt";
 import { validationResult, matchedData } from "express-validator"
-
+import {sendVerificationEmail} from "../../Middleware/Validaitors/User_Mailer.mjs"
 import env from "dotenv"
 
 
@@ -17,7 +17,7 @@ const login = (req, res) => {
 
   try {
     if (!problem.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: problem.array() });
     }
 
     if (req.isAuthenticated()) {
@@ -27,14 +27,14 @@ const login = (req, res) => {
         message: "User is already Logged in",
       });
     }
-
-    passport.authenticate("local", (err, user) => {
+    
+    passport.authenticate("local", (err, user, info) => {
       if (err) {
         console.error("Authentication error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
       if (!user) {
-        return res.status(401).json({ error: "Invalid Credentials" });
+        return res.status(401).json({ error: info.message });
       }
 
       req.login(user, (err) => {
@@ -80,6 +80,33 @@ const google_login_callback = (req, res, next) => {
 };
 
 
+const emailSet = async (req, res) => {
+  const { email } = req.body;
+  const generateCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const expires = new Date(Date.now() + 10 * 60 * 1000);
+
+  try {
+    const checkEmail =await db.query("SELECT * FROM users where email = $1 AND  role IS NOT NULL", [email])
+
+    if(checkEmail.rowCount > 0) return res.status(400).json({error: "Email is already taken"})
+
+    await db.query(
+      `INSERT INTO users (email, verification_code, code_expires_at)
+       VALUES ($1, $2, $3) ON CONFLICT (email)
+       DO UPDATE SET verification_code = EXCLUDED.verification_code,
+                     code_expires_at = EXCLUDED.code_expires_at`,
+      [email, generateCode, expires]
+    );
+
+    await sendVerificationEmail(email, generateCode);
+    res.status(200).json({ message: 'Verification code sent to email.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+}
+
+
 const register = async (req, res) => {
 
   const problem = validationResult(req)
@@ -97,10 +124,14 @@ const register = async (req, res) => {
     const checkPhoneNumber = await db.query("SELECT * FROM users WHERE phone_number = $1", [
       phone_number,
     ]);
-    if (checkEmail.rowCount > 0)
+    if (checkEmail.rowCount < 1)
       return res
         .status(400)
-        .json({ error: "User with this email already exists." });
+        .json({ error: "Email does not exist" });
+
+    if (checkEmail.rows[0].password !== null) {
+      return res.status(400).json({ error: "This email is already registered. Please use other email." });
+    }
 
     if (checkPhoneNumber.rowCount > 0)
       return res
@@ -113,8 +144,8 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = await db.query(
-      "INSERT INTO users (name, lastname, phone_number, email, password, role, type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-      [name, lastname, phone_number, email, hashedPassword, 'client', "local"]
+      "UPDATE users SET name = $1, lastname = $2, phone_number = $3, password = $4, role =$5, type = $6, is_verified = TRUE WHERE email = $7  RETURNING *",
+      [name, lastname, phone_number, hashedPassword, 'client', "local", email]
     );
 
     const user = newUser.rows[0];
@@ -162,19 +193,70 @@ const logout = (req, res) => {
   }
 };
 
+
 const retrieve = async (req, res) => {
+  
   try {
-    const problem = validationResult(req);
+    const { email } = req.body
 
-    if (!problem.isEmpty()) {
-      return res.status(400).json({ errors: problem.array() });
-    }
+    const findUser = await db.query("SELECT * FROM users WHERE email = $1 AND is_verified = true AND NOT type = 'google' ", [email])
 
-    const { email, password, confirmPassword, phone_number } = matchedData(req);
+    if (findUser.rowCount < 1) return res.status(400).json({ error: "No user found" })
+
+    const generateCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000);
+
+    await db.query(`UPDATE users SET verification_code = $1, code_expires_at = $2 
+          WHERE email =  $3`, [generateCode, expires, email])
+
+    sendVerificationEmail(email, generateCode)
+    res.json({ message: 'Verification code sent to email.' });
+
+  } catch (err) {
+    return res.status(500).json({ error: "Internal Server Error", details: err.message });
+  }
+}
+
+const verify = async (req, res) => {
+
+  const { email, code } = req.body;
+
+  try {
+    const { rows } = await db.query(
+      `SELECT verification_code, code_expires_at FROM users WHERE email = $1`,
+      [email]
+    );
+
+    const user = rows[0];
+    if (!user) return res.status(404).send('User not found');
+
+    if (user.verification_code !== code)
+      return res.status(400).json({error: 'Invalid verification code'});
+
+    if (new Date(user.code_expires_at) < new Date())
+      return res.status(400).json({error: 'Code Expired'});
+
+    await db.query(
+      `UPDATE users SET verification_code = NULL, code_expires_at = NULL WHERE email = $1`,
+      [email]
+    );
+
+    res.send('Email verified!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+}
+
+
+const changePassword = async (req, res) => {
+  try {
+    
+    const { email, password, confirmPassword } = req.body;
 
     const findAcc = await db.query(
-      "SELECT * FROM users WHERE phone_number = $1 AND email = $2",
-      [phone_number, email]
+      "SELECT * FROM users WHERE email = $1",
+      [email]
     );
 
     if (findAcc.rowCount === 0) {
@@ -191,9 +273,7 @@ const retrieve = async (req, res) => {
       newPassword,
       email,
     ]);
-
     return res.status(200).json({ message: "Password updated successfully! Please log in again." });
-
   } catch (err) {
     console.error("Retrieve Account Error", err);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -305,4 +385,4 @@ const updateRoles = async (req, res) => {
 
 
 
-export { login, google_login, google_login_callback, register, logout, userInfo, updateUser, accountsDashboard, updateRoles, retrieve };
+export { login, google_login, google_login_callback, emailSet, register, verify, changePassword, logout, userInfo, updateUser, accountsDashboard, updateRoles, retrieve };
