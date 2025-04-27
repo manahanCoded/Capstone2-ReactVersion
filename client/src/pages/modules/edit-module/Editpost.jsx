@@ -80,7 +80,7 @@ export default function EditPost({ postList, editPostID }) {
   }, [navigate]);
 
   useEffect(() => {
-    if (!unitInfo.id) return; 
+    if (!unitInfo.id) return;
     async function fetchQuestions() {
       try {
         const res = await axios.get(
@@ -138,9 +138,9 @@ export default function EditPost({ postList, editPostID }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setOpenSaveDialog(true);
   };
 
@@ -246,11 +246,11 @@ export default function EditPost({ postList, editPostID }) {
     setQuestionToDelete({ index, question_id });
     setOpenQuestionDeleteDialog(true);
   };
-  
+
 
   const confirmQuestionDelete = async () => {
     const { index, question_id } = questionToDelete;
-    
+
     if (question_id) {
       try {
         const response = await axios.delete(`${API_URL}/api/module/deleteQuestion/${question_id}`);
@@ -281,7 +281,7 @@ export default function EditPost({ postList, editPostID }) {
       const updatedQuestions = questions.filter((_, i) => i !== index);
       setQuestions(updatedQuestions);
     }
-    
+
     setOpenQuestionDeleteDialog(false);
     setQuestionToDelete(null);
   };
@@ -295,7 +295,7 @@ export default function EditPost({ postList, editPostID }) {
       });
       return false;
     }
-    
+
     for (const question of questions) {
       if (!question.question_text.trim()) {
         setSnackbar({
@@ -305,7 +305,7 @@ export default function EditPost({ postList, editPostID }) {
         });
         return false;
       }
-      
+
       const options = ["A", "B", "C", "D"];
       if (!options.includes(question.correct_option)) {
         setSnackbar({
@@ -315,7 +315,7 @@ export default function EditPost({ postList, editPostID }) {
         });
         return false;
       }
-      
+
       for (const opt of ["option_a", "option_b", "option_c", "option_d"]) {
         if (!question[opt].trim()) {
           setSnackbar({
@@ -332,9 +332,9 @@ export default function EditPost({ postList, editPostID }) {
 
   const handleSubmitQuestion = (e) => {
     e.preventDefault();
-    
+
     if (!validateQuestions()) return;
-    
+
     setOpenQuestionSaveDialog(true);
   };
 
@@ -532,62 +532,63 @@ export default function EditPost({ postList, editPostID }) {
           ) : (
             <form onSubmit={handleSubmitQuestion} className="p-6 bg-white rounded-lg shadow">
               {questions.map((question, index) => {
-                
-                return(
-                <div key={index} className="my-6 border-b pb-4">
-                  <div className="flex justify-between items-center">
-                    <label className="block text-gray-700 font-bold">
-                      Question {index + 1}
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveQuestionClick(index, question.question_id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    name="question_text"
-                    value={question.question_text}
-                    onChange={(e) => handleChange(e, index)}
-                    required
-                    className="w-full border rounded px-3 py-2 mb-2"
-                    placeholder="Enter question here"
-                  />
-                  {["option_a", "option_b", "option_c", "option_d"].map((opt, i) => (
+
+                return (
+                  <div key={index} className="my-6 border-b pb-4">
+                    <div className="flex justify-between items-center">
+                      <label className="block text-gray-700 font-bold">
+                        Question {index + 1}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveQuestionClick(index, question.question_id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
                     <input
-                      key={i}
                       type="text"
-                      name={opt}
-                      value={question[opt]}
+                      name="question_text"
+                      value={question.question_text}
                       onChange={(e) => handleChange(e, index)}
                       required
                       className="w-full border rounded px-3 py-2 mb-2"
-                      placeholder={`Option ${opt.split("_")[1].toUpperCase()}`}
+                      placeholder="Enter question here"
                     />
-                  ))}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 font-bold">Correct Option</label>
-                    <select
-                      name="correct_option"
-                      value={question.correct_option ?? ""}
-                      onChange={(e) => handleChange(e, index)}
-                      required
-                      className="w-full border rounded px-3 py-2"
-                    >
-                      <option value="" disabled>
-                        {question.correct_option ? `Current: ${question.correct_option}` : "Select Correct Option"}
-                      </option>
-                      <option value="A">Option A</option>
-                      <option value="B">Option B</option>
-                      <option value="C">Option C</option>
-                      <option value="D">Option D</option>
-                    </select>
+                    {["option_a", "option_b", "option_c", "option_d"].map((opt, i) => (
+                      <input
+                        key={i}
+                        type="text"
+                        name={opt}
+                        value={question[opt]}
+                        onChange={(e) => handleChange(e, index)}
+                        required
+                        className="w-full border rounded px-3 py-2 mb-2"
+                        placeholder={`Option ${opt.split("_")[1].toUpperCase()}`}
+                      />
+                    ))}
+                    <div className="mb-4">
+                      <label className="block text-gray-700 font-bold">Correct Option</label>
+                      <select
+                        name="correct_option"
+                        value={question.correct_option ?? ""}
+                        onChange={(e) => handleChange(e, index)}
+                        required
+                        className="w-full border rounded px-3 py-2"
+                      >
+                        <option value="" disabled>
+                          {question.correct_option ? `Current: ${question.correct_option}` : "Select Correct Option"}
+                        </option>
+                        <option value="A">Option A</option>
+                        <option value="B">Option B</option>
+                        <option value="C">Option C</option>
+                        <option value="D">Option D</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-              )})}
+                )
+              })}
 
               <div className="flex justify-between">
                 <button
@@ -620,16 +621,35 @@ export default function EditPost({ postList, editPostID }) {
         </div>
       )}
 
-      {/* Delete Module Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
+      {/* Delete Unit Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Deletion</DialogTitle>
         <DialogContent>
-          <p>Are you sure you want to delete this module?</p>
-          <p className="font-bold mt-2">"{unitInfo.title}"</p>
-          <p className="text-red-600 mt-2">This action cannot be undone!</p>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to permanently delete this unit?
+            </p>
+            <div className="bg-red-50 p-4 rounded-lg">
+              <p className="font-semibold text-red-800">
+                "{unitInfo.title}"
+              </p>
+              <p className="text-red-600 mt-2">
+                Warning: This action cannot be undone and will permanently this Unit.
+              </p>
+            </div>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+        <DialogActions className="p-4">
+          <Button onClick={() => setOpenDeleteDialog(false)}
+            color="primary"
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
             Cancel
           </Button>
           <Button onClick={confirmDelete} color="error" variant="contained">
@@ -638,35 +658,72 @@ export default function EditPost({ postList, editPostID }) {
         </DialogActions>
       </Dialog>
 
-      {/* Save Module Confirmation Dialog */}
-      <Dialog open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
-        <DialogTitle>Confirm Changes</DialogTitle>
+      {/* Save Unit Confirmation Dialog */}
+      <Dialog
+        open={openSaveDialog}
+        onClose={() => setOpenSaveDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Changes</DialogTitle>
         <DialogContent>
-          <p>Are you sure you want to save these changes to the module?</p>
-          <p className="font-bold mt-2">"{unitInfo.title}"</p>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to save these changes to the unit?
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold text-blue-800">
+                "{unitInfo.title}"
+              </p>
+              <p className="text-blue-600 mt-2">
+                All changes will be immediately visible to users.
+              </p>
+            </div>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenSaveDialog(false)} color="primary">
+        <DialogActions className="p-4">
+          <Button onClick={() => setOpenSaveDialog(false)}
+            color="primary"
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
             Cancel
           </Button>
           <Button onClick={confirmSave} color="primary" variant="contained">
-            Save Changes
+            Confirm Changes
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Delete Question Confirmation Dialog */}
-      <Dialog open={openQuestionDeleteDialog} onClose={() => setOpenQuestionDeleteDialog(false)}>
-        <DialogTitle>Confirm Delete Question</DialogTitle>
+      <Dialog
+        open={openQuestionDeleteDialog}
+        onClose={() => setOpenQuestionDeleteDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle className="text-xl font-bold">Confirm Deletion</DialogTitle>
         <DialogContent>
-          <p>Are you sure you want to delete this question?</p>
-          {questionToDelete && (
-            <p className="font-bold mt-2">"{questions[questionToDelete.index]?.question_text}"</p>
-          )}
-          <p className="text-red-600 mt-2">This action cannot be undone!</p>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Are you sure you want to delete this question?
+            </p>
+            <div className="bg-red-50 p-4 rounded-lg">
+              {questionToDelete && (
+                <p className="font-semibold text-red-800">"{questions[questionToDelete.index]?.question_text}"</p>
+              )}
+              <p className="text-red-600 mt-2">
+                Warning: This action cannot be undone and will permanently delete this unit question.
+              </p>
+            </div>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenQuestionDeleteDialog(false)} color="primary">
+        <DialogActions className="p-4">
+          <Button onClick={() => setOpenQuestionDeleteDialog(false)}
+            color="primary"
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
             Cancel
           </Button>
           <Button onClick={confirmQuestionDelete} color="error" variant="contained">
@@ -683,7 +740,11 @@ export default function EditPost({ postList, editPostID }) {
           <p className="mt-2">This will update {questions.length} questions.</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenQuestionSaveDialog(false)} color="primary">
+          <Button onClick={() => setOpenQuestionSaveDialog(false)}
+            color="primary"
+            variant="outlined"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
             Cancel
           </Button>
           <Button onClick={confirmQuestionSave} color="primary" variant="contained">

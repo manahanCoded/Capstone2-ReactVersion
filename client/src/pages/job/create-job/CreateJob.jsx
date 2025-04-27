@@ -12,7 +12,13 @@ import "react-quill-new/dist/quill.snow.css";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import SignpostOutlinedIcon from "@mui/icons-material/SignpostOutlined";
 import PersonIcon from "@mui/icons-material/Person";
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { Alert, Snackbar } from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -49,6 +55,19 @@ export default function CreateJobPage() {
         date: new Date().toISOString().split("T")[0],
     });
 
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [dialogContent, setDialogContent] = useState({
+        title: "",
+        message: "",
+        action: null
+    });
+
+      const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success"
+      });
+
     const navigate = useNavigate();
 
     const onDescription = (value) => {
@@ -69,6 +88,23 @@ export default function CreateJobPage() {
         setFileName(file ? file.name : "No file selected");
     };
 
+    const handleConfirmDialogOpen = (title, message, action) => {
+        setDialogContent({
+            title,
+            message,
+            action
+        });
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmDialogClose = () => {
+        setOpenConfirmDialog(false);
+    };
+
+    const handleConfirmAction = () => {
+        dialogContent.action();
+        setOpenConfirmDialog(false);
+    };
 
     useEffect(() => {
         setIsClient(true);
@@ -102,7 +138,6 @@ export default function CreateJobPage() {
                     publisher: data.email,
                 }));
             } catch (err) {
-                alert("Failed to fetch user profile.");
                 console.error("An error occurred:", err);
             }
         }
@@ -110,36 +145,43 @@ export default function CreateJobPage() {
         checkUser();
     }, [navigate, setInformation, setNewAnnouncement]);
 
-
-
     async function postJob(e) {
         e.preventDefault();
-      
+
         const formData = new FormData();
         Object.entries(information).forEach(([key, value]) => {
-          if (key === "selectedFile" && value) {
-            formData.append("file", value); 
-          } else {
-            formData.append(key, value);
-          }
+            if (key === "selectedFile" && value) {
+                formData.append("file", value);
+            } else {
+                formData.append(key, value);
+            }
         });
-      
+
         try {
-          const res = await axios.post(`${API_URL}/api/job/create`, formData);
-          if (res.status === 201) {
-            alert("Job created successfully.");
-            navigate("/jobs")
-          } else {
-            alert("Failed to create job.");
-          }
+            const res = await axios.post(`${API_URL}/api/job/create`, formData);
+            if (res.status === 201) {
+                setSnackbar({
+                    open: true,
+                    message: "Job created successfully.",
+                    severity: "success"
+                  });
+                  setTimeout(() => navigate("/jobs"), 1500)
+            } else {
+                setSnackbar({
+                    open: true,
+                    message: "Failed to create job",
+                    severity: "error"
+                  });
+            }
         } catch (err) {
-          console.error("Error uploading job:", err);
-          alert("An error occurred while creating the job.");
+            console.error("Error uploading job:", err);
+            setSnackbar({
+                open: true,
+                message: "An error occurred while creating the job.",
+                severity: "error"
+              });
         }
-      }
-      
-
-
+    }
 
     async function postAnnouncement(e) {
         e.preventDefault()
@@ -154,27 +196,117 @@ export default function CreateJobPage() {
                     },
                 }
             );
+          
             if (res.status === 201) {
-                navigate("/jobs");
-                alert("Announcement created successfully");
-                window.location.reload();
+                setSnackbar({
+                    open: true,
+                    message: "Announcement created successfully",
+                    severity: "success"
+                });
+                setTimeout(() => navigate("/jobs"), 1500)
             } else {
-                alert("Failed to create Announcement.");
+                setSnackbar({
+                    open: true,
+                    message: "Failed to create Announcement.",
+                    severity: "error"
+                });
             }
+            
         } catch (err) {
             if (axios.isAxiosError(err) && err.response) {
                 console.error("Error creating Announcement:", err.response.data);
-                alert("Error creating Announcement: " + (err.response.data.message || "Unknown error"));
+                setSnackbar({
+                    open: true,
+                    message: "Error creating Announcement: " + (err.response.data.message || "Unknown error"),
+                    severity: "error"
+                  });
             } else {
-                alert("Error creating Announcement.");
+                setSnackbar({
+                    open: true,
+                    message: "Error creating Announcement.",
+                    severity: "error"
+                  });
                 console.error(err);
             }
         }
     }
 
+    const handleJobSubmit = (e) => {
+        e.preventDefault();
+        handleConfirmDialogOpen(
+            "Confirm Job Creation",
+            "Are you sure you want to create this job posting?",
+            () => postJob(e)
+        );
+    };
+
+    const handleAnnouncementSubmit = (e) => {
+        e.preventDefault();
+        handleConfirmDialogOpen(
+            "Confirm Announcement Creation",
+            "Are you sure you want to create this announcement?",
+            () => postAnnouncement(e)
+        );
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar({ ...snackbar, open: false });
+      };
+
     return (
-        <div className="mt-14  justify-center text-sm">
-            <form onSubmit={postJob} className="w-full flex flex-col border-l-2">
+        <div className="mt-14 justify-center text-sm">
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                      {snackbar.message}
+                    </Alert>
+                  </Snackbar>
+            
+
+            {/* Confirmation Dialog */}
+
+            <Dialog
+                open={openConfirmDialog}
+                onClose={handleConfirmDialogClose}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle id="alert-dialog-title">{dialogContent.title}</DialogTitle>
+                <DialogContent>
+                    <div className="space-y-4">
+                        <p className="text-gray-700">
+                            Are you sure you want to create this {typeForm === "job" ? "job" : "announcement"}?
+                        </p>
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <p className="font-semibold text-blue-800">
+                                Title: "{typeForm === "job" ? information.title : newAnnouncement.title}"
+                            </p>
+                            <p className="text-blue-600 mt-2">
+                                This will create a new learning unit that will be immediately visible to users.
+                            </p>
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions className="p-4">
+                    <Button onClick={handleConfirmDialogClose}
+                        variant="outlined"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >Cancel</Button>
+                    <Button onClick={handleConfirmAction}
+                        variant="contained"
+                        color="primary"
+                        className="bg-blue-600 hover:bg-blue-700"
+                    >
+                        Confirm Creation
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <form onSubmit={handleJobSubmit} className="w-full flex flex-col border-l-2">
                 <section className="">
                     <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
                         <div className="h-16  flex flex-row">
@@ -241,9 +373,7 @@ export default function CreateJobPage() {
                                                     required
                                                     className="p-2 rounded-md"
                                                     placeholder="Phone"
-                                                    onChange={(
-                                                        e
-                                                    ) => {
+                                                    onChange={(e) => {
                                                         const value = e.target.value;
                                                         setInformation({
                                                             ...information,
@@ -288,10 +418,9 @@ export default function CreateJobPage() {
                                             />
                                         </svg>
                                         <div className="flex flex-col gap-1">
-                                        <span className="ml-2 text-sm font-medium text-gray-700">
-                                      
-                                            Choose Background Image
-                                        </span>
+                                            <span className="ml-2 text-sm font-medium text-gray-700">
+                                                Choose Background Image
+                                            </span>
                                         </div>
                                         <input
                                             type="file"
@@ -318,7 +447,6 @@ export default function CreateJobPage() {
                             </section>
 
                             <section className="flex flex-row gap-4 justify-between mb-2">
-                                {/* Full-time options */}
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-base">Job Type</h6>
                                     <div className="flex flex-col gap-2">
@@ -433,7 +561,6 @@ export default function CreateJobPage() {
                                     </div>
                                 </div>
 
-                                {/* Remote options */}
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-base">Remote?</h6>
                                     <div className="flex flex-col gap-2">
@@ -494,7 +621,6 @@ export default function CreateJobPage() {
                                     </div>
                                 </div>
 
-                                {/* Experience options */}
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-base">Experience</h6>
                                     <div className="flex flex-col gap-2">
@@ -573,7 +699,6 @@ export default function CreateJobPage() {
                                     </div>
                                 </div>
 
-                                {/* Salary */}
                                 <div className="w-1/3 flex flex-col gap-2">
                                     <label>Salary</label>
                                     <input
@@ -722,7 +847,8 @@ export default function CreateJobPage() {
                     </MaxWidthWrapper>
                 </section>
             </form>
-            <form onSubmit={postAnnouncement} className="w-full flex flex-col border-l-2 text-base">
+
+            <form onSubmit={handleAnnouncementSubmit} className="w-full flex flex-col border-l-2 text-base">
                 <section className={typeForm === "announcement" ? "block py-14 " : "hidden"}>
                     <MaxWidthWrapper>
                         <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8  m-auto rounded-lg bg-gray-100 ">

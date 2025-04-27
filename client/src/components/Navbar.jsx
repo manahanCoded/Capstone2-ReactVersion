@@ -494,7 +494,7 @@ const Navbar = () => {
                 All
               </button>
             </div>
-            <div className="max-h-60 min-h-60 md:w-72 w-[17rem] overflow-y-auto mt-1">
+            <div className="max-h-60 min-h-60 w-72  overflow-y-auto mt-1">
               {filteredAnnouncements.length > 0 ? (
                 filteredAnnouncements.map((announcement, index) => (
                   <div
@@ -505,22 +505,26 @@ const Navbar = () => {
                       handleAlreadyRead(announcement.announcementsid)
                     }}
                     className=" w-full border-b cursor-pointer border-gray-300 flex flex-row items-center gap-4 py-2 px-4 group hover:bg-gray-100"
-                  >
+                  > 
+                    <div className='relative '>
                     {announcement?.image ? (
                       <img
-                        src={announcement?.image}
-                        className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                        alt="Profile Picture"
+                      src={announcement?.image}
+                      className="h-10 w-10 object-cover rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                      alt="Profile Picture"
                       />
                     ) : (
                       <AccountCircleIcon
-                        style={{
-                          width: '2.5rem',
-                          height: '2.5rem',
-                          color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
-                        }}
+                      className=''
+                      style={{
+                        width: '2.5rem',
+                        height: '2.5rem',
+                        color: 'rgb(69 10 10 / var(--tw-text-opacity, 1))',
+                      }}
                       />
                     )}
+                    {!alreadyRead.includes(announcement.announcementsid) && <div className='absolute -top-2 -left-2.5 w-3 h-3 bg-red-800 rounded-full'></div>}
+                    </div>
                     <div className="text-xs">
                       <div className='flex flex-row flex-wrap gap-1'>
                         <p className="font-bold truncate line-clamp-1">
@@ -532,7 +536,7 @@ const Navbar = () => {
                         </p>
                       </div>
                       <p className="w-36 break-words line-clamp-1  text-sm">{announcement.title}</p>
-                      <p className="w-48 break-words  line-clamp-3 text-[0.7rem] text-gray-500 leading-tight">
+                      <p className="w-48 break-words  md:line-clamp-3 line-clamp-2 text-[0.7rem] text-gray-500 leading-tight">
                         {stripHtml(announcement.description ?? "No description available")}
                       </p>
                     </div>
