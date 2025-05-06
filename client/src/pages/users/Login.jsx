@@ -186,13 +186,13 @@ export default function Login() {
                       Login
                     </button>
                     
-                    {/* Google Sign-In */}
+
                     <Link
                       to={`${API_URL}/api/user/auth/google`}
                       className="md:h-10 h-8 rounded mb-2 mt-2 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
                     >
                       <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />
-                      Or sign up with Google
+                      Or sign in with Google
                     </Link>
                   </div>
                 </div>

@@ -145,6 +145,113 @@ export default function CreateJobPage() {
         checkUser();
     }, [navigate, setInformation, setNewAnnouncement]);
 
+    
+  const validateForm = () => {
+    if (!information.title.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Job title is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.name.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Contact person name is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.email.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Email is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.phone.trim() || information.phone.length < 11) {
+      setSnackbar({
+        open: true,
+        message: "Valid phone number is required (at least 11 digits)",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.jobtype.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Job type is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.remote.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Remote option is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.street.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Street  is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.experience) {
+      setSnackbar({
+        open: true,
+        message: "Experience level is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.state || !information.city || !information.street) {
+      setSnackbar({
+        open: true,
+        message: "Complete location information is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.description.trim() || information.description.length < 50) {
+      setSnackbar({
+        open: true,
+        message: "Description must be at least 50 characters",
+        severity: "error"
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
+  const validateAnnouncement= () => {
+    if (!newAnnouncement.title.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Announcement title is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!newAnnouncement.description.trim() || newAnnouncement.description.length < 20) {
+        setSnackbar({
+          open: true,
+          message: "Announcement Description must be at least 50 characters",
+          severity: "error"
+        });
+        return false;
+      }
+    return true;
+  };
+
+
     async function postJob(e) {
         e.preventDefault();
 
@@ -233,6 +340,7 @@ export default function CreateJobPage() {
 
     const handleJobSubmit = (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
         handleConfirmDialogOpen(
             "Confirm Job Creation",
             "Are you sure you want to create this job posting?",
@@ -242,6 +350,7 @@ export default function CreateJobPage() {
 
     const handleAnnouncementSubmit = (e) => {
         e.preventDefault();
+        if(!validateAnnouncement()) return false
         handleConfirmDialogOpen(
             "Confirm Announcement Creation",
             "Are you sure you want to create this announcement?",
@@ -374,12 +483,12 @@ export default function CreateJobPage() {
                                                     className="p-2 rounded-md"
                                                     placeholder="Phone"
                                                     onChange={(e) => {
-                                                        const value = e.target.value;
+                                                        const onlyNums = e.target.value.replace(/\D/g, "");
                                                         setInformation({
                                                             ...information,
-                                                            phone: parseInt(value),
-                                                        });
-                                                    }}
+                                                            phone: onlyNums,
+                                                          });
+                                                        }}
                                                 />
                                             </div>
 
@@ -764,7 +873,6 @@ export default function CreateJobPage() {
                                             countryid={174}
                                             stateid={stateid}
                                             value={information.city}
-
                                             onChange={(e) => {
                                                 setInformation({
                                                     ...information,

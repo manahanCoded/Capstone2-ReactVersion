@@ -458,7 +458,7 @@ export default function Register() {
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                   </div>
                 </div>
-                
+                <div className="flex flex-col ">
                 <button
                   type="submit"
                   disabled={loading}
@@ -466,6 +466,14 @@ export default function Register() {
                 >
                   {loading ? <CircularProgress size={20} color="inherit" /> : "Send Verification Code"}
                 </button>
+                <Link
+                    to={`${API_URL}/api/user/auth/google`}
+                    className="md:h-10 h-8 rounded mb-2 mt-2 px-2 flex items-center justify-center cursor-pointer bg-[#333333] text-white hover:bg-black"
+                  >
+                    <img src="/IMG_Auth/google.png" className="h-6 mr-2" alt="Google logo" />
+                    Or sign up with Google
+                  </Link>
+                  </div>
                 
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-600">

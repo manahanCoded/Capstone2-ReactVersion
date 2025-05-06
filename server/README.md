@@ -156,7 +156,8 @@ CREATE TABLE mail (
 	reply text not null,
 	type varchar(45),
 	date date,
-	is_reply BOOLEAN DEFAULT FALSE  
+	is_reply BOOLEAN DEFAULT FALSE,
+    title text
 )
 
 

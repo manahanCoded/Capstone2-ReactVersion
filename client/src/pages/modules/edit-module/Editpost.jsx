@@ -123,23 +123,38 @@ export default function EditPost({ postList, editPostID }) {
     setIsRawHtmlInformation(!isRawHtmlInformation);
   };
 
-  const validateForm = () => {
+  const validateModule = () => {
     if (!unitInfo.title.trim()) {
-      setError("Title is required");
+      setSnackbar({
+        open: true,
+        message: "Title is required",
+        severity: "error"
+      });
       return false;
     }
-    if (!unitInfo.description || unitInfo.description.length < 50) {
-      setError("Description must be at least 50 characters");
+    if (unitInfo.description.length < 50) {
+      setSnackbar({
+        open: true,
+        message: "Description must be at least 50 characters long",
+        severity: "error"
+      });
       return false;
     }
-    setError(null);
+    if (unitInfo.information.length < 50) {
+      setSnackbar({
+        open: true,
+        message: "Information must be at least 50 characters long",
+        severity: "error"
+      });
+      return false;
+    }
     return true;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateModule()) return;
 
     setOpenSaveDialog(true);
   };
@@ -211,7 +226,7 @@ export default function EditPost({ postList, editPostID }) {
     }
   };
 
-  // Quiz Edit Section
+
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedQuestions = [...questions];

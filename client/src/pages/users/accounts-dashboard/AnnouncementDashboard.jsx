@@ -103,9 +103,16 @@ export default function AnnouncementsDashboard() {
         setEditingRow(null);  
     };
 
+    
+
     const handleSaveEdit = async () => {
         if (!editingRow?.title?.trim() || !editingRow?.description?.trim()) {
             alert("Title and description cannot be empty!");
+            return;
+        }
+
+        if (editingRow?.description?.length < 20) {
+            alert("Description must be at least 20 characters long");
             return;
         }
 

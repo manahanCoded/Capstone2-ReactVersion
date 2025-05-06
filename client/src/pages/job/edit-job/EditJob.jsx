@@ -61,7 +61,7 @@ export default function EditJobPage() {
     severity: "success"
   });
 
-  // Check user authentication and role
+
   useEffect(() => {
     async function checkUser() {
       try {
@@ -85,7 +85,7 @@ export default function EditJobPage() {
     checkUser();
   }, [navigate]);
 
-  // Fetch job data
+
   useEffect(() => {
     if (jobEditID) {
       async function fetchJobData() {
@@ -107,7 +107,7 @@ export default function EditJobPage() {
     }
   }, [jobEditID]);
 
-  // Set form data when job data is loaded
+
   useEffect(() => {
     if (specificJob) {
       setIsClient(true);
@@ -154,7 +154,7 @@ export default function EditJobPage() {
     }
   };
 
-  // Form validation
+
   const validateForm = () => {
     if (!information.title.trim()) {
       setSnackbar({
@@ -180,7 +180,15 @@ export default function EditJobPage() {
       });
       return false;
     }
-    if (!information.jobtype) {
+    if (!information.phone.trim() || information.phone.length < 11) {
+      setSnackbar({
+        open: true,
+        message: "Valid phone number is required (at least 11 digits)",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.jobtype.trim()) {
       setSnackbar({
         open: true,
         message: "Job type is required",
@@ -188,10 +196,18 @@ export default function EditJobPage() {
       });
       return false;
     }
-    if (!information.remote) {
+    if (!information.remote.trim()) {
       setSnackbar({
         open: true,
         message: "Remote option is required",
+        severity: "error"
+      });
+      return false;
+    }
+    if (!information.street.trim()) {
+      setSnackbar({
+        open: true,
+        message: "Street  is required",
         severity: "error"
       });
       return false;
@@ -229,7 +245,7 @@ export default function EditJobPage() {
     setOpenSaveDialog(true);
   };
 
-  // Confirm and execute job edit
+
   const confirmEdit = async () => {
     setIsLoading(true);
     try {
@@ -275,12 +291,12 @@ export default function EditJobPage() {
     }
   };
 
-  // Handle delete confirmation
+
   const handleDeleteClick = () => {
     setOpenDeleteDialog(true);
   };
 
-  // Confirm and execute job deletion
+
   const confirmDelete = async () => {
     setIsLoading(true);
     try {
@@ -312,7 +328,7 @@ export default function EditJobPage() {
 
   return (
     <div className="mt-14 flex flex-row justify-center text-sm">
-      {/* Notification Snackbar */}
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -328,7 +344,7 @@ export default function EditJobPage() {
         </Alert>
       </Snackbar>
 
-      {/* Main Form */}
+
       <form onSubmit={handleSubmit} className="w-full flex flex-col border-l-2">
         <section className="">
           <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
@@ -350,7 +366,7 @@ export default function EditJobPage() {
         <section className="block py-14">
           <MaxWidthWrapper>
             <section className="flex flex-col gap-4 md:w-3/4 p-4 md:px-8 m-auto rounded-lg bg-gray-100 ">
-              {/* Contact Person Section */}
+
               <section className="flex justify-between md:flex-row flex-col gap-4 mb-2">
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Contact Person</h6>
@@ -375,8 +391,9 @@ export default function EditJobPage() {
                         <input
                           type="text"
                           value={information.phone}
+                          className="p-2 rounded-md"
                           onChange={(e) => {
-                            const onlyNums = e.target.value.replace(/\D/g, ""); 
+                            const onlyNums = e.target.value.replace(/\D/g, "");
                             setInformation({
                               ...information,
                               phone: onlyNums,
@@ -445,7 +462,6 @@ export default function EditJobPage() {
                 </div>
               </section>
 
-              {/* Job Title Section */}
               <section className="flex flex-col gap-2 mb-2">
                 <label className="text-xl">Title</label>
                 <input
@@ -460,9 +476,8 @@ export default function EditJobPage() {
                 />
               </section>
 
-              {/* Job Details Section */}
               <section className="flex flex-row gap-4 justify-between mb-2">
-                {/* Job Type Options */}
+
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Job Type</h6>
                   <div className="flex flex-col gap-2">
@@ -492,7 +507,7 @@ export default function EditJobPage() {
                   </div>
                 </div>
 
-                {/* Remote Options */}
+
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Remote?</h6>
                   <div className="flex flex-col gap-2">
@@ -522,7 +537,7 @@ export default function EditJobPage() {
                   </div>
                 </div>
 
-                {/* Experience Options */}
+
                 <div className="flex flex-col gap-2">
                   <h6 className="text-base">Experience</h6>
                   <div className="flex flex-col gap-2">
@@ -551,8 +566,6 @@ export default function EditJobPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Salary Input */}
                 <div className="w-1/3 flex flex-col gap-2">
                   <label>Salary</label>
                   <input
@@ -560,8 +573,8 @@ export default function EditJobPage() {
                     required
                     placeholder=""
                     className={`px-4 py-2 rounded-md border-[1px] border-slate-300 ${information.salary === "Unpaid"
-                        ? "text-gray-400"
-                        : "text-black"
+                      ? "text-gray-400"
+                      : "text-black"
                       }`}
                     value={information.salary || "Unpaid"}
                     onChange={(e) => {
@@ -594,7 +607,6 @@ export default function EditJobPage() {
                 </div>
               </section>
 
-              {/* Location Section */}
               <section className="flex flex-col gap-2 mb-2">
                 <h6 className="text-base">Location</h6>
                 <section className="flex md:flex-row flex-col justify-between gap-4">
@@ -654,7 +666,7 @@ export default function EditJobPage() {
                 </p>
               </section>
 
-              {/* Description Editors */}
+
               <section className="flex flex-col gap-2">
                 {isClient && (
                   <div className="mb-4">
@@ -703,7 +715,7 @@ export default function EditJobPage() {
         </section>
       </form>
 
-      {/* Delete Confirmation Dialog */}
+
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -747,7 +759,7 @@ export default function EditJobPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Save Confirmation Dialog */}
+
       <Dialog
         open={openSaveDialog}
         onClose={() => setOpenSaveDialog(false)}

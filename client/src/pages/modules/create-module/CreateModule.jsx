@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
@@ -146,34 +146,33 @@ export default function CreateModulePage() {
     };
 
 
-    const handleUpdateModule = async (e) => {
+    const handleUpdateModule = useCallback(async (e) => {
         e.preventDefault();
         if (!editModule) return;
-
+    
         try {
             const tagsArray = typeof editModule.tags === "string"
                 ? editModule.tags.split(",").map(tag => tag.trim()).filter(Boolean)
                 : editModule.tags;
-
-            // Prepare the form data
+    
             const formData = new FormData();
             formData.append("name", editModule.name);
             formData.append("description", editModule.description);
             formData.append("difficulty_level", editModule.difficulty_level);
-            formData.append("tags", JSON.stringify(tagsArray)); 
+            formData.append("tags", JSON.stringify(tagsArray));
             if (editModule.selectedFile) {
                 formData.append("file", editModule.selectedFile);
             }
-
+    
             if (editModule.achievementFile) {
-                formData.append("achievement_image", editModule.achievementFile); 
+                formData.append("achievement_image", editModule.achievementFile);
             }
-
+    
             const res = await axios.put(
                 `${API_URL}/api/module/updateModule/${editModule.id}`,
                 formData
             );
-
+    
             if (res.status === 200) {
                 alert("Module updated successfully!");
                 setModules((prev) =>
@@ -192,8 +191,7 @@ export default function CreateModulePage() {
             }
             console.error("Error updating module:", error);
         }
-    };
-
+    }, [editModule, setModules, setIsEditing, setEditModule]);
 
 
     useEffect(() => {

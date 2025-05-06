@@ -116,7 +116,7 @@ export default function CreateUnitPage() {
     setUserInfo({ ...userInfo, information: value });
   };
 
-  // Validate module form
+
   const validateModule = () => {
     if (!userInfo.title.trim()) {
       setSnackbar({
@@ -134,17 +134,25 @@ export default function CreateUnitPage() {
       });
       return false;
     }
+    if (userInfo.information.length < 50) {
+      setSnackbar({
+        open: true,
+        message: "Information must be at least 50 characters long",
+        severity: "error"
+      });
+      return false;
+    }
     return true;
   };
 
-  // Show module confirmation dialog
+
   const handleModuleSubmit = (e) => {
     e.preventDefault();
     if (!validateModule()) return;
     setOpenModuleDialog(true);
   };
 
-  // Confirm and create module
+
   const confirmCreateModule = async () => {
     setIsLoading(true);
     try {
@@ -182,7 +190,7 @@ export default function CreateUnitPage() {
     }
   };
 
-  // Handle question changes
+
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedQuestions = [...questions];
@@ -190,7 +198,6 @@ export default function CreateUnitPage() {
     setQuestions(updatedQuestions);
   };
 
-  // Add new question
   const handleAddQuestion = () => {
     setQuestions([
       ...questions,
@@ -198,7 +205,6 @@ export default function CreateUnitPage() {
     ]);
   };
 
-  // Remove question
   const handleRemoveQuestion = (index) => {
     if (questions.length > 5) {
       const updatedQuestions = questions.filter((_, i) => i !== index);
@@ -212,7 +218,7 @@ export default function CreateUnitPage() {
     }
   };
 
-  // Validate quiz form
+
   const validateQuiz = () => {
     if (!userInfo.title) {
       setSnackbar({
@@ -262,14 +268,14 @@ export default function CreateUnitPage() {
     return true;
   };
 
-  // Show quiz confirmation dialog
+
   const handleQuizSubmit = (e) => {
     e.preventDefault();
     if (!validateQuiz()) return;
     setOpenQuizDialog(true);
   };
 
-  // Confirm and create quiz
+
   const confirmCreateQuiz = async () => {
     setIsLoading(true);
     try {
@@ -316,7 +322,7 @@ export default function CreateUnitPage() {
 
   return (
     <div className="mt-14 container mx-auto">
-      {/* Notification Snackbar */}
+    
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -328,7 +334,7 @@ export default function CreateUnitPage() {
         </Alert>
       </Snackbar>
 
-      {/* Header Section */}
+ 
       <section className="text-sm">
         <MaxWidthWrapper className="h-16 flex justify-between items-center border-b-2">
           <div className="h-16 flex flex-row">
@@ -366,13 +372,13 @@ export default function CreateUnitPage() {
         </MaxWidthWrapper>
       </section>
 
-      {/* Module Creation Form */}
+
       <form
         onSubmit={handleModuleSubmit}
         className={typeForm === "createModule" ? "m-auto bg-white shadow-md rounded lg:px-8 pt-6 pb-8 mb-4" : "hidden"}
       >
         <MaxWidthWrapper>
-          {/* Title Input */}
+    
           <div className="mb-4">
             <h3 className="text-3xl mb-6 font-semibold">{unitPlace.name}</h3>
             <label className="block text-gray-700 font-semibold mb-2">
@@ -389,7 +395,7 @@ export default function CreateUnitPage() {
             />
           </div>
 
-          {/* Description Editor */}
+
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
               Description <span className="text-red-500">*</span>
@@ -424,10 +430,10 @@ export default function CreateUnitPage() {
             )}
           </div>
 
-          {/* Additional Information Editor */}
+
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
-              Additional Information
+              Information
             </label>
             <div className="flex items-center gap-4 mb-2">
               <EditorToolbar toolbarId="t2" />
@@ -471,7 +477,7 @@ export default function CreateUnitPage() {
         </MaxWidthWrapper>
       </form>
 
-      {/* Quiz Creation Form */}
+
       <div className={typeForm === "createQuiz" ? "max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg" : "hidden"}>
         {userInfo.title ? (
           <h2 className="text-2xl font-semibold text-center py-6">
@@ -594,7 +600,7 @@ export default function CreateUnitPage() {
         </form>
       </div>
 
-      {/* Module Creation Confirmation Dialog */}
+ 
       <Dialog
         open={openModuleDialog}
         onClose={() => setOpenModuleDialog(false)}
@@ -638,7 +644,7 @@ export default function CreateUnitPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Quiz Creation Confirmation Dialog */}
+
       <Dialog
         open={openQuizDialog}
         onClose={() => setOpenQuizDialog(false)}
