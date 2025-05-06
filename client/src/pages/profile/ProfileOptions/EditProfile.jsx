@@ -128,6 +128,7 @@ export default function EditProfile() {
                                     />
                                 </div>
                             </label>
+                            {checkUser.type !== "google"&&
                             <button
                                 type="button"
                                 onClick={() => setEditPassword(!editPassword)}
@@ -135,6 +136,7 @@ export default function EditProfile() {
                             >
                                 Edit Password
                             </button>
+                            }
                         </div>
 
                         <div className="xl:w-[85%] md:w-[80%]">

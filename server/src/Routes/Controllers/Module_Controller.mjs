@@ -126,7 +126,7 @@ const createModule = async (req, res) => {
     created_by = created_by?.toString().trim() || "";
     difficulty_level = difficulty_level?.trim() || "";
 
-    // Convert tags from string to array if necessary
+
     if (typeof tags === "string") {
       try {
         tags = JSON.parse(tags);
@@ -138,10 +138,8 @@ const createModule = async (req, res) => {
       return res.status(400).json({ error: "Tags must be an array." });
     }
 
-    // Trim individual tags
     tags = tags.map((tag) => tag.trim());
 
-    // Ensure that `req.files` is correctly parsed using `multer`
     if (!req.files) {
       return res.status(400).json({ error: "File upload is required." });
     }
@@ -154,7 +152,6 @@ const createModule = async (req, res) => {
     const achievementImageData = achievementImage ? achievementImage.buffer : null;
     const achievementImageMimeType = achievementImage ? achievementImage.mimetype : null;
 
-    // Validate required fields
     if (!name || !description || !tags.length || !created_by || !difficulty_level) {
       return res.status(400).json({ error: "All fields are required." });
     }
@@ -203,7 +200,7 @@ const updateModule = async (req, res) => {
 
   try {
       let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
-      const tagsString = `{${tagsArray.join(",")}}`; // Convert to PostgreSQL array format
+      const tagsString = `{${tagsArray.join(",")}}`; 
 
       let query = `
           UPDATE module_storage_section
@@ -211,7 +208,7 @@ const updateModule = async (req, res) => {
       `;
       let values = [name.trim(), description.trim(), tagsString, difficulty_level.trim()];
       
-      // Handle file uploads safely
+
       let index = values.length + 1;
       if (req.files?.file) {
           query += `, file_data = $${index}, file_mime_type = $${index + 1}`;
@@ -351,7 +348,7 @@ const addQuestion = async (req, res) => {
   let { module_title, questions } = req.body;
 
   module_title = module_title.trim();
-  module_title = module_title.replace(/\s+/g, ' '); // Remove multiple spaces
+  module_title = module_title.replace(/\s+/g, ' '); 
 
   try {
     if (!module_title || !questions || !Array.isArray(questions)) {
@@ -533,7 +530,7 @@ const user_score = async (req, res) => {
     const completion_date = new Date().toISOString();
 
     if (existingQuiz.rows.length > 0) {
-      // Update existing record
+
       await db.query(
         `UPDATE module_scores 
         SET score = $1, passed = $2, attempt_number = $3, time_spent = $4, feedback = $5, completed = $6, perfect_score = $7, completion_date = $8
@@ -617,5 +614,80 @@ const getAllModule_UserInfo = async (req, res) => {
 };
 
 
+const getUserAchievements = async (req, res) => {
+  const { id } = req.params;
 
-export {allModule_Storage, units, updateModule, removeModule, deleteQuestion,  allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion, updateQuestions ,deleteModule, user_score, getUser_score, getAllModule_UserInfo};
+  if (!id || isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
+
+  try {
+    const userCheck = await db.query("SELECT id FROM users WHERE id = $1", [id]);
+    if (userCheck.rowCount === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const [modules, scores, storageSections] = await Promise.all([
+      db.query("SELECT * FROM module ORDER BY id"),
+      db.query("SELECT * FROM module_scores WHERE user_id = $1", [id]),
+      db.query("SELECT * FROM module_storage_section ORDER BY id DESC")
+    ]);
+
+    const processedSections = storageSections.rows.map(section => ({
+      ...section,
+      file_data: section.file_data?.toString('base64'),
+      achievement_image_data: section.achievement_image_data?.toString('base64')
+    }));
+
+    const completedModules = modules.rows.filter(module => 
+      scores.rows.some(score => score.module_id === module.id)
+    );
+
+    const countUnitsBySection = modules => modules.reduce((acc, unit) => {
+      const id = unit.storage_section_id;
+      acc[id] = (acc[id] || 0) + 1;
+      return acc;
+    }, {});
+
+    const totalUnitsBySection = countUnitsBySection(modules.rows);
+    const completedUnitsBySection = countUnitsBySection(completedModules);
+
+    const completedSectionIds = Object.keys(totalUnitsBySection)
+      .filter(sectionId => 
+        completedUnitsBySection[sectionId] === totalUnitsBySection[sectionId]
+      )
+      .map(Number);
+
+    const achievements = completedSectionIds
+      .map(sectionId => 
+        processedSections.find(section => section.id === sectionId)
+      )
+      .filter(Boolean)
+      .filter((item, index, self) => 
+        index === self.findIndex(m => m.id === item.id)
+      );
+
+    res.json({
+      success: true,
+      data: {
+        userProfile: userCheck.rows[0],
+        modules: modules.rows,
+        scores: scores.rows,
+        storageSections: processedSections,
+        achievements
+      }
+    });
+
+  } catch (error) {
+    console.error("Achievements error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching achievements data",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+
+
+export {allModule_Storage, units, updateModule, removeModule, deleteQuestion,  allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion, updateQuestions ,deleteModule, user_score, getUser_score, getAllModule_UserInfo, getUserAchievements};

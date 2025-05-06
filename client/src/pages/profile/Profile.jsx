@@ -34,14 +34,7 @@ export default function Profile() {
                 setCheckUser(data);
 
             } catch (err) {
-                if (axios.isAxiosError(err) && err.response) {
-                    if (err.response.status === 401 || err.response.status === 403) {
-                        navigate("/user/login");
-                    }
-                } else {
-                    alert("Failed to fetch user profile.");
                     console.error(err);
-                }
             }
         }
 

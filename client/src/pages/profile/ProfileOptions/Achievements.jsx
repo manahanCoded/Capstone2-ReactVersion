@@ -6,13 +6,12 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Achievements() {
     const navigate = useNavigate();
-    const [units, setUnits] = useState([]);
-    const [userScores, setUserScores] = useState([]);
-    const [moduleName, setModuleName] = useState([]);
-    const [badges, setBadges] = useState([]);
-    const [checkUser, setCheckUser] = useState({});
+    const [achievementsData, setAchievementsData] = useState(null);
+    const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    // Effect for fetching user data
     useEffect(() => {
         async function fetchUser() {
             try {
@@ -20,92 +19,63 @@ export default function Achievements() {
                     method: "GET",
                     credentials: "include",
                 });
+                
                 if (!res.ok) {
                     navigate("/user/login");
                     return;
                 }
+                
                 const data = await res.json();
-                setCheckUser(data);
+                setUserData(data);
             } catch (err) {
-                console.error("Failed to fetch user profile:", err);
-                navigate("/user/login");
+                console.error("Error fetching user data:", err);
+                setError(err.message);
+                if (err.response?.status === 401) {
+                    navigate("/user/login");
+                }
             }
         }
+
         fetchUser();
     }, [navigate]);
 
+    // Effect for fetching achievements data when userData is available
     useEffect(() => {
-        if (!checkUser.id) return;
+        if (!userData?.id) return;
 
-        async function fetchUnitsAndScores() {
+        async function fetchAchievements() {
+            setLoading(true);
             try {
-                const [unitsRes, scoresRes, moduleData] = await Promise.all([
-                    axios.get(`${API_URL}/api/module/allModule`),
-                    axios.get(`${API_URL}/api/module/get-user-score/${checkUser.id}`),
-                    axios.get(`${API_URL}/api/module/allModule-storage`),
-                ]);
-
-                setUnits(unitsRes.data.listall);
-                setUserScores(scoresRes.data);
-                setModuleName(moduleData.data.success ? moduleData.data.listall : []);
-            } catch (error) {
-                console.error("Error fetching data:", error);
+                const achievementsRes = await axios.get(
+                    `${API_URL}/api/module/achievements/${userData.id}`
+                );
+                
+                if (achievementsRes.data.success) {
+                    setAchievementsData(achievementsRes.data.data);
+                } else {
+                    setError("Failed to load achievements data");
+                }
+            } catch (err) {
+                console.error("Error fetching achievements:", err);
+                setError(err.message);
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchUnitsAndScores();
-    }, [checkUser.id]);
-
-
-
-    useEffect(() => {
-        if (moduleName?.length && units?.length && userScores?.length) {
-            const completedModules = units.filter((module) =>
-                userScores.some((score) => score.module_id === module.id )
-            );
-
-            const countedUnits = units.reduce((acc, unit) => {
-                const id = unit.storage_section_id;
-                acc[id] = (acc[id] || 0) + 1;
-                return acc;
-            }, {});
-
-
-            const countedUnitsDone = completedModules.reduce((acc, unit) => {
-                const id = unit.storage_section_id;
-                acc[id] = (acc[id] || 0) + 1;
-                return acc;
-            }, {});
-
-            const completedSections = [];
-
-            for (const sectionId in countedUnits) {
-                const total = countedUnits[sectionId];
-                const done = countedUnitsDone[sectionId] || 0;
-
-                if (done === total) {
-                    completedSections.push(parseInt(sectionId));
-                }
-            }
-            
-
-            const getAchievements = completedSections
-                .map((completedModule) =>
-                    moduleName.find((module) => module?.id === completedModule)
-                )
-                .filter((item, index, self) => item && index === self.findIndex((m) => m?.id === item?.id));
-
-            setBadges(getAchievements);
-        }
-    }, [moduleName, units, userScores]);
-
-
-
+        fetchAchievements();
+    }, [userData?.id]);
 
     if (loading) {
         return <p>Loading...</p>;
+    }
+
+    if (error) {
+        return <p className="text-red-500">Error: {error}</p>;
+    }
+
+    if (!userData || !achievementsData) {
+        return <p>No data available</p>;
     }
 
     return (
@@ -118,8 +88,8 @@ export default function Achievements() {
                             <div className="mt-3 flex justify-center items-center flex-col p-2 rounded-2xl border-2 border-dashed border-gray-500 bg-gray-200">
                                 <img
                                     src={
-                                        checkUser.image
-                                            ? `data:${checkUser.file_mime_type};base64,${checkUser.image}`
+                                        userData.image
+                                            ? `data:${userData.file_mime_type};base64,${userData.image}`
                                             : "/Icons/AddPic.png"
                                     }
                                     className="h-24 w-24 object-cover rounded-full"
@@ -132,13 +102,13 @@ export default function Achievements() {
                                 <div className="w-[48%] flex flex-col gap-2">
                                     <label>Name</label>
                                     <p className="md:h-10 h-8 py-2.5 rounded px-2 bg-gray-100 shadow">
-                                        {checkUser?.name ? checkUser.name : "Please edit name"}
+                                        {userData?.name || "Please edit name"}
                                     </p>
                                 </div>
                                 <div className="w-[48%] flex flex-col gap-2">
                                     <label>Last name</label>
                                     <p className="md:h-10 h-8 py-2.5 rounded px-2 bg-gray-100 shadow">
-                                        {checkUser?.lastname ? checkUser.lastname : "Please edit last name"}
+                                        {userData?.lastname || "Please edit last name"}
                                     </p>
                                 </div>
                             </section>
@@ -146,7 +116,7 @@ export default function Achievements() {
                                 <div className="w-[48%] flex flex-col gap-2">
                                     <label>Email</label>
                                     <p className="md:h-10 h-8 py-2.5 rounded px-2 bg-gray-100 shadow">
-                                        {checkUser?.email ? checkUser.email : "Please edit email"}
+                                        {userData?.email || "Please edit email"}
                                     </p>
                                 </div>
                             </section>
@@ -160,14 +130,16 @@ export default function Achievements() {
             <section className="h-[60%] mt-6 overflow-y-auto">
                 <h2 className="text-lg font-semibold">Badges</h2>
                 <div className="mt-4 flex flex-col">
-                    {badges.length > 0 ? (
+                    {achievementsData.achievements.length > 0 ? (
                         <ul className="h-full flex flex-row gap-20 items-center flex-wrap ">
-                            {badges.map((badges, index) => (
+                            {achievementsData.achievements.map((badge, index) => (
                                 <li key={index}>
-                                    <p className="text-xs">{badges?.name}</p>
-
-                                    <img src={`data:image/png;base64,${badges?.achievement_image_data}`} alt={badges?.title} style={{ width: '100px', height: '100px' }} />
-
+                                    <p className="text-xs">{badge?.name}</p>
+                                    <img 
+                                        src={`data:image/png;base64,${badge?.achievement_image_data}`} 
+                                        alt={badge?.name} 
+                                        style={{ width: '100px', height: '100px' }} 
+                                    />
                                 </li>
                             ))}
                         </ul>

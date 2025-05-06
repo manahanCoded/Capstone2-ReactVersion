@@ -293,7 +293,6 @@ const updateUser = async (req, res) => {
 
     const user = findUser.rows[0];
 
-    // Password update logic
     if (newPassword) {
       if (!oldPassword) {
         return res.status(400).json({ error: "Old password is required to update password." });
