@@ -5,19 +5,21 @@ import { useNavigate } from "react-router-dom";
 import AdminDashboard from "@/components/AdminDashboard";
 import { DataGrid } from "@mui/x-data-grid";
 import { InputLabel, FormControl, Select, MenuItem, Box, CircularProgress, TextField } from "@mui/material";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function AccountsDashboard() {
-    const [accounts, setAccounts] = useState([]);
+    const [dashboardData, setDashboardData] = useState({
+        users: [],
+        modules: [],
+        totalModules: 0
+    });
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
-    const [units, setUnits] = useState([]);
-    const [userScores, setUserScores] = useState([]);
-    const [moduleName, setModuleName] = useState([]);
-    const [badges, setBadges] = useState([]);
     const [checkUser, setCheckUser] = useState({});
 
-   useEffect(() => {
+    useEffect(() => {
         async function checkUser() {
             try {
                 const res = await fetch(`${API_URL}/api/user/profile`, {
@@ -36,8 +38,7 @@ export default function AccountsDashboard() {
                     return;
                 }
 
-                setCheckUser(data)
-
+                setCheckUser(data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401 || err.response.status === 403) {
@@ -52,25 +53,26 @@ export default function AccountsDashboard() {
         checkUser();
     }, [navigate]);
 
-
     useEffect(() => {
-        const handleAccounts = async () => {
+        const fetchDashboardData = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/user/allUsers`, {
+                const response = await axios.get(`${API_URL}/api/user/accounts-dashboard`, {
                     withCredentials: true,
                 });
-                setAccounts(response.data);
-                setLoading(false);
+                setDashboardData(response.data);
             } catch (error) {
-                console.error("Error fetching accounts:", error);
+                console.error("Error fetching dashboard data:", error);
+            } finally {
                 setLoading(false);
             }
         };
 
-        handleAccounts();
-    }, []);
+        if (checkUser.id) {
+            fetchDashboardData();
+        }
+    }, [checkUser.id]);
 
-    const filteredAccounts = accounts.filter((account) => {
+    const filteredAccounts = dashboardData.users.filter((account) => {
         const matchesSearchTerm =
             (account.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
             (account.role?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -85,11 +87,12 @@ export default function AccountsDashboard() {
                 { email, role: newRole },
                 { withCredentials: true }
             );
-            setAccounts((prevAccounts) =>
-                prevAccounts.map((account) =>
+            setDashboardData(prev => ({
+                ...prev,
+                users: prev.users.map(account =>
                     account.email === email ? { ...account, role: newRole } : account
                 )
-            );
+            }));
             alert("Role updated successfully!");
         } catch (error) {
             console.error("Error updating role:", error);
@@ -97,101 +100,14 @@ export default function AccountsDashboard() {
         }
     };
 
-    useEffect(() => {
-        if (!checkUser.id) return;
-
-        async function fetchUnitsAndScores() {
-            try {
-                const [unitsRes, scoresRes, moduleData] = await Promise.all([
-                    axios.get(`${API_URL}/api/module/allModule`),
-                    axios.get(`${API_URL}/api/module/get-all-user-info`),
-                    axios.get(`${API_URL}/api/module/allModule-storage`),
-                ]);
-
-                setUnits(unitsRes.data.listall);
-                setUserScores(scoresRes.data);
-                setModuleName(moduleData.data.success ? moduleData.data.listall : []);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchUnitsAndScores();
-    }, [checkUser.id]);
-
-    useEffect(() => {
-        if (!moduleName?.length || !units?.length || !userScores?.length) return;
-    
-        const userCompletedModules = userScores.reduce((acc, score) => {
-            if (!acc[score.user_id]) {
-                acc[score.user_id] = new Set();
-            }
-            acc[score.user_id].add(score.module_id);
-            return acc;
-        }, {});
-    
-        const countedUnits = units.reduce((acc, unit) => {
-            const id = unit.storage_section_id;
-            acc[id] = (acc[id] || 0) + 1;
-            return acc;
-        }, {});
-    
-
-        const userBadgesMap = {};
-        
-        accounts.forEach(account => {
-            const userId = account.id;
-            const userModules = userCompletedModules[userId] || new Set();
-            
-            const userCompletedUnits = units.filter(module => 
-                userModules.has(module.id)
-            );
-
-            const countedUnitsDone = userCompletedUnits.reduce((acc, unit) => {
-                const id = unit.storage_section_id;
-                acc[id] = (acc[id] || 0) + 1;
-                return acc;
-            }, {});
-    
-            const completedSections = [];
-            for (const sectionId in countedUnits) {
-                const total = countedUnits[sectionId];
-                const done = countedUnitsDone[sectionId] || 0;
-    
-                if (done === total) {
-                    completedSections.push(parseInt(sectionId));
-                }
-            }
-    
-            // Get achievements for completed sections
-            userBadgesMap[userId] = completedSections
-                .map(sectionId => 
-                    moduleName.find(module => module?.id === sectionId)
-                )
-                .filter(item => item); // Remove undefined
-        });
-    
-        setBadges(userBadgesMap);
-    }, [moduleName, units, userScores, accounts]);
-
-
-
-
-    const rows = filteredAccounts.map((account, index) => {
-        return {
-            id: index,
-            user_id: account?.id || "Unknown",
-            email: account.email || "N/A",
-            role: account.role || "N/A",
-            badges: badges[account?.id] || [],
-            type: account.type || "Unverified"
-        };
-    });
-
-
-
+    const rows = filteredAccounts.map((account, index) => ({
+        id: index,
+        user_id: account?.id || "Unknown",
+        email: account.email || "N/A",
+        role: account.role || "N/A",
+        badges: account.badges || [],
+        type: account.type || "Unverified"
+    }));
 
     const columns = [
         { field: "email", headerName: "Email", width: 300 },
@@ -208,7 +124,7 @@ export default function AccountsDashboard() {
                         onChange={(e) => handleRoleChange(params.row.email, e.target.value)}
                         sx={{ fontSize: "0.875rem" }}
                     >
-                        {[...new Set(accounts.map((acc) => acc.role))].map((role, index) => (
+                        {[...new Set(dashboardData.users.map(acc => acc.role))].map((role, index) => (
                             <MenuItem key={index} value={role}>
                                 {role}
                             </MenuItem>
@@ -230,25 +146,28 @@ export default function AccountsDashboard() {
                 }
 
                 return (
-                    <div className="flex justify-start gap-4  h-24 p-[5px]">
+                    <div className="flex justify-start gap-4 h-24 p-[5px]">
                         {userBadges.map((badge, index) => (
-                            <div key={index} className="flex  flex-col  items-center  gap-1 h-24 ">
-                                        <img src={`data:image/png;base64,${badge?.achievement_image_data}`} alt={badge?.title} className="w-6 h-6 rounded-full object-cover"/>
-                                <p className="text-xs">
-                                    {badge.name}
-                                </p>
+                            <div key={index} className="flex flex-col items-center gap-1 h-24">
+                                {badge.achievement_image_data ? (
+                                    <img
+                                        src={`data:image/png;base64,${badge.achievement_image_data}`}
+                                        alt={badge.name}
+                                        className="w-6 h-6 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span className="text-xs">🏆</span>
+                                    </div>
+                                )}
+                                <p className="text-xs">{badge.name}</p>
                             </div>
                         ))}
                     </div>
-
-
                 );
             },
         }
-
     ];
-
-
 
     if (loading) {
         return (

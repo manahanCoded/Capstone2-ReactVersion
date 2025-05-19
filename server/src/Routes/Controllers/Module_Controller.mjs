@@ -12,7 +12,7 @@ const allModule_Storage = async (req, res) => {
       }
 
       const module = result.rows[0];
-      
+
       if (module.file_data) {
         module.file_data = module.file_data.toString('base64');
       }
@@ -77,7 +77,7 @@ const units = async (req, res) => {
 
 const addUnit = async (req, res) => {
 
-  let { title, description, information , storage_section_id, publisher} = req.body;
+  let { title, description, information, storage_section_id, publisher } = req.body;
 
   title = title.trim();
   title = title.replace(/\s+/g, ' ');
@@ -88,10 +88,10 @@ const addUnit = async (req, res) => {
 
   try {
     const checkTitleResult = await db.query(
-      "SELECT * FROM module WHERE title = $1", 
+      "SELECT * FROM module WHERE title = $1",
       [title]
     );
-    
+
     if (checkTitleResult.rowCount > 0) {
       return res.status(400).json({
         success: false,
@@ -100,11 +100,11 @@ const addUnit = async (req, res) => {
     }
 
     const result = await db.query(
-      "INSERT INTO module (title, description, information, storage_section_id, publisher) VALUES ($1, $2, $3, $4, $5) RETURNING id", 
+      "INSERT INTO module (title, description, information, storage_section_id, publisher) VALUES ($1, $2, $3, $4, $5) RETURNING id",
       [title, description, information, storage_section_id, publisher]
     );
 
- 
+
     if (result.rowCount === 1) {
       return res.status(201).json({ success: true, moduleId: result.rows[0].id });
     } else {
@@ -166,11 +166,11 @@ const createModule = async (req, res) => {
       RETURNING *;
     `;
     const values = [
-      name, description, tags, created_by, difficulty_level, 
-      fileData, fileMimeType, 
+      name, description, tags, created_by, difficulty_level,
+      fileData, fileMimeType,
       achievementImageData, achievementImageMimeType
     ];
-    
+
     const { rows } = await db.query(query, values);
 
     return res.status(201).json({
@@ -195,53 +195,53 @@ const updateModule = async (req, res) => {
   const { name, description, tags, difficulty_level } = req.body;
 
   if (!id || !name || !description || !tags || !difficulty_level) {
-      return res.status(400).json({ error: "All fields are required." });
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   try {
-      let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
-      const tagsString = `{${tagsArray.join(",")}}`; 
+    let tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags);
+    const tagsString = `{${tagsArray.join(",")}}`;
 
-      let query = `
+    let query = `
           UPDATE module_storage_section
           SET name = $1, description = $2, tags = $3, difficulty_level = $4
       `;
-      let values = [name.trim(), description.trim(), tagsString, difficulty_level.trim()];
-      
+    let values = [name.trim(), description.trim(), tagsString, difficulty_level.trim()];
 
-      let index = values.length + 1;
-      if (req.files?.file) {
-          query += `, file_data = $${index}, file_mime_type = $${index + 1}`;
-          values.push(req.files.file[0].buffer, req.files.file[0].mimetype);
-          index += 2;
-      }
 
-      if (req.files?.achievement_image) {
-          query += `, achievement_image_data = $${index}, achievement_image_mime_type = $${index + 1}`;
-          values.push(req.files.achievement_image[0].buffer, req.files.achievement_image[0].mimetype);
-          index += 2;
-      }
+    let index = values.length + 1;
+    if (req.files?.file) {
+      query += `, file_data = $${index}, file_mime_type = $${index + 1}`;
+      values.push(req.files.file[0].buffer, req.files.file[0].mimetype);
+      index += 2;
+    }
 
-      query += ` WHERE id = $${index} RETURNING *;`;
-      values.push(id);
+    if (req.files?.achievement_image) {
+      query += `, achievement_image_data = $${index}, achievement_image_mime_type = $${index + 1}`;
+      values.push(req.files.achievement_image[0].buffer, req.files.achievement_image[0].mimetype);
+      index += 2;
+    }
 
-      const { rows } = await db.query(query, values);
-      
-      if (rows.length === 0) {
-          return res.status(404).json({ error: "Module not found." });
-      }
+    query += ` WHERE id = $${index} RETURNING *;`;
+    values.push(id);
 
-      return res.status(200).json({
-          message: "Module updated successfully.",
-          updatedModule: rows[0],
-      });
+    const { rows } = await db.query(query, values);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Module not found." });
+    }
+
+    return res.status(200).json({
+      message: "Module updated successfully.",
+      updatedModule: rows[0],
+    });
   } catch (error) {
-      console.error("Error updating module:", error);
-      return res.status(500).json({ error: "An internal server error occurred." });
+    console.error("Error updating module:", error);
+    return res.status(500).json({ error: "An internal server error occurred." });
   }
 };
 
- 
+
 
 
 const removeModule = async (req, res) => {
@@ -300,7 +300,7 @@ const editModule = async (req, res) => {
 
   try {
     const checkTitleResult = await db.query(
-      "SELECT * FROM module WHERE title = $1 AND id != $2", 
+      "SELECT * FROM module WHERE title = $1 AND id != $2",
       [title, ids]
     );
 
@@ -330,7 +330,7 @@ const deleteModule = async (req, res) => {
   const { id } = req.params;
 
   try {
-    
+
     await db.query("DELETE FROM module_scores WHERE module_id = $1", [id]);
     const result = await db.query("DELETE FROM module WHERE id = $1", [id]);
     if (result.rowCount > 0) {
@@ -348,7 +348,7 @@ const addQuestion = async (req, res) => {
   let { module_title, questions } = req.body;
 
   module_title = module_title.trim();
-  module_title = module_title.replace(/\s+/g, ' '); 
+  module_title = module_title.replace(/\s+/g, ' ');
 
   try {
     if (!module_title || !questions || !Array.isArray(questions)) {
@@ -356,7 +356,7 @@ const addQuestion = async (req, res) => {
     }
 
     const moduleResult = await db.query(
-      `SELECT id FROM module WHERE title = $1`, 
+      `SELECT id FROM module WHERE title = $1`,
       [module_title]
     );
 
@@ -364,7 +364,7 @@ const addQuestion = async (req, res) => {
       return res.status(404).json({ message: "Module not found" });
     }
 
-    const moduleId = moduleResult.rows[0].id; 
+    const moduleId = moduleResult.rows[0].id;
 
 
     for (const question of questions) {
@@ -542,7 +542,7 @@ const user_score = async (req, res) => {
         `INSERT INTO module_scores (user_id, module_id, score, passed, attempt_number, time_spent, feedback, completed, perfect_score, completion_date) 
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [user_id, module_id, score, passed, attempt_number, totalTimeSpent, feedback, completed, perfect_score, completion_date]
-      );      
+      );
     }
     res.status(200).json({ message: 'Quiz progress saved successfully!' });
   } catch (error) {
@@ -557,19 +557,19 @@ const getUser_score = async (req, res) => {
   const { id } = req.params;
 
   if (!id || isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid id parameter' });
+    return res.status(400).json({ error: 'Invalid id parameter' });
   }
 
   try {
-      const response = await db.query("SELECT * FROM module_scores WHERE user_id = $1", [id]);
+    const response = await db.query("SELECT * FROM module_scores WHERE user_id = $1", [id]);
 
-      if (response.rows.length === 0) {
-          return res.status(404).json({ message: 'No scores found for this user' });
-      }
-      res.status(200).json(response.rows);
+    if (response.rows.length === 0) {
+      return res.status(404).json({ message: 'No scores found for this user' });
+    }
+    res.status(200).json(response.rows);
   } catch (error) {
-      console.error("Database error:", error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error("Database error:", error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -599,11 +599,11 @@ const getAllModule_UserInfo = async (req, res) => {
       WHERE 
         ms.user_id IS NOT NULL 
     `;
-    
+
     const result = await db.query(query);
 
     if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'No quiz data found for any user' });
+      return res.status(404).json({ message: 'No quiz data found for any user' });
     }
 
     res.status(200).json(result.rows);
@@ -627,10 +627,12 @@ const getUserAchievements = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const [modules, scores, storageSections] = await Promise.all([
+    const [modules, scores, storageSections, completions, quizzes] = await Promise.all([
       db.query("SELECT * FROM module ORDER BY id"),
       db.query("SELECT * FROM module_scores WHERE user_id = $1", [id]),
-      db.query("SELECT * FROM module_storage_section ORDER BY id DESC")
+      db.query("SELECT * FROM module_storage_section ORDER BY id DESC"),
+      db.query("SELECT * FROM module_completion WHERE user_id = $1", [id]),
+      db.query("SELECT DISTINCT module_title FROM questions")
     ]);
 
     const processedSections = storageSections.rows.map(section => ({
@@ -639,31 +641,60 @@ const getUserAchievements = async (req, res) => {
       achievement_image_data: section.achievement_image_data?.toString('base64')
     }));
 
-    const completedModules = modules.rows.filter(module => 
-      scores.rows.some(score => score.module_id === module.id)
-    );
+    const modulesWithQuizzes = new Set(quizzes.rows.map(q => q.module_title));
 
-    const countUnitsBySection = modules => modules.reduce((acc, unit) => {
-      const id = unit.storage_section_id;
-      acc[id] = (acc[id] || 0) + 1;
+    const modulesBySection = modules.rows.reduce((acc, module) => {
+      const sectionId = module.storage_section_id;
+      if (!acc[sectionId]) {
+        acc[sectionId] = [];
+      }
+      acc[sectionId].push(module);
       return acc;
     }, {});
 
-    const totalUnitsBySection = countUnitsBySection(modules.rows);
-    const completedUnitsBySection = countUnitsBySection(completedModules);
+    const completedSectionIds = [];
 
-    const completedSectionIds = Object.keys(totalUnitsBySection)
-      .filter(sectionId => 
-        completedUnitsBySection[sectionId] === totalUnitsBySection[sectionId]
-      )
-      .map(Number);
+    for (const sectionId in modulesBySection) {
+      const sectionModules = modulesBySection[sectionId];
+      let allModulesCompleted = true;
+
+      for (const module of sectionModules) {
+        const moduleId = module.id;
+
+        const moduleHasQuizzes = modulesWithQuizzes.has(moduleId);
+
+        if (moduleHasQuizzes) {
+          const quizCompleted = scores.rows.some(score =>
+            score.module_id === moduleId && score.completed
+          );
+
+          if (!quizCompleted) {
+            allModulesCompleted = false;
+            break;
+          }
+        } else {
+          const moduleCompleted = completions.rows.some(c =>
+            c.module_id === moduleId && c.completed
+          );
+
+          if (!moduleCompleted) {
+            allModulesCompleted = false;
+            break;
+          }
+        }
+      }
+
+      if (allModulesCompleted) {
+        completedSectionIds.push(Number(sectionId));
+      }
+    }
 
     const achievements = completedSectionIds
-      .map(sectionId => 
+      .map(sectionId =>
         processedSections.find(section => section.id === sectionId)
       )
       .filter(Boolean)
-      .filter((item, index, self) => 
+      .filter((item, index, self) =>
         index === self.findIndex(m => m.id === item.id)
       );
 
@@ -680,14 +711,78 @@ const getUserAchievements = async (req, res) => {
 
   } catch (error) {
     console.error("Achievements error:", error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: "Error fetching achievements data",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
 
+const completeModule = async (req, res) => {
+  const { moduleId, userId } = req.body;
+  try {
+    const moduleCheck = await db.query("SELECT id FROM module WHERE id = $1", [moduleId]);
+    if (moduleCheck.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "Module not found" });
+    }
+
+    const userCheck = await db.query("SELECT id FROM users WHERE id = $1", [userId]);
+    if (userCheck.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    await db.query(`
+      INSERT INTO module_completion (user_id, module_id, completed)
+      VALUES ($1, $2, TRUE)
+      ON CONFLICT (user_id, module_id) 
+      DO UPDATE SET completed = EXCLUDED.completed, completed_at = CURRENT_TIMESTAMP
+    `, [userId, moduleId]);
+
+    res.json({ success: true, message: "Module marked as completed" });
+  } catch (error) {
+    console.error("Error marking module completion:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
 
 
-export {allModule_Storage, units, updateModule, removeModule, deleteQuestion,  allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion, updateQuestions ,deleteModule, user_score, getUser_score, getAllModule_UserInfo, getUserAchievements};
+
+const checkUserModule = async (req, res) => {
+  try {
+    const { userId, moduleId } = req.params;
+
+    const [
+      moduleData,
+      units,
+      userScores,
+      userCompletions,
+      quizzes
+    ] = await Promise.all([
+      db.query("SELECT * FROM module_storage_section WHERE id = $1", [moduleId]),
+      db.query("SELECT * FROM module WHERE storage_section_id = $1", [moduleId]),
+      db.query("SELECT * FROM module_scores WHERE user_id = $1", [userId]),
+      db.query("SELECT * FROM module_completion WHERE user_id = $1", [userId]),
+      db.query("SELECT DISTINCT module_title FROM questions")
+    ]);
+
+    // Process data
+    const response = {
+      module: moduleData.rows[0] ? {
+        ...moduleData.rows[0],
+        file_data: moduleData.rows[0].file_data?.toString('base64'),
+        achievement_image_data: moduleData.rows[0].achievement_image_data?.toString('base64')
+      } : null,
+      units: units.rows,
+      scores: userScores.rows,
+      completions: userCompletions.rows,
+      quizzes: quizzes.rows.map(q => q.module_title)
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export { allModule_Storage, units, updateModule, removeModule, deleteQuestion, allModule, createModule, addUnit, getModuleIds, editModule, addQuestion, allQuestion, updateQuestions, deleteModule, user_score, getUser_score, getAllModule_UserInfo, getUserAchievements, completeModule, checkUserModule };

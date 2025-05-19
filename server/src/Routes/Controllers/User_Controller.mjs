@@ -382,6 +382,132 @@ const updateRoles = async (req, res) => {
 
 }
 
+const getAccountsDashboardData = async (req, res) => {
+  try {
+    // Get all users
+    const usersQuery = "SELECT id, email, role, type FROM users";
+    const usersResult = await db.query(usersQuery);
+    
+    // Get all modules with their storage sections
+    const modulesQuery = `
+      SELECT 
+        m.id AS module_id,
+        m.title AS module_title,
+        m.storage_section_id,
+        ms.id AS storage_id,
+        ms.name AS storage_name,
+        ms.achievement_image_data
+      FROM 
+        module m
+      LEFT JOIN 
+        module_storage_section ms ON m.storage_section_id = ms.id
+      ORDER BY 
+        m.id
+    `;
+    const modulesResult = await db.query(modulesQuery);
+    
+    // Get all user scores (quiz completions)
+    const scoresQuery = `
+      SELECT 
+        user_id, 
+        module_id, 
+        passed, 
+        completed
+      FROM 
+        module_scores
+    `;
+    const scoresResult = await db.query(scoresQuery);
+    
+    // Get all module completions (non-quiz completions)
+    const completionsQuery = `
+      SELECT 
+        user_id, 
+        module_id, 
+        completed
+      FROM 
+        module_completion
+      WHERE 
+        completed = true
+    `;
+    const completionsResult = await db.query(completionsQuery);
+    
+    // Process the data
+    const users = usersResult.rows;
+    
+    // Group modules by storage section
+    const modulesBySection = modulesResult.rows.reduce((acc, module) => {
+      if (!module.storage_section_id) return acc;
+      
+      if (!acc[module.storage_section_id]) {
+        acc[module.storage_section_id] = {
+          id: module.storage_section_id,
+          name: module.storage_name,
+          achievement_image_data: module.achievement_image_data?.toString('base64'),
+          modules: []
+        };
+      }
+      
+      acc[module.storage_section_id].modules.push({
+        id: module.module_id,
+        title: module.module_title
+      });
+      
+      return acc;
+    }, {});
+    
+    // Combine quiz scores and module completions
+    const allUserCompletions = [...scoresResult.rows, ...completionsResult.rows];
+    
+    // Group completions by user
+    const completionsByUser = allUserCompletions.reduce((acc, record) => {
+      if (!acc[record.user_id]) {
+        acc[record.user_id] = new Set();
+      }
+      acc[record.user_id].add(record.module_id);
+      return acc;
+    }, {});
+    
+    // Calculate badges for each user
+    const usersWithBadges = users.map(user => {
+      const userCompletedModules = completionsByUser[user.id] || new Set();
+      
+      const badges = [];
+      
+      // Check which storage sections the user has completed all modules for
+      for (const sectionId in modulesBySection) {
+        const section = modulesBySection[sectionId];
+        const allCompleted = section.modules.every(module => 
+          userCompletedModules.has(module.id)
+        );
+        
+        if (allCompleted) {
+          badges.push({
+            id: section.id,
+            name: section.name,
+            achievement_image_data: section.achievement_image_data || null
+          });
+        }
+      }
+      
+      return {
+        ...user,
+        badges
+      };
+    });
+    
+    res.status(200).json({
+      users: usersWithBadges,
+      modules: Object.values(modulesBySection),
+      totalModules: modulesResult.rows.length
+    });
+    
+  } catch (error) {
+    console.error("Error fetching accounts dashboard data:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 
-export { login, google_login, google_login_callback, emailSet, register, verify, changePassword, logout, userInfo, updateUser, accountsDashboard, updateRoles, retrieve };
+
+
+export { login, google_login, google_login_callback, emailSet, register, verify, changePassword, logout, userInfo, updateUser, accountsDashboard, updateRoles, retrieve, getAccountsDashboardData };

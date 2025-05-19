@@ -134,7 +134,6 @@ export default function ModulesPage() {
       <MaxWidthWrapper >
         <section className="flex md:flex-row flex-col justify-center lg:mx-20 py-8 gap-6 ">
 
-          {/* Search Filter section */}
           <div className="lg:block hidden h-[70vh] lg:w-1/3 sticky top-20">
             <div className="flex flex-row items-center gap-3 text-3xl mb-4 pb-4 border-b">
               <DashboardOutlinedIcon />
@@ -185,8 +184,6 @@ export default function ModulesPage() {
                 </ul>
               )}
             </section>
-
-            {/* Filter section */}
             <section className="mb-4 px-4">
               <p className="font-semibold mb-2">Filter by Tags:</p>
               <div className="h-[50vh] flex flex-col items-start gap-3 overflow-y-auto">
@@ -214,7 +211,6 @@ export default function ModulesPage() {
           </div>
 
           <div className="w-full flex flex-wrap md:gap-4 gap-y-4 md:justify-start justify-between items-center">
-            {/* Search */}
             <section className="lg:h-20 h-fit w-full py-2 flex lg:flex-row flex-col justify-between items-center  gap-6 text-xs border-b-[1px] bg-white">
               <div>
                 <p className="text-xl font-medium mb-4">🌟 Stay Inspired & Keep Learning! 🌟</p>

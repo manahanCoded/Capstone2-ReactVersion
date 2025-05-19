@@ -27,6 +27,8 @@ CREATE TABLE users(
     verification_code VARCHAR(10),
     code_expires_at TIMESTAMP
 )
+SELECT pg_get_serial_sequence('users', 'id');
+SELECT setval('user_id_seq', (SELECT MAX(id) FROM users));
 
 <!-- DATABASE FOR modules -->
 CREATE TABLE module_storage_section (
@@ -56,12 +58,13 @@ CREATE TABLE module (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+SELECT pg_get_serial_sequence('module', 'id');
+SELECT setval('module_id_seq', (SELECT MAX(id) FROM module));
 
 <!-- DATABASE FOR quiz  -->
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
-    module_title INTEGER NOT NULL,
+    module_title INTEGER NOT NULL REFERENCES module(id) ON DELETE CASCADE,
     question_text TEXT NOT NULL,
     option_a TEXT NOT NULL,
     option_b TEXT NOT NULL,
@@ -71,6 +74,9 @@ CREATE TABLE questions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+SELECT pg_get_serial_sequence('questions', 'id');
+SELECT setval('questions_id_seq', (SELECT MAX(id) FROM questions));
 
 <!-- DATABASE FOR quiz scores -->
 CREATE TABLE module_scores (
@@ -87,6 +93,19 @@ CREATE TABLE module_scores (
 	perfect_score INTEGER,                     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (module_id) REFERENCES module(id) ON DELETE CASCADE
+);
+
+SELECT pg_get_serial_sequence('users', 'id');
+SELECT setval('user_id_seq', (SELECT MAX(id) FROM users));
+
+<!-- DATABASE FOR unit completed without quiz -->
+CREATE TABLE module_completion (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    module_id INTEGER NOT NULL REFERENCES module(id) ON DELETE CASCADE,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, module_id)
 );
 
 <!-- DATABASE FOR jobs -->
@@ -177,6 +196,8 @@ CREATE TABLE QA_questions (
     isUpdated boolean DEFAULT false,
     updated_by INTEGER
 );
+SELECT pg_get_serial_sequence('QA_questions', 'question_id');
+SELECT setval('QA_questions_question_id_seq', (SELECT MAX(question_id) FROM QA_questions));
 
 <!-- DATABASE FOR Question&Answer  answers-->
 CREATE TABLE QA_answers (
@@ -188,6 +209,9 @@ CREATE TABLE QA_answers (
     is_accepted BOOLEAN DEFAULT FALSE,
     parent_answer_id INT
 );
+
+SELECT pg_get_serial_sequence('QA_answers', 'answer_id');
+SELECT setval('QA_answers_answer_id_seq', (SELECT MAX(answer_id) FROM QA_answers));
 
 <!-- DATABASE FOR Question&Answer  votes-->
 CREATE TABLE QA_votes (

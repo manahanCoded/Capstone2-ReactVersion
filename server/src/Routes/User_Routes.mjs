@@ -6,7 +6,8 @@ import {
   updateRoles, retrieve, 
   changePassword,
   verify,
-  emailSet
+  emailSet,
+  getAccountsDashboardData
 } from "./Controllers/User_Controller.mjs";
 import { Validate_Login, Validate_Register } from "../Middleware/Validaitors/User_Validator.mjs";
 
@@ -38,5 +39,6 @@ router.post("/logout", logout);
 router.get("/profile", userInfo);
 router.get("/allUsers", accountsDashboard);
 router.put("/updateRole", updateRoles); 
+router.get('/accounts-dashboard', getAccountsDashboardData);
 
 export default router;

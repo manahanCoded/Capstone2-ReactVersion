@@ -15,8 +15,7 @@ export default function DocsPage() {
   const [posts, setPosts] = useState([]);
   const [nextPage, setNextPage] = useState([]);
   const [previousPage, setPreviousPage] = useState([]);
-  const [openNextPage, setOpenNextPage] =useState(false)
-  const [openPreviousPage, setOpenPreviousPage] =useState(false)
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
@@ -64,8 +63,8 @@ export default function DocsPage() {
         }
       } catch (error) {
         console.error("Error fetching module:", error);
-      }finally {
-        setIsLoading(false); // End loading
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchModule();
@@ -78,16 +77,16 @@ export default function DocsPage() {
         return;
       }
       try {
-        
+
         const unitsRes = await axios.get(`${API_URL}/api/module/module-units/${posts[0].storage_section_id}`);
         const response = unitsRes.data.listall;
 
         if (Array.isArray(response)) {
           const nextUnits = response.findIndex(nextUnit => nextUnit.id === posts[0]?.id);
-          if(nextUnits <= response.length){
+          if (nextUnits <= response.length) {
             setNextPage(response[nextUnits + 1])
           }
-            setPreviousPage(response[nextUnits - 1])
+          setPreviousPage(response[nextUnits - 1])
         } else {
           console.error("Data is not an array.");
         }
@@ -154,7 +153,7 @@ export default function DocsPage() {
 
 
   const handleQuizStart = () => {
-    setQuizStartTime(new Date());  // Record the start time of the quiz
+    setQuizStartTime(new Date());
     setOpenQuiz(true);
   };
 
@@ -162,7 +161,7 @@ export default function DocsPage() {
 
     const timeSpent = quizStartTime ? Math.floor((new Date() - quizStartTime) / 1000) : 0;
 
-    const passed = score >= itemQuiz.length * 0.7 ? 1 : 0;
+    const passed = score >= itemQuiz.length * 0.5 ? 1 : 0;
 
     const perfectScore = itemQuiz.length;
 
@@ -195,64 +194,110 @@ export default function DocsPage() {
     setIsQuizCompleted(false);
   };
 
+  useEffect(() => {
+    const markAsCompleted = async () => {
+      if (posts.length > 0 && posts[0]?.id && userId) {
+        await markModuleAsCompleted(posts[0].id);
+      }
+    };
+
+    markAsCompleted();
+  }, [posts, userId]);
+
+  const markModuleAsCompleted = async (moduleId) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/module/complete`,
+        {
+          moduleId,
+          userId
+        },
+        {
+          withCredentials: true
+        }
+      );
+      return response.data.success;
+    } catch (error) {
+      console.error("Error marking module as completed:", error);
+      return false;
+    }
+  };
+
+
   return (
     <div className="mt-14">
       <MaxWidthWrapper className="py-14">
-      {isLoading ? (
+        {isLoading ? (
           <div className="flex justify-center items-center h-96">
             <div className="animate-spin h-16 w-16 border-4 border-red-500 border-t-transparent rounded-full"></div>
           </div>
         ) : (
-        <div className="lg:w-3/5 md:w-4/5 m-auto">
-          {posts.map((post) => (
-            <div key={post.id}>
-              <h1 className="flex flex-col font-extrabold lg:text-5xl text-2xl leading-tight">
-                <span className="font-bold text-red-900 text-lg">Introducing</span>
-                {post.title}
-              </h1>
-              <div
-                className="ql-editor"
-                dangerouslySetInnerHTML={{ __html: post.description }}
-              />
-              <div
-                className="ql-editor"
-                dangerouslySetInnerHTML={{ __html: post.information }}
-              />
-            </div>
-          ))}
+          <div className="lg:w-3/5 md:w-4/5 m-auto">
+            {posts.map((post) => (
+              <div key={post.id}>
+                <h1 className="flex flex-col font-extrabold lg:text-5xl text-2xl leading-tight">
+                  <span className="font-bold text-red-900 text-lg">Introducing</span>
+                  {post.title}
+                </h1>
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: post.description }}
+                />
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: post.information }}
+                />
+              </div>
+            ))}
 
-          <div className="mt-10 flex flex-col md:flex-row md:justify-between items-center gap-4">
-          {itemQuiz.length > 0 ?(
-            <button
-              className="w-full  md:h-12 h-10 flex items-center justify-center gap-2 font-semibold text-white rounded-lg bg-red-700 hover:bg-red-800 transition"
-              onClick={handleQuizStart}
-            >
-              <img src="/IMG_Home/Quiz_white.png" className="h-8 " alt="Quiz Icon" />
-              Start Quiz
-            </button>
-            ):
-            (
-              <div></div>
-            )
-            }
-            <div className="w-full md:w-[50%]  flex flex-row items-center justify-end gap-4">
-            <Link
-                className=" md:h-12 h-10  flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg  transition"
-                to={`/modules/units/docs/${previousPage?.id? previousPage?.id: posts[0]?.id}`}
-              >
-                <ArrowBackIosIcon />
-                Back
-              </Link>
-              <Link
-                className=" md:h-12 h-10  flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg  transition"
-                to={`/modules/units/docs/${nextPage?.id? nextPage?.id: posts[0]?.id}`}
-              >
-                Next
-                <ArrowForwardIosIcon />
-              </Link>
+            <div className="mt-10 flex flex-col md:flex-row md:justify-between items-center gap-4">
+              {itemQuiz.length > 0 ? (
+                <button
+                  className="w-full  md:h-12 h-10 flex items-center justify-center gap-2 font-semibold text-white rounded-lg bg-red-700 hover:bg-red-800 transition"
+                  onClick={handleQuizStart}
+                >
+                  <img src="/IMG_Home/Quiz_white.png" className="h-8 " alt="Quiz Icon" />
+                  Start Quiz
+                </button>
+              ) :
+                (
+                  <div></div>
+                )
+              }
+              <div className="w-full md:w-[50%]  flex flex-row items-center justify-end gap-4">
+                <div className="flex gap-4">
+                  {previousPage && (
+                    <Link
+                      className="md:h-12 h-10 flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg transition"
+                      to={`/modules/units/docs/${previousPage.id}`}
+                    >
+                      <ArrowBackIosIcon />
+                      Back
+                    </Link>
+                  )}
+
+                  {nextPage ? (
+                    <Link
+                      className="md:h-12 h-10 flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg transition"
+                        onClick={restartQuiz}
+                      to={`/modules/units/docs/${nextPage.id}`}
+                    >
+                      Next
+                      <ArrowForwardIosIcon />
+                    </Link>
+                  ) :
+                    <Link
+                      className="md:h-12 h-10 flex px-4 items-center justify-center gap-2 font-semibold border-2 border-[#333333] hover:text-white hover:bg-[#333333] rounded-lg transition"
+                      to={`/modules/units/${posts[0].storage_section_id}`}
+                    >
+                      Finished
+                      <ArrowForwardIosIcon />
+                    </Link>
+                  }
+                </div>
+              </div>
             </div>
           </div>
-        </div>
         )}
       </MaxWidthWrapper>
 

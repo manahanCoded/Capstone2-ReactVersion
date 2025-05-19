@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo, updateQuestions, deleteQuestion, getUserAchievements} from "./Controllers/Module_Controller.mjs";
+import { addUnit, allModule, editModule, getModuleIds, addQuestion, allQuestion , deleteModule, user_score, getUser_score, allModule_Storage, units, createModule, updateModule, removeModule, getAllModule_UserInfo, updateQuestions, deleteQuestion, getUserAchievements, completeModule, checkUserModule} from "./Controllers/Module_Controller.mjs";
 import multer from "multer";
 
 
@@ -46,6 +46,11 @@ router.post("/update-module-score", user_score)
 router.get("/get-user-score/:id", getUser_score)
 
 router.get("/get-all-user-info", getAllModule_UserInfo);
+
 router.get('/achievements/:id', getUserAchievements);
+
+router.post('/complete', completeModule);
+
+router.get('/unit-data/:userId/:moduleId', checkUserModule)
 
 export default router
