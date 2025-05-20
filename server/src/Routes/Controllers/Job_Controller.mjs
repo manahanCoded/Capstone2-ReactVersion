@@ -183,17 +183,17 @@ const display_appointments = async (req, res) => {
 
         let resumeUrl = null;
         if (applicant.resume) {
-            const resumeData = applicant.resume;
-            const mimeType = applicant.file_mime_type;
+          const resumeData = applicant.resume;
+          const mimeType = applicant.file_mime_type;
 
-            const resumeBase64 = resumeData.toString('base64');
+          const resumeBase64 = resumeData.toString('base64');
 
-            if (applicant.file_mime_type?.startsWith("image/")) {
-              resumeUrl = `data:${mimeType};base64,${resumeBase64}`;
-            } else {
-              resumeUrl = `data:application/octet-stream;base64,${resumeBase64}`;
-            }
+          if (applicant.file_mime_type?.startsWith("image/")) {
+            resumeUrl = `data:${mimeType};base64,${resumeBase64}`;
+          } else {
+            resumeUrl = `data:application/octet-stream;base64,${resumeBase64}`;
           }
+        }
 
         return {
           ...applicant,
@@ -214,24 +214,24 @@ const downloadApplication = async (req, res) => {
   try {
     const applicantId = req.params.id;
 
-    // Fetch the file data and MIME type from the database
+ 
     const result = await db.query('SELECT resume, file_mime_type FROM applicants WHERE id = $1', [applicantId]);
 
     if (result.rows.length === 0) {
       return res.status(404).send('File not found');
     }
 
-    const resumeData = result.rows[0].resume; // Binary data
-    const mimeType = result.rows[0].file_mime_type || 'application/octet-stream'; // Default MIME type if none is found
+    const resumeData = result.rows[0].resume; 
+    const mimeType = result.rows[0].file_mime_type || 'application/octet-stream'; 
 
-    // Set headers for downloading the file
-    res.setHeader('Content-Type', mimeType); // Set the correct file type
+
+    res.setHeader('Content-Type', mimeType); 
     res.setHeader(
       'Content-Disposition',
       `attachment; filename="resume-${applicantId}.${mimeType.split('/')[1]}"`
-    ); // Set the file name with extension
+    ); 
 
-    // Send the binary file data
+
     res.send(resumeData);
   } catch (error) {
     console.error('Error serving file:', error);
@@ -321,7 +321,7 @@ const updateJob = async (req, res) => {
         name = $1, phone = $2, email = $3, title = $4, jobtype = $5, remote = $6,
         experience = $7, salary = $8, state = $9, city = $10, street = $11,
         description = $12, moreinfo = $13, update_date = CURRENT_TIMESTAMP`;
-    
+
     let values = [
       name,
       phone,
@@ -338,13 +338,16 @@ const updateJob = async (req, res) => {
       moreinfo
     ];
 
-
     if (req.file) {
       query += `, file_name = $14, file_data = $15, file_mime_type = $16`;
-      values.push(req.file.originalname, req.file.buffer, req.file.mimetype);
+      values.push(
+        req.file.originalname,
+        req.file.buffer,
+        req.file.mimetype
+      );
     }
 
-    query += ` WHERE id = $${values.length + 1}`; 
+    query += ` WHERE id = $${values.length + 1}`;
     values.push(id);
 
     await db.query(query, values);

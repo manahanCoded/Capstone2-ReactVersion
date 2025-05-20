@@ -766,7 +766,7 @@ const checkUserModule = async (req, res) => {
       db.query("SELECT DISTINCT module_title FROM questions")
     ]);
 
-    // Process data
+
     const response = {
       module: moduleData.rows[0] ? {
         ...moduleData.rows[0],

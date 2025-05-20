@@ -27,18 +27,31 @@ const upload = multer({
 
 
 router.post("/login", Validate_Login, login);
+
 router.get("/auth/google", google_login);
+
 router.get("/auth/google/callback", google_login_callback);
+
 router.post("/email-set", emailSet);
+
 router.post("/retrieve", retrieve);
+
 router.post("/verify", verify);
+
 router.post("/change-password", changePassword);
+
 router.post("/register",Validate_Register, register);
+
 router.put("/update", upload.single("image"), updateUser);
+
 router.post("/logout", logout);
+
 router.get("/profile", userInfo);
+
 router.get("/allUsers", accountsDashboard);
+
 router.put("/updateRole", updateRoles); 
+
 router.get('/accounts-dashboard', getAccountsDashboardData);
 
 export default router;

@@ -6,7 +6,9 @@ const router = Router()
 router.get("/allMail", allMails )
 
 router.post("/sendMail", sendMails )
+
 router.post("/replyMail", replyMails )
+
 router.delete("/deleteMail/:id", deleteReply)
 
 

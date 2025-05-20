@@ -6,12 +6,12 @@ import env from "dotenv";
 import cookieParser from "cookie-parser";
 import pgSession from "connect-pg-simple";
 
-//  prevent malicious activities like unintentional excessive traffic (DDoS, brute force attacks, and abuse)
+
 import rateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import ExpressBrute from "express-brute";
 
-// ROUTES
+
 import User_Routes from "./src/Routes/User_Routes.mjs";
 import Job_Routes from "./src/Routes/Job_Routes.mjs";
 import Module_Routes from "./src/Routes/Module_Routes.mjs";

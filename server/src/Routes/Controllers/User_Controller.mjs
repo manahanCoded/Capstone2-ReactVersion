@@ -384,11 +384,11 @@ const updateRoles = async (req, res) => {
 
 const getAccountsDashboardData = async (req, res) => {
   try {
-    // Get all users
+
     const usersQuery = "SELECT id, email, role, type FROM users";
     const usersResult = await db.query(usersQuery);
-    
-    // Get all modules with their storage sections
+
+
     const modulesQuery = `
       SELECT 
         m.id AS module_id,
@@ -405,8 +405,8 @@ const getAccountsDashboardData = async (req, res) => {
         m.id
     `;
     const modulesResult = await db.query(modulesQuery);
-    
-    // Get all user scores (quiz completions)
+
+
     const scoresQuery = `
       SELECT 
         user_id, 
@@ -417,8 +417,7 @@ const getAccountsDashboardData = async (req, res) => {
         module_scores
     `;
     const scoresResult = await db.query(scoresQuery);
-    
-    // Get all module completions (non-quiz completions)
+
     const completionsQuery = `
       SELECT 
         user_id, 
@@ -430,11 +429,19 @@ const getAccountsDashboardData = async (req, res) => {
         completed = true
     `;
     const completionsResult = await db.query(completionsQuery);
-    
-    // Process the data
+
+    const quizzesQuery = `
+      SELECT DISTINCT 
+        module_title 
+      FROM 
+        questions
+    `;
+    const quizzesResult = await db.query(quizzesQuery);
+    const modulesWithQuizzes = new Set(quizzesResult.rows.map(q => q.module_title));
+
     const users = usersResult.rows;
-    
-    // Group modules by storage section
+
+
     const modulesBySection = modulesResult.rows.reduce((acc, module) => {
       if (!module.storage_section_id) return acc;
       
@@ -449,36 +456,49 @@ const getAccountsDashboardData = async (req, res) => {
       
       acc[module.storage_section_id].modules.push({
         id: module.module_id,
-        title: module.module_title
+        title: module.module_title,
+        hasQuiz: modulesWithQuizzes.has(module.module_id)
       });
       
       return acc;
     }, {});
-    
-    // Combine quiz scores and module completions
-    const allUserCompletions = [...scoresResult.rows, ...completionsResult.rows];
-    
-    // Group completions by user
-    const completionsByUser = allUserCompletions.reduce((acc, record) => {
-      if (!acc[record.user_id]) {
-        acc[record.user_id] = new Set();
+
+    const quizCompletionsByUser = scoresResult.rows.reduce((acc, record) => {
+      if (record.completed ) {
+        if (!acc[record.user_id]) {
+          acc[record.user_id] = new Set();
+        }
+        acc[record.user_id].add(record.module_id);
       }
-      acc[record.user_id].add(record.module_id);
       return acc;
     }, {});
-    
-    // Calculate badges for each user
+
+
+    const moduleCompletionsByUser = completionsResult.rows.reduce((acc, record) => {
+      if (record.completed ) {
+        if (!acc[record.user_id]) {
+          acc[record.user_id] = new Set();
+        }
+        acc[record.user_id].add(record.module_id);
+      }
+      return acc;
+    }, {});
+
     const usersWithBadges = users.map(user => {
-      const userCompletedModules = completionsByUser[user.id] || new Set();
+      const userQuizCompletions = quizCompletionsByUser[user.id] || new Set();
+      const userModuleCompletions = moduleCompletionsByUser[user.id] || new Set();
       
       const badges = [];
       
-      // Check which storage sections the user has completed all modules for
       for (const sectionId in modulesBySection) {
         const section = modulesBySection[sectionId];
-        const allCompleted = section.modules.every(module => 
-          userCompletedModules.has(module.id)
-        );
+        const allCompleted = section.modules.every(module => {
+          if (module.hasQuiz) {
+            return userQuizCompletions.has(module.id);
+          } else {
+            return userModuleCompletions.has(module.id);
+          }
+        });
         
         if (allCompleted) {
           badges.push({
@@ -506,7 +526,6 @@ const getAccountsDashboardData = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 
 

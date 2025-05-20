@@ -15,14 +15,23 @@ const isAuthenticated = (req, res, next) => {
   };
 
 router.get("/all", qa_all )
+
 router.post("/question", upload.single("image"), question )
+
 router.post("/answer", answer )
+
 router.post("/vote", vote )
+
 router.delete("/delete-question/:questionId", delete_question)
+
 router.delete("/delete-answer/:answerId", delete_answer)
+
 router.patch("/update-question/:id",isAuthenticated, upload.single("image"), update_question)
+
 router.patch("/allow-question/:id",isAuthenticated, allowQuestion)
+
 router.patch("/update-answer/:id",isAuthenticated, update_answer)
+
 router.patch("/accept/:id",isAuthenticated, isAccepted)
 
 

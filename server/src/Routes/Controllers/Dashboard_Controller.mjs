@@ -72,7 +72,7 @@ const getAiResponse = async (req, res) => {
 
     const apiResponse = completion.choices[0].message.content;
 
-    // Try to parse the response into JSON
+
     const cleanedJsonString = apiResponse.match(/\[.*\]/s)?.[0];
 
     if (cleanedJsonString) {
